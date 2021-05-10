@@ -1,0 +1,39 @@
+name: Quality Assurance
+
+on:
+    push:
+        branches:
+            - master
+    pull_request: ~
+
+jobs:
+    code_analysis:
+        name: 'Code Analysis'
+        runs-on: ubuntu-latest
+        steps:
+            -   name: Setup PHP, with composer and extensions
+                uses: shivammathur/setup-php@v2
+                with:
+                    php-version: 7.4
+                    extensions: mbstring, xml, ctype, iconv, mysql, curl, intl
+                    coverage: pcov
+            -   uses: actions/checkout@v1
+            -   uses: ramsey/composer-install@v1
+            -   name: PHP Stan
+                run: vendor/bin/phpstan analyze
+            -   name: Psalm
+                run: vendor/bin/psalm
+    tests:
+        name: 'Tests'
+        runs-on: ubuntu-latest
+        steps:
+            -   name: Setup PHP, with composer and extensions
+                uses: shivammathur/setup-php@v2
+                with:
+                    php-version: 7.4
+                    extensions: mbstring, xml, ctype, iconv, mysql, curl, intl
+                    coverage: pcov
+            -   uses: actions/checkout@v1
+            -   uses: ramsey/composer-install@v1
+            -   name: PHPUnit
+                run: vendor/bin/phpunit

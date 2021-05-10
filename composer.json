@@ -1,0 +1,34 @@
+{
+    "name": "nusje2000/feature-toggle-bundle",
+    "description": "A bundle for adding and managing feature toggles in your project",
+    "type": "symfony-bundle",
+    "autoload": {
+        "App\\": "src/"
+    },
+    "autoload-dev": {
+        "App\\Tests\\": "tests/"
+    },
+    "require": {
+        "php": "^7.3",
+        "symfony/console": "^5.0",
+        "symfony/http-kernel": "^5.0",
+        "symfony/http-client": "^5.0",
+        "symfony/http-foundation": "^5.0",
+        "phpunit/phpunit": "^9.5"
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^0.12.86",
+        "vimeo/psalm": "^4.7",
+        "phpstan/phpstan-symfony": "^0.12.33",
+        "phpstan/phpstan-phpunit": "^0.12.18",
+        "psalm/plugin-phpunit": "^0.15.1"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Maarten Nusteling",
+            "email": "maarten.nusteling@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable"
+}

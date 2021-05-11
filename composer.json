@@ -3,10 +3,14 @@
     "description": "A bundle for adding and managing feature toggles in your project",
     "type": "symfony-bundle",
     "autoload": {
-        "App\\": "src/"
+        "psr-4": {
+            "Nusje2000\\FeatureToggleBundle\\": "src"
+        }
     },
     "autoload-dev": {
-        "App\\Tests\\": "tests/"
+        "psr-4": {
+            "Nusje2000\\FeatureToggleBundle\\Tests\\": "tests"
+        }
     },
     "require": {
         "php": "^7.3",
@@ -14,7 +18,8 @@
         "symfony/http-kernel": "^5.0",
         "symfony/http-client": "^5.0",
         "symfony/http-foundation": "^5.0",
-        "phpunit/phpunit": "^9.5"
+        "phpunit/phpunit": "^9.5",
+        "myclabs/php-enum": "^1.0"
     },
     "require-dev": {
         "phpstan/phpstan": "^0.12.86",

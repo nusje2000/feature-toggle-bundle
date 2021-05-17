@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Nusje2000\FeatureToggleBundle\Repository;
 
 use Nusje2000\FeatureToggleBundle\Environment\Environment;
-use Nusje2000\FeatureToggleBundle\Environment\SimpleEnvironment;
 use Nusje2000\FeatureToggleBundle\Exception\UndefinedFeature;
 use Nusje2000\FeatureToggleBundle\Feature\Feature;
 
@@ -21,6 +20,9 @@ final class EnvironmentFeatureRepository implements FeatureRepository
         $this->environmentRepository = $environmentRepository;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function all(string $environment): array
     {
         $subject = $this->getEnvironment($environment);
@@ -46,11 +48,9 @@ final class EnvironmentFeatureRepository implements FeatureRepository
     public function persist(string $environment, Feature $feature): void
     {
         $targetEnvironment = $this->getEnvironment($environment);
-        $features = $targetEnvironment->features();
-        $features[$feature->name()] = $feature;
-        $newEnvironment = new SimpleEnvironment($targetEnvironment->name(), array_values($features));
+        $targetEnvironment->addFeature($feature);
 
-        $this->environmentRepository->persist($newEnvironment);
+        $this->environmentRepository->persist($targetEnvironment);
     }
 
     private function getEnvironment(string $environment): Environment

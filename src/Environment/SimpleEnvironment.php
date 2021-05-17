@@ -20,11 +20,21 @@ final class SimpleEnvironment implements Environment
     private $features = [];
 
     /**
+     * @var list<string>
+     */
+    private $hosts = [];
+
+    /**
+     * @param list<string>  $hosts
      * @param list<Feature> $features
      */
-    public function __construct(string $name, array $features)
+    public function __construct(string $name, array $hosts, array $features)
     {
         $this->name = $name;
+
+        foreach ($hosts as $host) {
+            $this->addHost($host);
+        }
 
         foreach ($features as $feature) {
             $featureName = $feature->name();
@@ -33,8 +43,13 @@ final class SimpleEnvironment implements Environment
                 throw DuplicateFeatureException::inEnvironment($this->name(), $featureName);
             }
 
-            $this->features[$featureName] = $feature;
+            $this->addFeature($feature);
         }
+    }
+
+    public static function empty(string $name): self
+    {
+        return new self($name, [], []);
     }
 
     public function name(): string
@@ -43,10 +58,43 @@ final class SimpleEnvironment implements Environment
     }
 
     /**
+     * @inheritDoc
+     */
+    public function hosts(): array
+    {
+        return $this->hosts;
+    }
+
+    public function addHost(string $host): void
+    {
+        if (!in_array($host, $this->hosts, true)) {
+            $this->hosts[] = $host;
+        }
+    }
+
+    public function removeHost(string $host): void
+    {
+        $key = array_search($host, $this->hosts, true);
+        if (false !== $key) {
+            unset($this->hosts[$key]);
+        }
+    }
+
+    /**
      * @return array<string, Feature>
      */
     public function features(): array
     {
         return $this->features;
+    }
+
+    public function addFeature(Feature $feature): void
+    {
+        $this->features[$feature->name()] = $feature;
+    }
+
+    public function removeFeature(Feature $feature): void
+    {
+        unset($this->features[$feature->name()]);
     }
 }

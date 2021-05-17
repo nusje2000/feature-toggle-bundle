@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<routes xmlns="http://symfony.com/schema/routing"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://symfony.com/schema/routing
+        https://symfony.com/schema/routing/routing-1.0.xsd">
+    <route id="nusje2000_feature_toggle_api_host_environment_view" path="/api/feature-toggle/{name}" methods="GET,HEAD">
+        <default key="_controller">nusje2000_feature_toggle.controller.host.environment.view</default>
+    </route>
+
+    <route id="nusje2000_feature_toggle_api_host_environment_create" path="/api/feature-toggle/create-environment" methods="POST">
+        <default key="_controller">nusje2000_feature_toggle.controller.host.environment.create</default>
+    </route>
+
+    <route id="nusje2000_feature_toggle_api_host_feature_view" path="/api/feature-toggle/{environment}/{name}" methods="GET,HEAD">
+        <default key="_controller">nusje2000_feature_toggle.controller.host.feature.view</default>
+    </route>
+
+    <route id="nusje2000_feature_toggle_api_host_feature_create" path="/api/feature-toggle/{environment}/create-environment" methods="POST">
+        <default key="_controller">nusje2000_feature_toggle.controller.host.feature.create</default>
+    </route>
+</routes>

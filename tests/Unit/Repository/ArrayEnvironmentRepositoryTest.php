@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Unit\Repository;
+namespace Nusje2000\FeatureToggleBundle\Tests\Unit\Repository;
 
 use Nusje2000\FeatureToggleBundle\Environment\Environment;
 use Nusje2000\FeatureToggleBundle\Environment\SimpleEnvironment;
+use Nusje2000\FeatureToggleBundle\Exception\UndefinedEnvironment;
 use Nusje2000\FeatureToggleBundle\Repository\ArrayEnvironmentRepository;
 use Nusje2000\FeatureToggleBundle\Repository\EnvironmentRepository;
 use PHPUnit\Framework\TestCase;
@@ -26,8 +27,9 @@ final class ArrayEnvironmentRepositoryTest extends TestCase
     public function testFind(): void
     {
         $repository = $this->createRepository();
-
         self::assertEquals($this->createEnvironment('env-1'), $repository->find('env-1'));
+        $this->expectExceptionObject(UndefinedEnvironment::create('env-4'));
+        $repository->find('env-4');
     }
 
     public function testExists(): void
@@ -62,6 +64,6 @@ final class ArrayEnvironmentRepositoryTest extends TestCase
 
     private function createEnvironment(string $name): Environment
     {
-        return new SimpleEnvironment($name, []);
+        return SimpleEnvironment::empty($name);
     }
 }

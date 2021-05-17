@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<container xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns="http://symfony.com/schema/dic/services"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+        <defaults>
+            <tag name="controller.service_arguments"/>
+        </defaults>
+
+        <service id="nusje2000_feature_toggle.controller.host.environment.create" class="Nusje2000\FeatureToggleBundle\Controller\Host\Environment\CreateController">
+            <argument type="service" id="nusje2000_feature_toggle.http.request_parser"/>
+            <argument type="service" id="nusje2000_feature_toggle.repository.environment"/>
+        </service>
+
+        <service id="nusje2000_feature_toggle.controller.host.environment.view" class="Nusje2000\FeatureToggleBundle\Controller\Host\Environment\ViewController">
+            <argument type="service" id="nusje2000_feature_toggle.repository.environment"/>
+        </service>
+
+        <service id="nusje2000_feature_toggle.controller.host.feature.create" class="Nusje2000\FeatureToggleBundle\Controller\Host\Feature\CreateController">
+            <argument type="service" id="nusje2000_feature_toggle.http.request_parser"/>
+            <argument type="service" id="nusje2000_feature_toggle.repository.feature"/>
+        </service>
+
+        <service id="nusje2000_feature_toggle.controller.host.feature.view" class="Nusje2000\FeatureToggleBundle\Controller\Host\Feature\ViewController">
+            <argument type="service" id="nusje2000_feature_toggle.repository.feature"/>
+        </service>
+    </services>
+</container>

@@ -9,6 +9,12 @@ use PHPUnit\Framework\TestCase;
 
 final class StateTest extends TestCase
 {
+    public function testFromBoolean(): void
+    {
+        self::assertTrue(State::fromBoolean(true)->isEnabled());
+        self::assertFalse(State::fromBoolean(false)->isEnabled());
+    }
+
     public function testIsEnabled(): void
     {
         self::assertTrue(State::ENABLED()->isEnabled());

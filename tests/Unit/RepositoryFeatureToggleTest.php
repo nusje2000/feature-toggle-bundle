@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Unit;
+namespace Nusje2000\FeatureToggleBundle\Tests\Unit;
 
 use Nusje2000\FeatureToggleBundle\Exception\DisabledFeature;
 use Nusje2000\FeatureToggleBundle\Exception\EnabledFeature;

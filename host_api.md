@@ -28,16 +28,14 @@ Retrieves all the feature toggles for the given environment.
 
 ### POST /api/feature-toggle/{environment}
 
-Creates a new environment. The IP address will be saved from where the creation occoured, and the environment can only be updated from that IP address.
+Creates a new environment.
 
 ```json5
 // Response
 [
     {
-        "name": "feature_name_1", // string
-        "whitelist": [
-            "0.0.0.0"
-        ], // array<string>
+        "name": "environment_name", // string
+        "host": "0.0.0.0" // the IP/domain of the environment
     },
 ]
 ```

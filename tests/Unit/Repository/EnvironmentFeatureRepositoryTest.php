@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Unit\Repository;
+namespace Nusje2000\FeatureToggleBundle\Tests\Unit\Repository;
 
 use Nusje2000\FeatureToggleBundle\Environment\SimpleEnvironment;
 use Nusje2000\FeatureToggleBundle\Exception\UndefinedEnvironment;
@@ -72,12 +72,12 @@ final class EnvironmentFeatureRepositoryTest extends TestCase
     {
         $environmentRepository = $this->createMock(EnvironmentRepository::class);
 
-        $environmentRepository->expects(self::once())->method('find')->with('existing-env')->willReturn(new SimpleEnvironment('existing-env', [
+        $environmentRepository->expects(self::once())->method('find')->with('existing-env')->willReturn(new SimpleEnvironment('existing-env', [], [
             new SimpleFeature('feature-1', State::ENABLED()),
             new SimpleFeature('feature-2', State::ENABLED()),
         ]));
 
-        $environmentRepository->expects(self::once())->method('persist')->with(new SimpleEnvironment('existing-env', [
+        $environmentRepository->expects(self::once())->method('persist')->with(new SimpleEnvironment('existing-env', [], [
             new SimpleFeature('feature-1', State::ENABLED()),
             new SimpleFeature('feature-2', State::ENABLED()),
             new SimpleFeature('new-feature', State::DISABLED()),
@@ -100,7 +100,7 @@ final class EnvironmentFeatureRepositoryTest extends TestCase
             $environmentRepository = $this->createStub(EnvironmentRepository::class);
             $environmentRepository->method('find')->willReturnCallback(static function (string $name) {
                 if ('existing-env' === $name) {
-                    return new SimpleEnvironment('existing-env', [
+                    return new SimpleEnvironment('existing-env', [], [
                         new SimpleFeature('disabled-feature', State::ENABLED()),
                         new SimpleFeature('enabled-feature', State::DISABLED()),
                     ]);

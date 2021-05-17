@@ -19,6 +19,15 @@ final class State extends Enum
     public const DISABLED = 0;
     public const ENABLED = 1;
 
+    public static function fromBoolean(bool $enabled): self
+    {
+        if ($enabled) {
+            return self::ENABLED();
+        }
+
+        return self::DISABLED();
+    }
+
     public function isEnabled(): bool
     {
         return $this->equals(self::ENABLED());

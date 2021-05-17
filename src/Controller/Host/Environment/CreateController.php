@@ -6,32 +6,36 @@ namespace Nusje2000\FeatureToggleBundle\Controller\Host\Environment;
 
 use Nusje2000\FeatureToggleBundle\Environment\Environment;
 use Nusje2000\FeatureToggleBundle\Environment\SimpleEnvironment;
+use Nusje2000\FeatureToggleBundle\Http\RequestParser;
 use Nusje2000\FeatureToggleBundle\Repository\EnvironmentRepository;
-use Safe\Exceptions\JsonException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 
-use function Safe\json_decode;
 use function Safe\sprintf;
 
 final class CreateController
 {
     /**
+     * @var RequestParser
+     */
+    private $requestParser;
+
+    /**
      * @var EnvironmentRepository
      */
     private $repository;
 
-    public function __construct(EnvironmentRepository $repository)
+    public function __construct(RequestParser $requestParser, EnvironmentRepository $repository)
     {
+        $this->requestParser = $requestParser;
         $this->repository = $repository;
     }
 
     public function __invoke(Request $request): Response
     {
-        $raw = $this->getRequestContent($request);
-        $json = $this->parseJsonRequest($raw);
+        $json = $this->requestParser->json($request);
         $environment = $this->createEnvironmentFromJson($json);
         $name = $environment->name();
 
@@ -42,31 +46,6 @@ final class CreateController
         $this->repository->persist($environment);
 
         return new Response(sprintf('Created environment named "%s".', $name));
-    }
-
-    private function getRequestContent(Request $request): string
-    {
-        $raw = $request->getContent();
-        if (!is_string($raw)) {
-            throw new BadRequestHttpException('Invalid body, no content found.');
-        }
-
-        return $raw;
-    }
-
-    /**
-     * @return array<mixed>
-     */
-    private function parseJsonRequest(string $raw): array
-    {
-        try {
-            /** @var array<mixed> $parsed */
-            $parsed = json_decode($raw, true);
-        } catch (JsonException $jsonException) {
-            throw new BadRequestHttpException($jsonException->getMessage(), $jsonException);
-        }
-
-        return $parsed;
     }
 
     /**

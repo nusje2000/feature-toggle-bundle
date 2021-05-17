@@ -6,6 +6,7 @@ namespace Nusje2000\FeatureToggleBundle\Tests\Unit\Controller\Host\Environment;
 
 use Nusje2000\FeatureToggleBundle\Controller\Host\Environment\CreateController;
 use Nusje2000\FeatureToggleBundle\Environment\SimpleEnvironment;
+use Nusje2000\FeatureToggleBundle\Http\RequestParser;
 use Nusje2000\FeatureToggleBundle\Repository\EnvironmentRepository;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,7 +23,7 @@ final class CreateControllerTest extends TestCase
             new SimpleEnvironment('some_env', ['some.host'], [])
         );
 
-        $controller = new CreateController($repository);
+        $controller = new CreateController(new RequestParser(), $repository);
 
         $request = $this->createStub(Request::class);
         $request->method('getContent')->willReturn('{"name": "some_env", "host": "some.host"}');
@@ -36,7 +37,7 @@ final class CreateControllerTest extends TestCase
         $repository->method('exists')->willReturn(true);
         $repository->expects(self::never())->method('persist');
 
-        $controller = new CreateController($repository);
+        $controller = new CreateController(new RequestParser(), $repository);
 
         $request = $this->createStub(Request::class);
         $request->method('getContent')->willReturn('{"name": "some_env", "host": "some.host"}');
@@ -47,41 +48,11 @@ final class CreateControllerTest extends TestCase
         $controller($request);
     }
 
-    public function testInvokeWithNoContent(): void
-    {
-        $repository = $this->createMock(EnvironmentRepository::class);
-
-        $controller = new CreateController($repository);
-
-        $request = $this->createStub(Request::class);
-        $request->method('getContent')->willReturn(false);
-
-        $this->expectException(BadRequestHttpException::class);
-        $this->expectExceptionMessage('Invalid body, no content found.');
-
-        $controller($request);
-    }
-
-    public function testInvokeWithInvalidJson(): void
-    {
-        $repository = $this->createMock(EnvironmentRepository::class);
-
-        $controller = new CreateController($repository);
-
-        $request = $this->createStub(Request::class);
-        $request->method('getContent')->willReturn('invalid json');
-
-        $this->expectException(BadRequestHttpException::class);
-        $this->expectExceptionMessage('Syntax error');
-
-        $controller($request);
-    }
-
     public function testInvokeWithMissingName(): void
     {
         $repository = $this->createMock(EnvironmentRepository::class);
 
-        $controller = new CreateController($repository);
+        $controller = new CreateController(new RequestParser(), $repository);
 
         $request = $this->createStub(Request::class);
         $request->method('getContent')->willReturn('{"host": "some.host"}');
@@ -96,7 +67,7 @@ final class CreateControllerTest extends TestCase
     {
         $repository = $this->createMock(EnvironmentRepository::class);
 
-        $controller = new CreateController($repository);
+        $controller = new CreateController(new RequestParser(), $repository);
 
         $request = $this->createStub(Request::class);
         $request->method('getContent')->willReturn('{"name": "some_env"}');

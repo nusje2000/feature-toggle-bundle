@@ -8,7 +8,7 @@ HTTP calls. The host is made to handle multiple environments at the same time, s
 Retrieves all the feature toggles for the given environment.
 
 ```json5
-// Response
+// Response when using GET
 {
     "name": "environment", // string
     "hosts": [
@@ -37,13 +37,11 @@ Retrieves all the feature toggles for the given environment.
 Creates a new environment. Will return a 201 status if the creation was succesfull.
 
 ```json5
-// Response
-[
-    {
-        "name": "environment_name", // string
-        "host": "0.0.0.0" // the IP/domain of the environment
-    },
-]
+// Request
+{
+    "name": "environment_name", // string
+    "host": "0.0.0.0" // the IP/domain of the environment
+}
 ```
 
 *Will return a 409 status if the environment is already exists.*
@@ -53,7 +51,7 @@ Creates a new environment. Will return a 201 status if the creation was succesfu
 Retrieves information about the feature toggle.
 
 ```json5
-// Response
+// Response when using GET
 {
     "name": "feature_name", // string
     "environment": "environment", // string

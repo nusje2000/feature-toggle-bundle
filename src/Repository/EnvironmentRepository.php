@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Nusje2000\FeatureToggleBundle\Repository;
 
 use Nusje2000\FeatureToggleBundle\Environment\Environment;
+use Nusje2000\FeatureToggleBundle\Exception\DuplicateEnvironment;
 use Nusje2000\FeatureToggleBundle\Exception\UndefinedEnvironment;
 
 interface EnvironmentRepository
@@ -21,5 +22,8 @@ interface EnvironmentRepository
 
     public function exists(string $environment): bool;
 
-    public function persist(Environment $environment): void;
+    /**
+     * @throws DuplicateEnvironment
+     */
+    public function add(Environment $environment): void;
 }

@@ -8,7 +8,7 @@
             <argument type="collection"/>
         </service>
 
-        <service id="nusje2000_feature_toggle.repository.feature" class="Nusje2000\FeatureToggleBundle\Repository\EnvironmentFeatureRepository" public="true">
+        <service id="nusje2000_feature_toggle.repository.feature" class="Nusje2000\FeatureToggleBundle\Repository\ArrayFeatureRepository" public="true">
             <argument type="service" id="nusje2000_feature_toggle.repository.environment"/>
         </service>
     </services>

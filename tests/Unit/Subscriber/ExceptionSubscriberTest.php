@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Nusje2000\FeatureToggleBundle\Tests\Unit\Subscriber;
 
+use Nusje2000\FeatureToggleBundle\Exception\DuplicateEnvironment;
+use Nusje2000\FeatureToggleBundle\Exception\DuplicateFeature;
 use Nusje2000\FeatureToggleBundle\Exception\UndefinedEnvironment;
+use Nusje2000\FeatureToggleBundle\Exception\UndefinedFeature;
 use Nusje2000\FeatureToggleBundle\Subscriber\ExceptionSubscriber;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
@@ -38,6 +41,30 @@ final class ExceptionSubscriberTest extends TestCase
         $subscriber->mapException($event);
         self::assertEquals(
             new HttpException(Response::HTTP_NOT_FOUND, $throwable->getMessage(), $throwable),
+            $event->getThrowable()
+        );
+
+        $throwable = UndefinedFeature::inEnvironment('some_env', 'feature');
+        $event = $this->createEvent($throwable);
+        $subscriber->mapException($event);
+        self::assertEquals(
+            new HttpException(Response::HTTP_NOT_FOUND, $throwable->getMessage(), $throwable),
+            $event->getThrowable()
+        );
+
+        $throwable = DuplicateEnvironment::create('some_env');
+        $event = $this->createEvent($throwable);
+        $subscriber->mapException($event);
+        self::assertEquals(
+            new HttpException(Response::HTTP_CONFLICT, $throwable->getMessage(), $throwable),
+            $event->getThrowable()
+        );
+
+        $throwable = DuplicateFeature::inEnvironment('some_env', 'feature');
+        $event = $this->createEvent($throwable);
+        $subscriber->mapException($event);
+        self::assertEquals(
+            new HttpException(Response::HTTP_CONFLICT, $throwable->getMessage(), $throwable),
             $event->getThrowable()
         );
     }

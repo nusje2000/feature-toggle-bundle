@@ -12,15 +12,13 @@ use Nusje2000\FeatureToggleBundle\Repository\FeatureRepository;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 
 final class CreateControllerTest extends TestCase
 {
     public function testInvoke(): void
     {
         $repository = $this->createMock(FeatureRepository::class);
-        $repository->method('exists')->willReturn(false);
-        $repository->expects(self::once())->method('persist')->with(
+        $repository->expects(self::once())->method('add')->with(
             'environment',
             new SimpleFeature('feature_1', State::ENABLED())
         );
@@ -29,23 +27,6 @@ final class CreateControllerTest extends TestCase
 
         $request = $this->createStub(Request::class);
         $request->method('getContent')->willReturn('{"name": "feature_1", "enabled": true}');
-
-        $controller($request, 'environment');
-    }
-
-    public function testInvokeWithExistingFeature(): void
-    {
-        $repository = $this->createMock(FeatureRepository::class);
-        $repository->method('exists')->willReturn(true);
-        $repository->expects(self::never())->method('persist');
-
-        $controller = new CreateController(new RequestParser(), $repository);
-
-        $request = $this->createStub(Request::class);
-        $request->method('getContent')->willReturn('{"name": "feature_1", "enabled": true}');
-
-        $this->expectException(ConflictHttpException::class);
-        $this->expectExceptionMessage('Feature named "feature_1" in environment "environment" already exists.');
 
         $controller($request, 'environment');
     }

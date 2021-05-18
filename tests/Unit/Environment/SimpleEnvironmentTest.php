@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace Nusje2000\FeatureToggleBundle\Tests\Unit\Environment;
 
 use Nusje2000\FeatureToggleBundle\Environment\SimpleEnvironment;
-use Nusje2000\FeatureToggleBundle\Exception\DuplicateFeatureException;
+use Nusje2000\FeatureToggleBundle\Exception\DuplicateFeature;
+use Nusje2000\FeatureToggleBundle\Exception\UndefinedFeature;
 use Nusje2000\FeatureToggleBundle\Feature\Feature;
 use PHPUnit\Framework\TestCase;
 
@@ -36,6 +37,18 @@ final class SimpleEnvironmentTest extends TestCase
         self::assertEquals(['host-1', 'host-2', 'host-3'], $environment->hosts());
     }
 
+    public function testFeature(): void
+    {
+        $environment = new SimpleEnvironment('environment-name', [], [
+            $this->createFeature('feature-1'),
+        ]);
+
+        self::assertEquals($environment->feature('feature-1'), $this->createFeature('feature-1'));
+
+        $this->expectExceptionObject(UndefinedFeature::inEnvironment('environment-name', 'feature-0'));
+        $environment->feature('feature-0');
+    }
+
     public function testFeatures(): void
     {
         $environment = new SimpleEnvironment('environment-name', [], [
@@ -61,13 +74,13 @@ final class SimpleEnvironmentTest extends TestCase
 
         $environment->removeFeature($this->createFeature('feature-4'));
 
-        self::assertEquals([
-            'feature-1' => $this->createFeature('feature-1'),
-            'feature-2' => $this->createFeature('feature-2'),
-            'feature-3' => $this->createFeature('feature-3'),
-        ], $environment->features());
+        self::assertFalse($environment->hasFeature($this->createFeature('feature-0')));
+        self::assertTrue($environment->hasFeature($this->createFeature('feature-1')));
+        self::assertTrue($environment->hasFeature($this->createFeature('feature-2')));
+        self::assertTrue($environment->hasFeature($this->createFeature('feature-3')));
+        self::assertFalse($environment->hasFeature($this->createFeature('feature-4')));
 
-        $this->expectExceptionObject(DuplicateFeatureException::inEnvironment('environment-name', 'feature-1'));
+        $this->expectExceptionObject(DuplicateFeature::inEnvironment('environment-name', 'feature-1'));
         new SimpleEnvironment('environment-name', [], [
             $this->createFeature('feature-1'),
             $this->createFeature('feature-1'),

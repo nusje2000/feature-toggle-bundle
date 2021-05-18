@@ -66,7 +66,10 @@ Creates a new environment. Will return a 201 status if the creation was succesfu
 // Request
 {
     "name": "environment_name", // string
-    "host": "0.0.0.0" // the IP/domain of the environment
+    "hosts": [
+        "0.0.0.0",
+        "www.host.com"
+    ] // the IP/domain(s) of the environment
 }
 ```
 

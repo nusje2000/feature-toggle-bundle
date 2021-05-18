@@ -6,6 +6,7 @@ namespace Nusje2000\FeatureToggleBundle\Tests\Unit\Repository;
 
 use Nusje2000\FeatureToggleBundle\Environment\Environment;
 use Nusje2000\FeatureToggleBundle\Environment\SimpleEnvironment;
+use Nusje2000\FeatureToggleBundle\Exception\DuplicateEnvironment;
 use Nusje2000\FeatureToggleBundle\Exception\UndefinedEnvironment;
 use Nusje2000\FeatureToggleBundle\Repository\ArrayEnvironmentRepository;
 use Nusje2000\FeatureToggleBundle\Repository\EnvironmentRepository;
@@ -43,14 +44,12 @@ final class ArrayEnvironmentRepositoryTest extends TestCase
         self::assertFalse($repository->exists('env-4'));
     }
 
-    public function testPersist(): void
+    public function testAdd(): void
     {
         $repository = $this->createRepository();
-
-        self::assertFalse($repository->exists('env-0'));
-        $repository->persist($this->createEnvironment('env-0'));
-        self::assertTrue($repository->exists('env-0'));
-        self::assertEquals($this->createEnvironment('env-0'), $repository->find('env-0'));
+        $repository->add(SimpleEnvironment::empty('env'));
+        $this->expectExceptionObject(DuplicateEnvironment::create('env'));
+        $repository->add(SimpleEnvironment::empty('env'));
     }
 
     private function createRepository(): EnvironmentRepository

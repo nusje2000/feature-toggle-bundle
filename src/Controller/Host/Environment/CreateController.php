@@ -11,7 +11,6 @@ use Nusje2000\FeatureToggleBundle\Repository\EnvironmentRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 
 use function Safe\sprintf;
 
@@ -39,11 +38,7 @@ final class CreateController
         $environment = $this->createEnvironmentFromJson($json);
         $name = $environment->name();
 
-        if ($this->repository->exists($name)) {
-            throw new ConflictHttpException(sprintf('Environment with name "%s" already exists.', $name));
-        }
-
-        $this->repository->persist($environment);
+        $this->repository->add($environment);
 
         return new Response(sprintf('Created environment named "%s".', $name));
     }
@@ -59,14 +54,20 @@ final class CreateController
             throw new BadRequestHttpException('Missing/Invalid environment name, please provide a string value for the "name" key.');
         }
 
-        /** @var mixed $host */
-        $host = $json['host'] ?? null;
-        if (!is_string($host)) {
-            throw new BadRequestHttpException('Missing/Invalid environment host, please provide a string value for the "host" key.');
+        $environment = SimpleEnvironment::empty($name);
+
+        $hosts = $json['hosts'] ?? null;
+        if (!is_array($hosts)) {
+            throw new BadRequestHttpException('Missing/Invalid environment host, please provide an array of strings for the "host" key.');
         }
 
-        $environment = SimpleEnvironment::empty($name);
-        $environment->addHost($host);
+        foreach ($hosts as $host) {
+            if (!is_string($host)) {
+                throw new BadRequestHttpException('Missing/Invalid environment host, please provide an array of strings for the "host" key.');
+            }
+
+            $environment->addHost($host);
+        }
 
         return $environment;
     }

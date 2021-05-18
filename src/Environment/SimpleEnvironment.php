@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Nusje2000\FeatureToggleBundle\Environment;
 
-use Nusje2000\FeatureToggleBundle\Exception\DuplicateFeatureException;
+use Nusje2000\FeatureToggleBundle\Exception\DuplicateFeature;
+use Nusje2000\FeatureToggleBundle\Exception\UndefinedFeature;
 use Nusje2000\FeatureToggleBundle\Feature\Feature;
 
 final class SimpleEnvironment implements Environment
@@ -40,7 +41,7 @@ final class SimpleEnvironment implements Environment
             $featureName = $feature->name();
 
             if (isset($this->features[$featureName])) {
-                throw DuplicateFeatureException::inEnvironment($this->name(), $featureName);
+                throw DuplicateFeature::inEnvironment($this->name(), $featureName);
             }
 
             $this->addFeature($feature);
@@ -80,6 +81,16 @@ final class SimpleEnvironment implements Environment
         }
     }
 
+    public function feature(string $name): Feature
+    {
+        $feature = $this->features[$name] ?? null;
+        if (null === $feature) {
+            throw UndefinedFeature::inEnvironment($this->name(), $name);
+        }
+
+        return $feature;
+    }
+
     /**
      * @return array<string, Feature>
      */
@@ -91,6 +102,11 @@ final class SimpleEnvironment implements Environment
     public function addFeature(Feature $feature): void
     {
         $this->features[$feature->name()] = $feature;
+    }
+
+    public function hasFeature(Feature $feature): bool
+    {
+        return isset($this->features[$feature->name()]);
     }
 
     public function removeFeature(Feature $feature): void

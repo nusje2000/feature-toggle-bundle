@@ -23,7 +23,7 @@ final class FeatureMapper
 
         $enabled = $json['enabled'] ?? null;
         if (!is_bool($enabled)) {
-            throw InvalidResponse::invalidKeyType('enabled', 'bool', $name);
+            throw InvalidResponse::invalidKeyType('enabled', 'bool', $enabled);
         }
 
         return new SimpleFeature($name, State::fromBoolean($enabled));

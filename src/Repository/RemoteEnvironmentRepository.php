@@ -34,9 +34,7 @@ final class RemoteEnvironmentRepository implements EnvironmentRepository
     {
         $response = $this->client->request(Request::METHOD_GET, '/');
 
-        if ($response->getStatusCode() !== Response::HTTP_OK) {
-            throw InvalidResponse::unexpectedStatus($response->getStatusCode(), [Response::HTTP_OK]);
-        }
+        $this->assertResponseStatus($response, [Response::HTTP_OK]);
 
         return array_map(static function (array $item) {
             return EnvironmentMapper::map($item);

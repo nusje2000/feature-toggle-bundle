@@ -29,7 +29,7 @@ final class EnvironmentMapper
 
         foreach ($hosts as $key => $host) {
             if (!is_string($host)) {
-                throw InvalidResponse::invalidKeyType('hosts.' . $key, 'string', $hosts);
+                throw InvalidResponse::invalidKeyType('hosts.' . $key, 'string', $host);
             }
 
             $environment->addHost($host);
@@ -42,7 +42,7 @@ final class EnvironmentMapper
 
         foreach ($features as $key => $feature) {
             if (!is_array($feature)) {
-                throw InvalidResponse::invalidKeyType('features.' . $key, 'array', $hosts);
+                throw InvalidResponse::invalidKeyType('features.' . $key, 'array', $feature);
             }
 
             $environment->addFeature(FeatureMapper::map($feature));

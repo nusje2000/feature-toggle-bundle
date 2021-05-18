@@ -6,6 +6,7 @@ namespace Nusje2000\FeatureToggleBundle\Repository;
 
 use Nusje2000\FeatureToggleBundle\Exception\DuplicateFeature;
 use Nusje2000\FeatureToggleBundle\Exception\Http\InvalidResponse;
+use Nusje2000\FeatureToggleBundle\Exception\UndefinedEnvironment;
 use Nusje2000\FeatureToggleBundle\Exception\UndefinedFeature;
 use Nusje2000\FeatureToggleBundle\Feature\Feature;
 use Nusje2000\FeatureToggleBundle\Http\Response\EnvironmentMapper;
@@ -68,10 +69,15 @@ final class RemoteFeatureRepository implements FeatureRepository
                 'enabled' => $feature->state()->isEnabled(),
             ],
         ]);
-        $this->assertResponseStatus($response, [Response::HTTP_OK, Response::HTTP_CONFLICT]);
+
+        $this->assertResponseStatus($response, [Response::HTTP_OK, Response::HTTP_NOT_FOUND, Response::HTTP_CONFLICT]);
 
         if ($response->getStatusCode() === Response::HTTP_CONFLICT) {
             throw DuplicateFeature::inEnvironment($environment, $feature->name());
+        }
+
+        if ($response->getStatusCode() === Response::HTTP_NOT_FOUND) {
+            throw UndefinedEnvironment::create($environment);
         }
     }
 

@@ -24,7 +24,39 @@ $toggle->assertDefined('feature-name');
 
 ### Configuration reference
 
-TODO
+```yaml
+nusje2000_feature_toggle:
+    repository:
+        cache_adapter: 'service.id' // service used for caching, not enabled by default
+        service: // when using a custom repository
+            environment: 'environment_repository.service_id'
+            feature: 'feature_repository.service_id'
+        remote: // when using the API of another host
+            host: 'host.domain' // the API host
+            base_path: '/api/feature-toggle' // default
+        static: false // uses an internal array as storage (changes are therefore not persistent)
+    environment: // required when application is a client
+        name: 'environment-name' // custom name for the environment
+        hosts: [ 'localhost' ] // when using the api, this will be called by the host to invalidate the cache
+        features: // list of features, these will be used as default values
+            feature_1: true
+            feature_2: true
+            feature_3: false
+```
+
+#### Loading the host routes
+
+```yaml
+feature_toggle_host:
+    resource: '@Nusje2000FeatureToggleBundle/Resources/config/routing/host.xml'
+```
+
+#### Loading the client routes
+
+```yaml
+feature_toggle_client:
+    resource: '@Nusje2000FeatureToggleBundle/Resources/config/routing/client.xml'
+```
 
 ### Advanced usage
 

@@ -24,4 +24,18 @@ final class SimpleFeatureTest extends TestCase
         $feature = new SimpleFeature('name', State::DISABLED());
         self::assertEquals(State::DISABLED(), $feature->state());
     }
+
+    public function testEnable(): void
+    {
+        $feature = new SimpleFeature('name', State::DISABLED());
+        $feature->enable();
+        self::assertEquals(State::ENABLED(), $feature->state());
+    }
+
+    public function testDisable(): void
+    {
+        $feature = new SimpleFeature('name', State::ENABLED());
+        $feature->disable();
+        self::assertEquals(State::DISABLED(), $feature->state());
+    }
 }

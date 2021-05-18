@@ -17,8 +17,22 @@
             <argument type="service" id="nusje2000_feature_toggle.repository.environment"/>
         </service>
 
+
+        <service id="nusje2000_feature_toggle.controller.host.environment.list" class="Nusje2000\FeatureToggleBundle\Controller\Host\Environment\ListController">
+            <argument type="service" id="nusje2000_feature_toggle.repository.environment"/>
+        </service>
+
         <service id="nusje2000_feature_toggle.controller.host.feature.create" class="Nusje2000\FeatureToggleBundle\Controller\Host\Feature\CreateController">
             <argument type="service" id="nusje2000_feature_toggle.http.request_parser"/>
+            <argument type="service" id="nusje2000_feature_toggle.repository.feature"/>
+        </service>
+
+        <service id="nusje2000_feature_toggle.controller.host.feature.update" class="Nusje2000\FeatureToggleBundle\Controller\Host\Feature\UpdateController">
+            <argument type="service" id="nusje2000_feature_toggle.http.request_parser"/>
+            <argument type="service" id="nusje2000_feature_toggle.repository.feature"/>
+        </service>
+
+        <service id="nusje2000_feature_toggle.controller.host.feature.delete" class="Nusje2000\FeatureToggleBundle\Controller\Host\Feature\DeleteController">
             <argument type="service" id="nusje2000_feature_toggle.repository.feature"/>
         </service>
 

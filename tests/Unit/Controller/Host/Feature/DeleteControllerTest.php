@@ -4,33 +4,25 @@ declare(strict_types=1);
 
 namespace Nusje2000\FeatureToggleBundle\Tests\Unit\Controller\Host\Feature;
 
-use Nusje2000\FeatureToggleBundle\Controller\Host\Feature\ViewController;
+use Nusje2000\FeatureToggleBundle\Controller\Host\Feature\DeleteController;
 use Nusje2000\FeatureToggleBundle\Feature\SimpleFeature;
 use Nusje2000\FeatureToggleBundle\Feature\State;
 use Nusje2000\FeatureToggleBundle\Repository\FeatureRepository;
 use PHPUnit\Framework\TestCase;
 
-use function Safe\json_decode;
-
-final class ViewControllerTest extends TestCase
+final class DeleteControllerTest extends TestCase
 {
     public function testInvoke(): void
     {
         $repository = $this->createMock(FeatureRepository::class);
         $repository->method('find')->willReturn(new SimpleFeature('feature_1', State::ENABLED()));
-
-        $controller = new ViewController($repository);
-
-        $response = $controller('some_env', 'feature_1');
-
-        $content = $response->getContent();
-        self::assertNotFalse($content);
-        self::assertSame(
-            [
-                'name' => 'feature_1',
-                'enabled' => true,
-            ],
-            json_decode($content, true)
+        $repository->expects(self::once())->method('remove')->with(
+            'environment',
+            new SimpleFeature('feature_1', State::ENABLED())
         );
+
+        $controller = new DeleteController($repository);
+
+        $controller('environment', 'feature_1');
     }
 }

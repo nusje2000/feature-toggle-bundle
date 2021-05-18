@@ -34,4 +34,9 @@ interface FeatureRepository
      * @throws UndefinedEnvironment
      */
     public function persist(string $environment, Feature $feature): void;
+
+    /**
+     * @throws UndefinedEnvironment
+     */
+    public function remove(string $environment, Feature $feature): void;
 }

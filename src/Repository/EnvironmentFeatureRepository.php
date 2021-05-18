@@ -53,6 +53,14 @@ final class EnvironmentFeatureRepository implements FeatureRepository
         $this->environmentRepository->persist($targetEnvironment);
     }
 
+    public function remove(string $environment, Feature $feature): void
+    {
+        $targetEnvironment = $this->getEnvironment($environment);
+        $targetEnvironment->removeFeature($feature);
+
+        $this->environmentRepository->persist($targetEnvironment);
+    }
+
     private function getEnvironment(string $environment): Environment
     {
         return $this->environmentRepository->find($environment);

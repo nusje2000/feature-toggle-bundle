@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Nusje2000\FeatureToggleBundle\Controller\Host\Feature;
 
-use Nusje2000\FeatureToggleBundle\Exception\UndefinedEnvironment;
 use Nusje2000\FeatureToggleBundle\Feature\Feature;
 use Nusje2000\FeatureToggleBundle\Feature\SimpleFeature;
 use Nusje2000\FeatureToggleBundle\Feature\State;
@@ -14,7 +13,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 use function Safe\sprintf;
 
@@ -42,12 +40,8 @@ final class CreateController
         $feature = $this->createFeatureFromJson($json);
         $name = $feature->name();
 
-        try {
-            if ($this->repository->exists($environment, $name)) {
-                throw new ConflictHttpException(sprintf('Feature named "%s" in environment "%s" already exists.', $name, $environment));
-            }
-        } catch (UndefinedEnvironment $exception) {
-            throw new NotFoundHttpException(sprintf('Environment "%s" is not defind.', $environment), $exception);
+        if ($this->repository->exists($environment, $name)) {
+            throw new ConflictHttpException(sprintf('Feature named "%s" in environment "%s" already exists.', $name, $environment));
         }
 
         $this->repository->persist($environment, $feature);

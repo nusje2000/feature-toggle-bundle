@@ -4,14 +4,10 @@ declare(strict_types=1);
 
 namespace Nusje2000\FeatureToggleBundle\Controller\Host\Environment;
 
-use Nusje2000\FeatureToggleBundle\Exception\UndefinedEnvironment;
 use Nusje2000\FeatureToggleBundle\Feature\Feature;
 use Nusje2000\FeatureToggleBundle\Repository\EnvironmentRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-
-use function Safe\sprintf;
 
 final class ViewController
 {
@@ -27,20 +23,15 @@ final class ViewController
 
     public function __invoke(string $name): Response
     {
-        try {
-            $environment = $this->repository->find($name);
-        } catch (UndefinedEnvironment $environment) {
-            throw new NotFoundHttpException(sprintf('No environment found named "%s".', $name), $environment);
-        }
+        $environment = $this->repository->find($name);
 
         return new JsonResponse([
             'name' => $environment->name(),
             'hosts' => $environment->hosts(),
             'features' => array_map(
-                static function (Feature $feature) use ($environment) {
+                static function (Feature $feature) {
                     return [
                         'name' => $feature->name(),
-                        'environment' => $environment->name(),
                         'enabled' => $feature->state()->isEnabled(),
                     ];
                 },

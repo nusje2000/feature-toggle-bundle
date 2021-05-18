@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Nusje2000\FeatureToggleBundle\Tests\Unit\Controller\Host\Feature;
 
 use Nusje2000\FeatureToggleBundle\Controller\Host\Feature\CreateController;
-use Nusje2000\FeatureToggleBundle\Exception\UndefinedEnvironment;
 use Nusje2000\FeatureToggleBundle\Feature\SimpleFeature;
 use Nusje2000\FeatureToggleBundle\Feature\State;
 use Nusje2000\FeatureToggleBundle\Http\RequestParser;
@@ -14,7 +13,6 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 final class CreateControllerTest extends TestCase
 {
@@ -48,22 +46,6 @@ final class CreateControllerTest extends TestCase
 
         $this->expectException(ConflictHttpException::class);
         $this->expectExceptionMessage('Feature named "feature_1" in environment "environment" already exists.');
-
-        $controller($request, 'environment');
-    }
-
-    public function testInvokeWithUndefinedEnvironment(): void
-    {
-        $repository = $this->createMock(FeatureRepository::class);
-        $repository->method('exists')->willThrowException(UndefinedEnvironment::create('environment'));
-
-        $controller = new CreateController(new RequestParser(), $repository);
-
-        $request = $this->createStub(Request::class);
-        $request->method('getContent')->willReturn('{"name": "feature_1", "enabled": true}');
-
-        $this->expectException(NotFoundHttpException::class);
-        $this->expectExceptionMessage('Environment "environment" is not defind.');
 
         $controller($request, 'environment');
     }

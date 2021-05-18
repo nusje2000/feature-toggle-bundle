@@ -61,6 +61,22 @@ final class EnvironmentFeatureRepositoryTest extends TestCase
         self::assertFalse($repository->exists('existing-env', 'undefined-feature'));
     }
 
+    public function testRemove(): void
+    {
+        $environmentRepository = $this->createMock(EnvironmentRepository::class);
+        $environmentRepository->expects(self::once())->method('find')->willReturn(
+            new SimpleEnvironment('existing-env', [], [
+                new SimpleFeature('feature_1', State::ENABLED()),
+            ])
+        );
+        $environmentRepository->expects(self::once())->method('persist')->with(
+            new SimpleEnvironment('existing-env', [], [])
+        );
+
+        $repository = $this->createRepository($environmentRepository);
+        $repository->remove('existing-env', new SimpleFeature('feature_1', State::ENABLED()));
+    }
+
     public function testExistsInUndefinedEnvironment(): void
     {
         $repository = $this->createRepository();

@@ -4,6 +4,10 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://symfony.com/schema/routing
         https://symfony.com/schema/routing/routing-1.0.xsd">
+    <route id="nusje2000_feature_toggle_api_host_environment_view" path="/api/feature-toggle" methods="GET,HEAD">
+        <default key="_controller">nusje2000_feature_toggle.controller.host.environment.list</default>
+    </route>
+
     <route id="nusje2000_feature_toggle_api_host_environment_view" path="/api/feature-toggle/{name}" methods="GET,HEAD">
         <default key="_controller">nusje2000_feature_toggle.controller.host.environment.view</default>
     </route>
@@ -18,5 +22,13 @@
 
     <route id="nusje2000_feature_toggle_api_host_feature_create" path="/api/feature-toggle/{environment}/create-environment" methods="POST">
         <default key="_controller">nusje2000_feature_toggle.controller.host.feature.create</default>
+    </route>
+
+    <route id="nusje2000_feature_toggle_api_host_feature_update" path="/api/feature-toggle/{environment}/{name}" methods="PUT">
+        <default key="_controller">nusje2000_feature_toggle.controller.host.feature.update</default>
+    </route>
+
+    <route id="nusje2000_feature_toggle_api_host_feature_delete" path="/api/feature-toggle/{environment}/{name}" methods="DELETE">
+        <default key="_controller">nusje2000_feature_toggle.controller.host.feature.delete</default>
     </route>
 </routes>

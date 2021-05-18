@@ -3,6 +3,34 @@
 The host is responsible to keep track of features and defines if features are enabled or disabled. Clients register new features on the host by using simple
 HTTP calls. The host is made to handle multiple environments at the same time, so features can be enabled for one instance and disabled for another.
 
+### GET|HEAD /api/feature-toggle
+
+Retrieves all the environments.
+
+```json5
+// Response when using GET
+[
+    {
+        "name": "environment", // string
+        "hosts": [
+            '0.0.0.0',
+            'some-domain'
+        ], // array<string>
+        "features": [
+            {
+                "name": "feature_name_1", // string
+                "enabled": true // boolean
+            },
+            {
+                "name": "feature_name_2", // string
+                "enabled": true // boolean
+            },
+        ],
+    }
+    // ...
+]
+```
+
 ### GET|HEAD /api/feature-toggle/{environment}
 
 Retrieves all the feature toggles for the given environment.
@@ -18,12 +46,10 @@ Retrieves all the feature toggles for the given environment.
     "features": [
         {
             "name": "feature_name_1", // string
-            "environment": "environment", // string
             "enabled": true // boolean
         },
         {
             "name": "feature_name_2", // string
-            "environment": "environment", // string
             "enabled": true // boolean
         },
     ],
@@ -54,7 +80,6 @@ Retrieves information about the feature toggle.
 // Response when using GET
 {
     "name": "feature_name", // string
-    "environment": "environment", // string
     "enabled": true // boolean
 }
 ```

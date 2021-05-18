@@ -17,5 +17,6 @@ final class Nusje2000FeatureToggleExtension extends Extension
         $xmlLoader->load('controllers.xml');
         $xmlLoader->load('http.xml');
         $xmlLoader->load('repositories.xml');
+        $xmlLoader->load('subscribers.xml');
     }
 }

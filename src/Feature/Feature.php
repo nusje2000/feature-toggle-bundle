@@ -9,4 +9,8 @@ interface Feature
     public function name(): string;
 
     public function state(): State;
+
+    public function enable(): void;
+
+    public function disable(): void;
 }

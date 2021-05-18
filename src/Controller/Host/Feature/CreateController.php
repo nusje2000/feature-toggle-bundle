@@ -12,7 +12,6 @@ use Nusje2000\FeatureToggleBundle\Repository\FeatureRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 
 use function Safe\sprintf;
 
@@ -40,11 +39,7 @@ final class CreateController
         $feature = $this->createFeatureFromJson($json);
         $name = $feature->name();
 
-        if ($this->repository->exists($environment, $name)) {
-            throw new ConflictHttpException(sprintf('Feature named "%s" in environment "%s" already exists.', $name, $environment));
-        }
-
-        $this->repository->persist($environment, $feature);
+        $this->repository->add($environment, $feature);
 
         return new Response(sprintf('Created feature named "%s" in environment "%s".', $name, $environment));
     }

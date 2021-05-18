@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Nusje2000\FeatureToggleBundle\Repository;
 
 use Nusje2000\FeatureToggleBundle\Environment\Environment;
+use Nusje2000\FeatureToggleBundle\Exception\DuplicateEnvironment;
 use Nusje2000\FeatureToggleBundle\Exception\UndefinedEnvironment;
 
 final class ArrayEnvironmentRepository implements EnvironmentRepository
@@ -43,8 +44,12 @@ final class ArrayEnvironmentRepository implements EnvironmentRepository
         return isset($this->environments[$environment]);
     }
 
-    public function persist(Environment $environment): void
+    public function add(Environment $environment): void
     {
+        if ($this->exists($environment->name())) {
+            throw DuplicateEnvironment::create($environment->name());
+        }
+
         $this->environments[$environment->name()] = $environment;
     }
 }

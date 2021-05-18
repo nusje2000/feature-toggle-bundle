@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Nusje2000\FeatureToggleBundle\Subscriber;
 
+use Nusje2000\FeatureToggleBundle\Exception\DuplicateEnvironment;
+use Nusje2000\FeatureToggleBundle\Exception\DuplicateFeature;
 use Nusje2000\FeatureToggleBundle\Exception\UndefinedEnvironment;
 use Nusje2000\FeatureToggleBundle\Exception\UndefinedFeature;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -19,6 +21,8 @@ final class ExceptionSubscriber implements EventSubscriberInterface
     private const MAPPING = [
         UndefinedFeature::class => Response::HTTP_NOT_FOUND,
         UndefinedEnvironment::class => Response::HTTP_NOT_FOUND,
+        DuplicateEnvironment::class => Response::HTTP_CONFLICT,
+        DuplicateFeature::class => Response::HTTP_CONFLICT,
     ];
 
     public static function getSubscribedEvents(): array

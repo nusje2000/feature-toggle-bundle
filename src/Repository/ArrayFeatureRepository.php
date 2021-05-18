@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace Nusje2000\FeatureToggleBundle\Repository;
 
 use Nusje2000\FeatureToggleBundle\Environment\Environment;
+use Nusje2000\FeatureToggleBundle\Exception\DuplicateFeature;
 use Nusje2000\FeatureToggleBundle\Exception\UndefinedFeature;
 use Nusje2000\FeatureToggleBundle\Feature\Feature;
 
-final class EnvironmentFeatureRepository implements FeatureRepository
+final class ArrayFeatureRepository implements FeatureRepository
 {
     /**
      * @var EnvironmentRepository
@@ -45,20 +46,34 @@ final class EnvironmentFeatureRepository implements FeatureRepository
         return isset($this->all($environment)[$feature]);
     }
 
-    public function persist(string $environment, Feature $feature): void
+    public function add(string $environment, Feature $feature): void
     {
         $targetEnvironment = $this->getEnvironment($environment);
-        $targetEnvironment->addFeature($feature);
+        if ($targetEnvironment->hasFeature($feature)) {
+            throw DuplicateFeature::inEnvironment($environment, $feature->name());
+        }
 
-        $this->environmentRepository->persist($targetEnvironment);
+        $targetEnvironment->addFeature($feature);
+    }
+
+    public function update(string $environment, Feature $feature): void
+    {
+        $targetEnvironment = $this->getEnvironment($environment);
+        if (!$targetEnvironment->hasFeature($feature)) {
+            throw UndefinedFeature::inEnvironment($environment, $feature->name());
+        }
+
+        $targetEnvironment->addFeature($feature);
     }
 
     public function remove(string $environment, Feature $feature): void
     {
         $targetEnvironment = $this->getEnvironment($environment);
-        $targetEnvironment->removeFeature($feature);
+        if (!$targetEnvironment->hasFeature($feature)) {
+            throw UndefinedFeature::inEnvironment($environment, $feature->name());
+        }
 
-        $this->environmentRepository->persist($targetEnvironment);
+        $targetEnvironment->removeFeature($feature);
     }
 
     private function getEnvironment(string $environment): Environment

@@ -6,7 +6,7 @@ namespace Nusje2000\FeatureToggleBundle\Exception;
 
 use UnexpectedValueException;
 
-final class DuplicateFeatureException extends UnexpectedValueException implements Throwable
+final class DuplicateFeature extends UnexpectedValueException implements Throwable
 {
     private function __construct(string $message, Throwable $previous = null)
     {

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Nusje2000\FeatureToggleBundle\Repository;
 
+use Nusje2000\FeatureToggleBundle\Exception\DuplicateFeature;
 use Nusje2000\FeatureToggleBundle\Exception\UndefinedEnvironment;
 use Nusje2000\FeatureToggleBundle\Exception\UndefinedFeature;
 use Nusje2000\FeatureToggleBundle\Feature\Feature;
@@ -32,11 +33,19 @@ interface FeatureRepository
 
     /**
      * @throws UndefinedEnvironment
+     * @throws DuplicateFeature
      */
-    public function persist(string $environment, Feature $feature): void;
+    public function add(string $environment, Feature $feature): void;
 
     /**
      * @throws UndefinedEnvironment
+     * @throws UndefinedFeature
+     */
+    public function update(string $environment, Feature $feature): void;
+
+    /**
+     * @throws UndefinedEnvironment
+     * @throws UndefinedFeature
      */
     public function remove(string $environment, Feature $feature): void;
 }

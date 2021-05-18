@@ -19,7 +19,7 @@ final class UpdateControllerTest extends TestCase
     {
         $repository = $this->createMock(FeatureRepository::class);
         $repository->method('find')->willReturn(new SimpleFeature('feature_1', State::DISABLED()));
-        $repository->expects(self::once())->method('persist')->with(
+        $repository->expects(self::once())->method('update')->with(
             'environment',
             new SimpleFeature('feature_1', State::ENABLED())
         );
@@ -36,7 +36,7 @@ final class UpdateControllerTest extends TestCase
     {
         $repository = $this->createMock(FeatureRepository::class);
         $repository->method('find')->willReturn(new SimpleFeature('feature_1', State::ENABLED()));
-        $repository->expects(self::once())->method('persist')->with(
+        $repository->expects(self::once())->method('update')->with(
             'environment',
             new SimpleFeature('feature_1', State::DISABLED())
         );

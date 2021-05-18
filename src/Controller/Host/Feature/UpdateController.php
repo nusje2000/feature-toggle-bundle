@@ -37,7 +37,7 @@ final class UpdateController
 
         $json = $this->requestParser->json($request);
         $this->updateFeature($feature, $json);
-        $this->repository->persist($environment, $feature);
+        $this->repository->update($environment, $feature);
 
         return new Response(sprintf('Updated feature named "%s" in environment "%s".', $name, $environment));
     }

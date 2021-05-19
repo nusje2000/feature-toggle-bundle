@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<routes xmlns="http://symfony.com/schema/routing"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://symfony.com/schema/routing
+        https://symfony.com/schema/routing/routing-1.0.xsd">
+    <route id="nusje2000_feature_toggle_api_client_invalidate_cache" path="/api/feature-toggle/cache" methods="PURGE">
+        <default key="_controller">nusje2000_feature_toggle.controller.client.invalidate_cache</default>
+    </route>
+</routes>

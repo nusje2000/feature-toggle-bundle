@@ -44,6 +44,25 @@ nusje2000_feature_toggle:
             feature_3: false
 ```
 
+#### Caching
+
+```yaml
+nusje2000_feature_toggle:
+    repository:
+        remote:
+            cache_store: 'service_id' // the service id of the cache store
+```
+
+Using a cache does require a way to invalidate the cache.
+
+```yaml
+services:
+    nusje2000_feature_toggle.cache.invalidator:
+        class: Nusje2000\FeatureToggleBundle\Cache\FileStoreInvalidator
+        arguments:
+            - '/path/to/storage'
+```
+
 #### Loading the host routes
 
 ```yaml

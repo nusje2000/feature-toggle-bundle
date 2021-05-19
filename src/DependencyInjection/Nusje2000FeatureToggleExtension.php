@@ -19,6 +19,7 @@ final class Nusje2000FeatureToggleExtension extends Extension
     public function load(array $configs, ContainerBuilder $container): void
     {
         $xmlLoader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config/services'));
+        $xmlLoader->load('cache.xml');
         $xmlLoader->load('controllers.xml');
         $xmlLoader->load('http.xml');
         $xmlLoader->load('subscribers.xml');

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<container xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns="http://symfony.com/schema/dic/services"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+        <service id="nusje2000_feature_toggle.http_client.native" class="Symfony\Component\HttpClient\NativeHttpClient">
+            <factory class="Symfony\Component\HttpClient\HttpClient" method="create"/>
+        </service>
+
+        <service id="nusje2000_feature_toggle.http_client.scoping" class="Symfony\Component\HttpClient\ScopingHttpClient">
+            <argument type="service" id="nusje2000_feature_toggle.http_client.native"/>
+            <argument type="collection">
+                <argument key="base_uri" type="string">%nusje2000_feature_toggle.remote.host%/%nusje2000_feature_toggle.remote.base_path%</argument>
+            </argument>
+        </service>
+
+        <service id="nusje2000_feature_toggle.http_client" alias="nusje2000_feature_toggle.http_client.scoping"/>
+
+        <service id="nusje2000_feature_toggle.repository.environment.remote" class="Nusje2000\FeatureToggleBundle\Repository\RemoteEnvironmentRepository"
+                 public="true">
+            <argument type="service" id="nusje2000_feature_toggle.http_client"/>
+        </service>
+
+        <service id="nusje2000_feature_toggle.repository.feature.remote" class="Nusje2000\FeatureToggleBundle\Repository\RemoteFeatureRepository" public="true">
+            <argument type="service" id="nusje2000_feature_toggle.http_client"/>
+        </service>
+
+        <service id="nusje2000_feature_toggle.repository.environment" alias="nusje2000_feature_toggle.repository.environment.remote"/>
+
+        <service id="nusje2000_feature_toggle.repository.feature" alias="nusje2000_feature_toggle.repository.feature.remote"/>
+    </services>
+</container>

@@ -3,8 +3,7 @@
 For simple feature checks, there is a FeatureToggle interface. This acts as a mediator for checking feature states within an environment.
 
 ```php
-use Nusje2000\FeatureToggleBundle\Repository\FeatureRepository;
-use Nusje2000\FeatureToggleBundle\RepositoryFeatureToggle;
+use Nusje2000\FeatureToggleBundle\Repository\FeatureRepository;use Nusje2000\FeatureToggleBundle\RepositoryFeatureToggle;
 
 /** @var FeatureRepository $repository */
 
@@ -33,6 +32,7 @@ nusje2000_feature_toggle:
             feature: 'feature_repository.service_id'
         remote: // when using the API of another host
             host: 'host.domain' // the API host
+            cache_store: 'service_id' // the service id of the cache store
             base_path: '/api/feature-toggle' // default
         static: false // uses an internal array as storage (changes are therefore not persistent)
     environment: // required when application is a client
@@ -60,10 +60,6 @@ feature_toggle_client:
 
 ### Advanced usage
 
-#### Custom repositories
-
-TODO
-
 #### Using the API
 
-TODO
+See [host api definition](./host_api.md) and [client api definition](./client_api.md) for api definitions.

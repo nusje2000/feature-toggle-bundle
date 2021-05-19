@@ -8,9 +8,11 @@ use Nusje2000\FeatureToggleBundle\Feature\SimpleFeature;
 use Nusje2000\FeatureToggleBundle\Feature\State;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
+use Symfony\Component\HttpClient\CachingHttpClient;
 
 final class Nusje2000FeatureToggleExtension extends Extension
 {
@@ -24,7 +26,6 @@ final class Nusje2000FeatureToggleExtension extends Extension
         /** @var array{
          *      repository: array{
          *          enabled: bool,
-         *          cache_adapter: string|null,
          *          service: array{
          *              enabled: bool,
          *              feature: string,
@@ -33,6 +34,7 @@ final class Nusje2000FeatureToggleExtension extends Extension
          *          static: bool|null,
          *          remote: array{
          *              enabled: bool,
+         *              cache_store: string|null,
          *              host: string,
          *              base_path: string
          *          }
@@ -87,7 +89,6 @@ final class Nusje2000FeatureToggleExtension extends Extension
     /**
      * @param array{
      *     enabled: bool|null,
-     *     cache_adapter: string|null,
      *     service: array{
      *         enabled: bool,
      *         feature: string,
@@ -97,6 +98,7 @@ final class Nusje2000FeatureToggleExtension extends Extension
      *     remote: array{
      *         enabled: bool,
      *         host: string,
+     *         cache_store: string|null,
      *         base_path: string
      *     }
      * } $config
@@ -105,6 +107,26 @@ final class Nusje2000FeatureToggleExtension extends Extension
     {
         if (true === $config['static']) {
             $xmlLoader->load('repository/static.xml');
+
+            return;
+        }
+        if (true === $config['remote']['enabled']) {
+            $container->setParameter('nusje2000_feature_toggle.remote.host', $config['remote']['host']);
+            $container->setParameter('nusje2000_feature_toggle.remote.base_path', $config['remote']['base_path']);
+
+            $xmlLoader->load('repository/remote.xml');
+
+            if (null !== $config['remote']['cache_store']) {
+                $container->setDefinition('nusje2000_feature_toggle.http_client.caching', new Definition(
+                    CachingHttpClient::class,
+                    [
+                        new Reference('nusje2000_feature_toggle.http_client.scoping'),
+                        new Reference($config['remote']['cache_store']),
+                    ]
+                ));
+
+                $container->setAlias('nusje2000_feature_toggle.http_client', 'nusje2000_feature_toggle.http_client.caching');
+            }
 
             return;
         }

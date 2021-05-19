@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Nusje2000\FeatureToggleBundle\Tests\Unit\DependencyInjection;
 
 use InvalidArgumentException;
+use Nusje2000\FeatureToggleBundle\Console\UpdateCommand;
 use Nusje2000\FeatureToggleBundle\Controller\Host\Environment;
 use Nusje2000\FeatureToggleBundle\Controller\Host\Feature;
 use Nusje2000\FeatureToggleBundle\DependencyInjection\Nusje2000FeatureToggleExtension;
@@ -20,6 +21,9 @@ use Nusje2000\FeatureToggleBundle\Repository\RemoteFeatureRepository;
 use Nusje2000\FeatureToggleBundle\Subscriber\ExceptionSubscriber;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\HttpClient\CachingHttpClient;
+use Symfony\Component\HttpClient\ScopingHttpClient;
+use Symfony\Component\HttpKernel\HttpCache\StoreInterface;
 
 use function Safe\sprintf;
 
@@ -66,6 +70,7 @@ final class Nusje2000FeatureToggleExtensionTest extends TestCase
 
         $this->assertDefinition($container, 'nusje2000_feature_toggle.repository.environment', ArrayEnvironmentRepository::class, true);
         $this->assertDefinition($container, 'nusje2000_feature_toggle.repository.feature', ArrayFeatureRepository::class, true);
+        $this->assertDefinition($container, 'nusje2000_feature_toggle.console.update_command', UpdateCommand::class, true);
 
         self::assertSame('some_environment', $container->getParameter('nusje2000_feature_toggle.environment_name'));
 
@@ -90,12 +95,19 @@ final class Nusje2000FeatureToggleExtensionTest extends TestCase
                 ]
             ),
         ], $environments);
+
+        self::assertEquals(new SimpleEnvironment(
+            'some_environment',
+            ['localhost'],
+            [
+                new SimpleFeature('enabled_feature', State::ENABLED()),
+                new SimpleFeature('disabled_feature', State::DISABLED()),
+            ]
+        ), $container->get('nusje2000_feature_toggle.default_environment'));
     }
 
     public function testLoadWithRemoteConfiguration(): void
     {
-        self::markTestIncomplete('Feature has not been implemented yet.');
-
         $container = new ContainerBuilder();
 
         $extension = new Nusje2000FeatureToggleExtension();
@@ -111,6 +123,31 @@ final class Nusje2000FeatureToggleExtensionTest extends TestCase
 
         $this->assertDefinition($container, 'nusje2000_feature_toggle.repository.environment', RemoteEnvironmentRepository::class, true);
         $this->assertDefinition($container, 'nusje2000_feature_toggle.repository.feature', RemoteFeatureRepository::class, true);
+        $this->assertDefinition($container, 'nusje2000_feature_toggle.http_client', ScopingHttpClient::class, false);
+    }
+
+    public function testLoadWithRemoteWithCacheConfiguration(): void
+    {
+        $container = new ContainerBuilder();
+
+        $environmentRepository = $this->createStub(StoreInterface::class);
+        $container->set('store_service_id', $environmentRepository);
+
+        $extension = new Nusje2000FeatureToggleExtension();
+        $extension->load([
+            [
+                'repository' => [
+                    'remote' => [
+                        'host' => 'some.host',
+                        'cache_store' => 'store_service_id',
+                    ],
+                ],
+            ],
+        ], $container);
+
+        $this->assertDefinition($container, 'nusje2000_feature_toggle.repository.environment', RemoteEnvironmentRepository::class, true);
+        $this->assertDefinition($container, 'nusje2000_feature_toggle.repository.feature', RemoteFeatureRepository::class, true);
+        $this->assertDefinition($container, 'nusje2000_feature_toggle.http_client', CachingHttpClient::class, false);
     }
 
     public function testLoadWithServiceConfiguration(): void
@@ -190,9 +227,9 @@ final class Nusje2000FeatureToggleExtensionTest extends TestCase
             $id = (string) $builder->getAlias($id);
         }
 
-        $definition = $builder->getDefinition($id);
         self::assertInstanceOf($class, $builder->get($id));
 
+        $definition = $builder->getDefinition($id);
         self::assertSame($public, $definition->isPublic());
     }
 }

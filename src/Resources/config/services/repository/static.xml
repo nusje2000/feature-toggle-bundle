@@ -14,7 +14,9 @@
         </service>
 
         <service id="nusje2000_feature_toggle.repository.environment" alias="nusje2000_feature_toggle.repository.environment.static"/>
-
         <service id="nusje2000_feature_toggle.repository.feature" alias="nusje2000_feature_toggle.repository.feature.static"/>
+
+        <service id="Nusje2000\FeatureToggleBundle\Repository\EnvironmentRepository" alias="nusje2000_feature_toggle.repository.environment.static"/>
+        <service id="Nusje2000\FeatureToggleBundle\Repository\FeatureRepository" alias="nusje2000_feature_toggle.repository.feature.static"/>
     </services>
 </container>

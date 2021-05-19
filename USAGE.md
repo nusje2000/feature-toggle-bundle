@@ -81,4 +81,4 @@ feature_toggle_client:
 
 #### Using the API
 
-See [host api definition](./host_api.md) and [client api definition](./client_api.md) for api definitions.
+See [host api definition](./host_api.md) and [client api definition](./client_api.md) for the documentation.

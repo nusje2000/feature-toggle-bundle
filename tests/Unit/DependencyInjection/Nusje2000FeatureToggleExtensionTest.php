@@ -13,12 +13,14 @@ use Nusje2000\FeatureToggleBundle\DependencyInjection\Nusje2000FeatureToggleExte
 use Nusje2000\FeatureToggleBundle\Environment\SimpleEnvironment;
 use Nusje2000\FeatureToggleBundle\Feature\SimpleFeature;
 use Nusje2000\FeatureToggleBundle\Feature\State;
+use Nusje2000\FeatureToggleBundle\FeatureToggle;
 use Nusje2000\FeatureToggleBundle\Repository\ArrayEnvironmentRepository;
 use Nusje2000\FeatureToggleBundle\Repository\ArrayFeatureRepository;
 use Nusje2000\FeatureToggleBundle\Repository\EnvironmentRepository;
 use Nusje2000\FeatureToggleBundle\Repository\FeatureRepository;
 use Nusje2000\FeatureToggleBundle\Repository\RemoteEnvironmentRepository;
 use Nusje2000\FeatureToggleBundle\Repository\RemoteFeatureRepository;
+use Nusje2000\FeatureToggleBundle\RepositoryFeatureToggle;
 use Nusje2000\FeatureToggleBundle\Subscriber\ExceptionSubscriber;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -43,6 +45,8 @@ final class Nusje2000FeatureToggleExtensionTest extends TestCase
 
         $this->assertDefinition($container, 'nusje2000_feature_toggle.repository.environment', ArrayEnvironmentRepository::class, true);
         $this->assertDefinition($container, 'nusje2000_feature_toggle.repository.feature', ArrayFeatureRepository::class, true);
+        $this->assertDefinition($container, EnvironmentRepository::class, ArrayEnvironmentRepository::class, true);
+        $this->assertDefinition($container, FeatureRepository::class, ArrayFeatureRepository::class, true);
 
         $this->assertDefinition($container, 'nusje2000_feature_toggle.controller.host.environment.create', Environment\CreateController::class, false);
         $this->assertDefinition($container, 'nusje2000_feature_toggle.controller.host.environment.view', Environment\ViewController::class, false);
@@ -107,6 +111,13 @@ final class Nusje2000FeatureToggleExtensionTest extends TestCase
                 new SimpleFeature('disabled_feature', State::DISABLED()),
             ]
         ), $container->get('nusje2000_feature_toggle.default_environment'));
+
+        $this->assertDefinition($container, FeatureToggle::class, RepositoryFeatureToggle::class, true);
+
+        $this->assertDefinition($container, 'nusje2000_feature_toggle.repository.environment', ArrayEnvironmentRepository::class, true);
+        $this->assertDefinition($container, 'nusje2000_feature_toggle.repository.feature', ArrayFeatureRepository::class, true);
+        $this->assertDefinition($container, EnvironmentRepository::class, ArrayEnvironmentRepository::class, true);
+        $this->assertDefinition($container, FeatureRepository::class, ArrayFeatureRepository::class, true);
     }
 
     public function testLoadWithRemoteConfiguration(): void
@@ -127,6 +138,11 @@ final class Nusje2000FeatureToggleExtensionTest extends TestCase
         $this->assertDefinition($container, 'nusje2000_feature_toggle.repository.environment', RemoteEnvironmentRepository::class, true);
         $this->assertDefinition($container, 'nusje2000_feature_toggle.repository.feature', RemoteFeatureRepository::class, true);
         $this->assertDefinition($container, 'nusje2000_feature_toggle.http_client', ScopingHttpClient::class, false);
+
+        $this->assertDefinition($container, 'nusje2000_feature_toggle.repository.environment', RemoteEnvironmentRepository::class, true);
+        $this->assertDefinition($container, 'nusje2000_feature_toggle.repository.feature', RemoteFeatureRepository::class, true);
+        $this->assertDefinition($container, EnvironmentRepository::class, RemoteEnvironmentRepository::class, true);
+        $this->assertDefinition($container, FeatureRepository::class, RemoteFeatureRepository::class, true);
     }
 
     public function testLoadWithRemoteWithCacheConfiguration(): void

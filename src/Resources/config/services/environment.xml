@@ -4,10 +4,12 @@
            xmlns="http://symfony.com/schema/dic/services"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
-        <service id="nusje2000_feature_toggle.feature_toggle" class="Nusje2000\FeatureToggleBundle\RepositoryFeatureToggle">
+        <service id="nusje2000_feature_toggle.feature_toggle" class="Nusje2000\FeatureToggleBundle\RepositoryFeatureToggle" public="true">
             <argument type="service" id="nusje2000_feature_toggle.repository.feature"/>
             <argument type="string">%nusje2000_feature_toggle.environment_name%</argument>
         </service>
+
+        <service id="Nusje2000\FeatureToggleBundle\FeatureToggle" alias="nusje2000_feature_toggle.feature_toggle"/>
 
         <service id="nusje2000_feature_toggle.default_environment" class="Nusje2000\FeatureToggleBundle\Environment\SimpleEnvironment">
             <argument type="string">%nusje2000_feature_toggle.environment_name%</argument>

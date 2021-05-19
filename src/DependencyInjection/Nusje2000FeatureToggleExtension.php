@@ -6,6 +6,8 @@ namespace Nusje2000\FeatureToggleBundle\DependencyInjection;
 
 use Nusje2000\FeatureToggleBundle\Feature\SimpleFeature;
 use Nusje2000\FeatureToggleBundle\Feature\State;
+use Nusje2000\FeatureToggleBundle\Repository\EnvironmentRepository;
+use Nusje2000\FeatureToggleBundle\Repository\FeatureRepository;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -76,7 +78,12 @@ final class Nusje2000FeatureToggleExtension extends Extension
 
         foreach ($config['features'] as $name => $enabled) {
             $container->getDefinition('nusje2000_feature_toggle.default_environment')->addMethodCall('addFeature', [
-                new SimpleFeature((string) $name, State::fromBoolean($enabled)),
+                new Definition(SimpleFeature::class, [
+                    (string) $name,
+                    new Definition(State::class, [
+                        State::fromBoolean($enabled)->getValue(),
+                    ]),
+                ]),
             ]);
         }
 

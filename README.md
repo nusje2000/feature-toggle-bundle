@@ -19,7 +19,7 @@ different environments and all can have their own set of features.
 
 #### Environments when only having a single application
 
-When just writing a simple project that will be deployed on a single server, you will just have one environment. This bundle will also cover this usecase.
+When just writing a simple project that will be deployed on a single server, you will just have one environment. This bundle will also covers this usecase.
 
 ### Features
 

@@ -1,9 +1,5 @@
 # Client API
 
-### PATCH /api/feature-toggle/update
+### PURGE /api/feature-toggle/cache
 
-Updates the internal cache with new values.
-
-### PATCH /api/feature-toggle/update/{feature}
-
-Updates the internal cache of the given feature with the new value.
+Purges the cache.

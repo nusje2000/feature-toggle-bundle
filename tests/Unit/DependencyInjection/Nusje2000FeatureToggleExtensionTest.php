@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Nusje2000\FeatureToggleBundle\Tests\Unit\DependencyInjection;
 
 use InvalidArgumentException;
+use Nusje2000\FeatureToggleBundle\Cache\NullInvalidator;
 use Nusje2000\FeatureToggleBundle\Console\UpdateCommand;
 use Nusje2000\FeatureToggleBundle\Controller\Host\Environment;
 use Nusje2000\FeatureToggleBundle\Controller\Host\Feature;
@@ -35,6 +36,8 @@ final class Nusje2000FeatureToggleExtensionTest extends TestCase
 
         $extension = new Nusje2000FeatureToggleExtension();
         $extension->load([], $container);
+
+        $this->assertDefinition($container, 'nusje2000_feature_toggle.cache.invalidator', NullInvalidator::class, false);
 
         $this->assertDefinition($container, 'nusje2000_feature_toggle.subscriber.exception', ExceptionSubscriber::class, false);
 

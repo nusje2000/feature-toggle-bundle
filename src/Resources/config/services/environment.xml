@@ -14,5 +14,14 @@
             <argument type="string">%nusje2000_feature_toggle.hosts%</argument>
             <argument type="collection"/>
         </service>
+
+        <service id="nusje2000_feature_toggle.console.update_command" class="Nusje2000\FeatureToggleBundle\Console\UpdateCommand" public="true">
+            <argument type="service" id="nusje2000_feature_toggle.repository.environment"/>
+            <argument type="service" id="nusje2000_feature_toggle.repository.feature"/>
+            <argument type="service" id="nusje2000_feature_toggle.cache.invalidator"/>
+            <argument type="service" id="nusje2000_feature_toggle.default_environment"/>
+
+            <tag name="console.command"/>
+        </service>
     </services>
 </container>

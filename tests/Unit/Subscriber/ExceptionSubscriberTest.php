@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Nusje2000\FeatureToggleBundle\Tests\Unit\Subscriber;
 
+use Nusje2000\FeatureToggleBundle\Exception\DisabledFeature;
 use Nusje2000\FeatureToggleBundle\Exception\DuplicateEnvironment;
 use Nusje2000\FeatureToggleBundle\Exception\DuplicateFeature;
 use Nusje2000\FeatureToggleBundle\Exception\UndefinedEnvironment;
@@ -65,6 +66,14 @@ final class ExceptionSubscriberTest extends TestCase
         $subscriber->mapException($event);
         self::assertEquals(
             new HttpException(Response::HTTP_CONFLICT, $throwable->getMessage(), $throwable),
+            $event->getThrowable()
+        );
+
+        $throwable = DisabledFeature::inEnvironment('some_env', 'feature');
+        $event = $this->createEvent($throwable);
+        $subscriber->mapException($event);
+        self::assertEquals(
+            new HttpException(Response::HTTP_FORBIDDEN, $throwable->getMessage(), $throwable),
             $event->getThrowable()
         );
     }

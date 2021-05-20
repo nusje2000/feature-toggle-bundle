@@ -22,6 +22,7 @@ use Nusje2000\FeatureToggleBundle\Repository\RemoteEnvironmentRepository;
 use Nusje2000\FeatureToggleBundle\Repository\RemoteFeatureRepository;
 use Nusje2000\FeatureToggleBundle\RepositoryFeatureToggle;
 use Nusje2000\FeatureToggleBundle\Subscriber\ExceptionSubscriber;
+use Nusje2000\FeatureToggleBundle\Twig\TwigExtension;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpClient\CachingHttpClient;
@@ -118,6 +119,28 @@ final class Nusje2000FeatureToggleExtensionTest extends TestCase
         $this->assertDefinition($container, 'nusje2000_feature_toggle.repository.feature', ArrayFeatureRepository::class, true);
         $this->assertDefinition($container, EnvironmentRepository::class, ArrayEnvironmentRepository::class, true);
         $this->assertDefinition($container, FeatureRepository::class, ArrayFeatureRepository::class, true);
+    }
+
+    public function testLoadWithTwigBundle(): void
+    {
+        $container = new ContainerBuilder();
+        $container->setParameter('kernel.bundles', ['TwigBundle' => []]);
+
+        $extension = new Nusje2000FeatureToggleExtension();
+        $extension->load([
+            [
+                'environment' => [
+                    'name' => 'some_environment',
+                    'hosts' => ['localhost'],
+                    'features' => [
+                        'enabled_feature' => true,
+                        'disabled_feature' => false,
+                    ],
+                ],
+            ],
+        ], $container);
+
+        $this->assertDefinition($container, 'nusje2000_feature_toggle.twig_extension', TwigExtension::class, false);
     }
 
     public function testLoadWithRemoteConfiguration(): void

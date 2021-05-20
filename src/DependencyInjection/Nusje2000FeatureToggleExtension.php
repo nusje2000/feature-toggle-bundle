@@ -6,8 +6,6 @@ namespace Nusje2000\FeatureToggleBundle\DependencyInjection;
 
 use Nusje2000\FeatureToggleBundle\Feature\SimpleFeature;
 use Nusje2000\FeatureToggleBundle\Feature\State;
-use Nusje2000\FeatureToggleBundle\Repository\EnvironmentRepository;
-use Nusje2000\FeatureToggleBundle\Repository\FeatureRepository;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -75,6 +73,14 @@ final class Nusje2000FeatureToggleExtension extends Extension
         $container->setParameter('nusje2000_feature_toggle.feature_defaults', $config['features']);
 
         $xmlLoader->load('environment.xml');
+
+        if ($container->hasParameter('kernel.bundles')) {
+            /** @var array<string, string> $bundles */
+            $bundles = $container->getParameter('kernel.bundles');
+            if (isset($bundles['TwigBundle'])) {
+                $xmlLoader->load('twig.xml');
+            }
+        }
 
         foreach ($config['features'] as $name => $enabled) {
             $container->getDefinition('nusje2000_feature_toggle.default_environment')->addMethodCall('addFeature', [

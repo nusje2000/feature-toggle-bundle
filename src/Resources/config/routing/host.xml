@@ -4,7 +4,7 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://symfony.com/schema/routing
         https://symfony.com/schema/routing/routing-1.0.xsd">
-    <route id="nusje2000_feature_toggle_api_host_environment_view" path="/" methods="GET,HEAD">
+    <route id="nusje2000_feature_toggle_api_host_environment_list" path="/" methods="GET,HEAD">
         <default key="_controller">nusje2000_feature_toggle.controller.host.environment.list</default>
     </route>
 

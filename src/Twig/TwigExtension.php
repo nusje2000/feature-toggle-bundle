@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace Nusje2000\FeatureToggleBundle\Twig;
 
 use Nusje2000\FeatureToggleBundle\FeatureToggle;
+use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
-final class TwigExtension
+final class TwigExtension extends AbstractExtension
 {
     /**
      * @var FeatureToggle

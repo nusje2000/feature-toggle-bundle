@@ -9,10 +9,10 @@
         </service>
 
         <service id="nusje2000_feature_toggle.http_client.scoping" class="Symfony\Component\HttpClient\ScopingHttpClient">
+            <factory class="Symfony\Component\HttpClient\ScopingHttpClient" method="forBaseUri"/>
+
             <argument type="service" id="nusje2000_feature_toggle.http_client.native"/>
-            <argument type="collection">
-                <argument key="base_uri" type="string">%nusje2000_feature_toggle.remote.host%/%nusje2000_feature_toggle.remote.base_path%</argument>
-            </argument>
+            <argument type="string">%nusje2000_feature_toggle.remote.scheme%://%nusje2000_feature_toggle.remote.host%</argument>
         </service>
 
         <service id="nusje2000_feature_toggle.http_client" alias="nusje2000_feature_toggle.http_client.scoping"/>
@@ -20,10 +20,12 @@
         <service id="nusje2000_feature_toggle.repository.environment.remote" class="Nusje2000\FeatureToggleBundle\Repository\RemoteEnvironmentRepository"
                  public="true">
             <argument type="service" id="nusje2000_feature_toggle.http_client"/>
+            <argument type="string">%nusje2000_feature_toggle.remote.base_path%</argument>
         </service>
 
         <service id="nusje2000_feature_toggle.repository.feature.remote" class="Nusje2000\FeatureToggleBundle\Repository\RemoteFeatureRepository" public="true">
             <argument type="service" id="nusje2000_feature_toggle.http_client"/>
+            <argument type="string">%nusje2000_feature_toggle.remote.base_path%</argument>
         </service>
 
         <service id="nusje2000_feature_toggle.repository.environment" alias="nusje2000_feature_toggle.repository.environment.remote"/>

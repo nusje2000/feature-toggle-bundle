@@ -25,7 +25,6 @@ use Nusje2000\FeatureToggleBundle\Subscriber\ExceptionSubscriber;
 use Nusje2000\FeatureToggleBundle\Twig\TwigExtension;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\HttpClient\CachingHttpClient;
 use Symfony\Component\HttpClient\ScopingHttpClient;
 use Symfony\Component\HttpKernel\HttpCache\StoreInterface;
 
@@ -158,6 +157,10 @@ final class Nusje2000FeatureToggleExtensionTest extends TestCase
             ],
         ], $container);
 
+        self::assertSame('some.host', $container->getParameter('nusje2000_feature_toggle.remote.host'));
+        self::assertSame('https', $container->getParameter('nusje2000_feature_toggle.remote.scheme'));
+        self::assertSame('/api/feature-toggle', $container->getParameter('nusje2000_feature_toggle.remote.base_path'));
+
         $this->assertDefinition($container, 'nusje2000_feature_toggle.repository.environment', RemoteEnvironmentRepository::class, true);
         $this->assertDefinition($container, 'nusje2000_feature_toggle.repository.feature', RemoteFeatureRepository::class, true);
         $this->assertDefinition($container, 'nusje2000_feature_toggle.http_client', ScopingHttpClient::class, false);
@@ -189,7 +192,7 @@ final class Nusje2000FeatureToggleExtensionTest extends TestCase
 
         $this->assertDefinition($container, 'nusje2000_feature_toggle.repository.environment', RemoteEnvironmentRepository::class, true);
         $this->assertDefinition($container, 'nusje2000_feature_toggle.repository.feature', RemoteFeatureRepository::class, true);
-        $this->assertDefinition($container, 'nusje2000_feature_toggle.http_client', CachingHttpClient::class, false);
+        $this->assertDefinition($container, 'nusje2000_feature_toggle.http_client', ScopingHttpClient::class, false);
     }
 
     public function testLoadWithServiceConfiguration(): void

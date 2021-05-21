@@ -22,9 +22,15 @@ final class RemoteEnvironmentRepository implements EnvironmentRepository
      */
     private $client;
 
-    public function __construct(HttpClientInterface $client)
+    /**
+     * @var string
+     */
+    private $basePath;
+
+    public function __construct(HttpClientInterface $client, string $basePath)
     {
         $this->client = $client;
+        $this->basePath = $basePath;
     }
 
     /**
@@ -32,7 +38,7 @@ final class RemoteEnvironmentRepository implements EnvironmentRepository
      */
     public function all(): array
     {
-        $response = $this->client->request(Request::METHOD_GET, '/');
+        $response = $this->client->request(Request::METHOD_GET, $this->basePath);
 
         $this->assertResponseStatus($response, [Response::HTTP_OK]);
 
@@ -43,7 +49,7 @@ final class RemoteEnvironmentRepository implements EnvironmentRepository
 
     public function find(string $environment): Environment
     {
-        $response = $this->client->request(Request::METHOD_GET, '/' . $environment);
+        $response = $this->client->request(Request::METHOD_GET, $this->basePath . '/' . $environment);
         $this->assertResponseStatus($response, [Response::HTTP_OK, Response::HTTP_NOT_FOUND]);
 
         if ($response->getStatusCode() === Response::HTTP_NOT_FOUND) {
@@ -55,7 +61,7 @@ final class RemoteEnvironmentRepository implements EnvironmentRepository
 
     public function exists(string $environment): bool
     {
-        $response = $this->client->request(Request::METHOD_HEAD, '/' . $environment);
+        $response = $this->client->request(Request::METHOD_HEAD, $this->basePath . '/' . $environment);
         $this->assertResponseStatus($response, [Response::HTTP_OK, Response::HTTP_NOT_FOUND]);
 
         return $response->getStatusCode() === Response::HTTP_OK;
@@ -67,7 +73,7 @@ final class RemoteEnvironmentRepository implements EnvironmentRepository
             throw new FeatureNotSupported('Cannot create an environment with preset features.');
         }
 
-        $response = $this->client->request(Request::METHOD_POST, '/create-environment', [
+        $response = $this->client->request(Request::METHOD_POST, $this->basePath . '/create-environment', [
             'json' => [
                 'name' => $environment->name(),
                 'hosts' => $environment->hosts(),

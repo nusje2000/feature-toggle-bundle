@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Unit\Repository;
+namespace Nusje2000\FeatureToggleBundle\Tests\Unit\Repository;
 
 use Nusje2000\FeatureToggleBundle\Environment\SimpleEnvironment;
 use Nusje2000\FeatureToggleBundle\Exception\DuplicateEnvironment;
@@ -23,7 +23,7 @@ final class RemoteEnvironmentRepositoryTest extends TestCase
     public function testAll(): void
     {
         $client = $this->createMock(HttpClientInterface::class);
-        $repository = new RemoteEnvironmentRepository($client);
+        $repository = new RemoteEnvironmentRepository($client, '/base-path');
 
         $response = $this->createResponse(Response::HTTP_OK, [
             [
@@ -35,7 +35,7 @@ final class RemoteEnvironmentRepositoryTest extends TestCase
             ],
         ]);
 
-        $client->expects(self::once())->method('request')->with(Request::METHOD_GET, '/')->willReturn($response);
+        $client->expects(self::once())->method('request')->with(Request::METHOD_GET, '/base-path')->willReturn($response);
 
         $environments = $repository->all();
 
@@ -45,9 +45,9 @@ final class RemoteEnvironmentRepositoryTest extends TestCase
     public function testAllWithInvalidStatusCode(): void
     {
         $client = $this->createMock(HttpClientInterface::class);
-        $repository = new RemoteEnvironmentRepository($client);
+        $repository = new RemoteEnvironmentRepository($client, '/base-path');
 
-        $client->expects(self::once())->method('request')->with(Request::METHOD_GET, '/')->willReturn(
+        $client->expects(self::once())->method('request')->with(Request::METHOD_GET, '/base-path')->willReturn(
             $this->createResponse(Response::HTTP_I_AM_A_TEAPOT)
         );
 
@@ -58,7 +58,7 @@ final class RemoteEnvironmentRepositoryTest extends TestCase
     public function testFind(): void
     {
         $client = $this->createMock(HttpClientInterface::class);
-        $repository = new RemoteEnvironmentRepository($client);
+        $repository = new RemoteEnvironmentRepository($client, '/base-path');
 
         $response = $this->createResponse(Response::HTTP_OK, [
             'name' => 'environment_1',
@@ -68,7 +68,7 @@ final class RemoteEnvironmentRepositoryTest extends TestCase
             ],
         ]);
 
-        $client->expects(self::once())->method('request')->with(Request::METHOD_GET, '/environment_1')->willReturn($response);
+        $client->expects(self::once())->method('request')->with(Request::METHOD_GET, '/base-path/environment_1')->willReturn($response);
 
         $environment = $repository->find('environment_1');
         self::assertEquals(new SimpleEnvironment('environment_1', ['host'], [new SimpleFeature('feature_1', State::ENABLED())]), $environment);
@@ -77,9 +77,9 @@ final class RemoteEnvironmentRepositoryTest extends TestCase
     public function testFindUndefinedEnvironment(): void
     {
         $client = $this->createMock(HttpClientInterface::class);
-        $repository = new RemoteEnvironmentRepository($client);
+        $repository = new RemoteEnvironmentRepository($client, '/base-path');
 
-        $client->expects(self::once())->method('request')->with(Request::METHOD_GET, '/undefined_environment')->willReturn(
+        $client->expects(self::once())->method('request')->with(Request::METHOD_GET, '/base-path/undefined_environment')->willReturn(
             $this->createResponse(Response::HTTP_NOT_FOUND)
         );
 
@@ -90,7 +90,7 @@ final class RemoteEnvironmentRepositoryTest extends TestCase
     public function testFindWithUnexpectedStatusCode(): void
     {
         $client = $this->createMock(HttpClientInterface::class);
-        $repository = new RemoteEnvironmentRepository($client);
+        $repository = new RemoteEnvironmentRepository($client, '/base-path');
 
         $client->method('request')->willReturn(
             $this->createResponse(Response::HTTP_I_AM_A_TEAPOT)
@@ -103,9 +103,9 @@ final class RemoteEnvironmentRepositoryTest extends TestCase
     public function testExists(): void
     {
         $client = $this->createMock(HttpClientInterface::class);
-        $repository = new RemoteEnvironmentRepository($client);
+        $repository = new RemoteEnvironmentRepository($client, '/base-path');
 
-        $client->expects(self::once())->method('request')->with(Request::METHOD_HEAD, '/undefined_environment')->willReturn(
+        $client->expects(self::once())->method('request')->with(Request::METHOD_HEAD, '/base-path/undefined_environment')->willReturn(
             $this->createResponse(Response::HTTP_OK)
         );
 
@@ -115,9 +115,9 @@ final class RemoteEnvironmentRepositoryTest extends TestCase
     public function testExistsUndefinedEnvironment(): void
     {
         $client = $this->createMock(HttpClientInterface::class);
-        $repository = new RemoteEnvironmentRepository($client);
+        $repository = new RemoteEnvironmentRepository($client, '/base-path');
 
-        $client->expects(self::once())->method('request')->with(Request::METHOD_HEAD, '/undefined_environment')->willReturn(
+        $client->expects(self::once())->method('request')->with(Request::METHOD_HEAD, '/base-path/undefined_environment')->willReturn(
             $this->createResponse(Response::HTTP_NOT_FOUND)
         );
 
@@ -127,7 +127,7 @@ final class RemoteEnvironmentRepositoryTest extends TestCase
     public function testExistsWithUnexpectedStatusCode(): void
     {
         $client = $this->createMock(HttpClientInterface::class);
-        $repository = new RemoteEnvironmentRepository($client);
+        $repository = new RemoteEnvironmentRepository($client, '/base-path');
 
         $client->method('request')->willReturn(
             $this->createResponse(Response::HTTP_I_AM_A_TEAPOT)
@@ -140,9 +140,9 @@ final class RemoteEnvironmentRepositoryTest extends TestCase
     public function testAdd(): void
     {
         $client = $this->createMock(HttpClientInterface::class);
-        $repository = new RemoteEnvironmentRepository($client);
+        $repository = new RemoteEnvironmentRepository($client, '/base-path');
 
-        $client->expects(self::once())->method('request')->with(Request::METHOD_POST, '/create-environment', [
+        $client->expects(self::once())->method('request')->with(Request::METHOD_POST, '/base-path/create-environment', [
             'json' => [
                 'name' => 'new-environment',
                 'hosts' => ['some_host', 'some_other_host'],
@@ -157,7 +157,8 @@ final class RemoteEnvironmentRepositoryTest extends TestCase
     public function testAddWithDefinedFeatures(): void
     {
         $repository = new RemoteEnvironmentRepository(
-            $this->createStub(HttpClientInterface::class)
+            $this->createStub(HttpClientInterface::class),
+            '/base-path'
         );
 
         $this->expectExceptionObject(new FeatureNotSupported('Cannot create an environment with preset features.'));
@@ -167,9 +168,9 @@ final class RemoteEnvironmentRepositoryTest extends TestCase
     public function testAddExistingEnvironment(): void
     {
         $client = $this->createMock(HttpClientInterface::class);
-        $repository = new RemoteEnvironmentRepository($client);
+        $repository = new RemoteEnvironmentRepository($client, '/base-path');
 
-        $client->expects(self::once())->method('request')->with(Request::METHOD_POST, '/create-environment', [
+        $client->expects(self::once())->method('request')->with(Request::METHOD_POST, '/base-path/create-environment', [
             'json' => [
                 'name' => 'existing-environment',
                 'hosts' => [],
@@ -185,7 +186,7 @@ final class RemoteEnvironmentRepositoryTest extends TestCase
     public function testAddWithUnexpectedStatusCode(): void
     {
         $client = $this->createMock(HttpClientInterface::class);
-        $repository = new RemoteEnvironmentRepository($client);
+        $repository = new RemoteEnvironmentRepository($client, '/base-path');
 
         $client->method('request')->willReturn(
             $this->createResponse(Response::HTTP_I_AM_A_TEAPOT)

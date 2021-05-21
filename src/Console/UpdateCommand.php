@@ -64,7 +64,7 @@ final class UpdateCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        if ($input->hasOption('dry-run')) {
+        if ($input->getOption('dry-run')) {
             $this->dryRun($io);
 
             return 0;

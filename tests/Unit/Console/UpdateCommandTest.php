@@ -20,7 +20,7 @@ final class UpdateCommandTest extends TestCase
     public function testRun(): void
     {
         $input = $this->createMock(InputInterface::class);
-        $input->method('hasOption')->with('dry-run')->willReturn(false);
+        $input->method('getOption')->with('dry-run')->willReturn(false);
 
         $environmentRepository = $this->createMock(EnvironmentRepository::class);
         $environmentRepository->method('exists')->willReturn(false);
@@ -49,7 +49,7 @@ final class UpdateCommandTest extends TestCase
     public function testRunOnExistingEnvironment(): void
     {
         $input = $this->createMock(InputInterface::class);
-        $input->method('hasOption')->with('dry-run')->willReturn(false);
+        $input->method('getOption')->with('dry-run')->willReturn(false);
 
         $environmentRepository = $this->createMock(EnvironmentRepository::class);
         $environmentRepository->method('exists')->willReturn(true);
@@ -75,7 +75,7 @@ final class UpdateCommandTest extends TestCase
     public function testDryRun(): void
     {
         $input = $this->createMock(InputInterface::class);
-        $input->method('hasOption')->with('dry-run')->willReturn(true);
+        $input->method('getOption')->with('dry-run')->willReturn(true);
 
         $environmentRepository = $this->createMock(EnvironmentRepository::class);
         $environmentRepository->method('exists')->willReturn(false);
@@ -108,7 +108,7 @@ final class UpdateCommandTest extends TestCase
     public function testDryRunWithExistingEnvironment(): void
     {
         $input = $this->createMock(InputInterface::class);
-        $input->method('hasOption')->with('dry-run')->willReturn(true);
+        $input->method('getOption')->with('dry-run')->willReturn(true);
 
         $environmentRepository = $this->createStub(EnvironmentRepository::class);
         $environmentRepository->method('exists')->willReturn(true);
@@ -138,7 +138,7 @@ final class UpdateCommandTest extends TestCase
     public function testDryRunWithUpToDateEnvironment(): void
     {
         $input = $this->createMock(InputInterface::class);
-        $input->method('hasOption')->with('dry-run')->willReturn(true);
+        $input->method('getOption')->with('dry-run')->willReturn(true);
 
         $environmentRepository = $this->createStub(EnvironmentRepository::class);
         $environmentRepository->method('exists')->willReturn(true);

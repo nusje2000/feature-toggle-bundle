@@ -37,6 +37,7 @@ final class Nusje2000FeatureToggleExtension extends Extension
          *              enabled: bool,
          *              cache_store: string|null,
          *              host: string,
+         *              scheme: string,
          *              base_path: string
          *          }
          *      },
@@ -112,6 +113,7 @@ final class Nusje2000FeatureToggleExtension extends Extension
      *     remote: array{
      *         enabled: bool,
      *         host: string,
+     *         scheme: string,
      *         cache_store: string|null,
      *         base_path: string
      *     }
@@ -126,6 +128,7 @@ final class Nusje2000FeatureToggleExtension extends Extension
         }
         if (true === $config['remote']['enabled']) {
             $container->setParameter('nusje2000_feature_toggle.remote.host', $config['remote']['host']);
+            $container->setParameter('nusje2000_feature_toggle.remote.scheme', $config['remote']['scheme']);
             $container->setParameter('nusje2000_feature_toggle.remote.base_path', $config['remote']['base_path']);
 
             $xmlLoader->load('repository/remote.xml');
@@ -134,12 +137,15 @@ final class Nusje2000FeatureToggleExtension extends Extension
                 $container->setDefinition('nusje2000_feature_toggle.http_client.caching', new Definition(
                     CachingHttpClient::class,
                     [
-                        new Reference('nusje2000_feature_toggle.http_client.scoping'),
+                        new Reference('nusje2000_feature_toggle.http_client.native'),
                         new Reference($config['remote']['cache_store']),
                     ]
                 ));
 
-                $container->setAlias('nusje2000_feature_toggle.http_client', 'nusje2000_feature_toggle.http_client.caching');
+                $container->getDefinition('nusje2000_feature_toggle.http_client.scoping')->setArgument(
+                    0,
+                    new Reference('nusje2000_feature_toggle.http_client.caching')
+                );
             }
 
             return;

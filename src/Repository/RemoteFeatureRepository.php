@@ -25,9 +25,15 @@ final class RemoteFeatureRepository implements FeatureRepository
      */
     private $client;
 
-    public function __construct(HttpClientInterface $client)
+    /**
+     * @var string
+     */
+    private $basePath;
+
+    public function __construct(HttpClientInterface $client, string $basePath)
     {
         $this->client = $client;
+        $this->basePath = $basePath;
     }
 
     /**
@@ -35,7 +41,7 @@ final class RemoteFeatureRepository implements FeatureRepository
      */
     public function all(string $environment): array
     {
-        $response = $this->client->request(Request::METHOD_GET, '/' . $environment);
+        $response = $this->client->request(Request::METHOD_GET, $this->basePath . '/' . $environment);
         $this->assertResponseStatus($response, [Response::HTTP_OK, Response::HTTP_NOT_FOUND]);
 
         return EnvironmentMapper::map($response->toArray())->features();
@@ -43,7 +49,7 @@ final class RemoteFeatureRepository implements FeatureRepository
 
     public function find(string $environment, string $feature): Feature
     {
-        $response = $this->client->request(Request::METHOD_GET, sprintf('/%s/%s', $environment, $feature));
+        $response = $this->client->request(Request::METHOD_GET, $this->basePath . sprintf('/%s/%s', $environment, $feature));
         $this->assertResponseStatus($response, [Response::HTTP_OK, Response::HTTP_NOT_FOUND]);
 
         if ($response->getStatusCode() === Response::HTTP_NOT_FOUND) {
@@ -55,7 +61,7 @@ final class RemoteFeatureRepository implements FeatureRepository
 
     public function exists(string $environment, string $feature): bool
     {
-        $response = $this->client->request(Request::METHOD_HEAD, sprintf('/%s/%s', $environment, $feature));
+        $response = $this->client->request(Request::METHOD_HEAD, $this->basePath . sprintf('/%s/%s', $environment, $feature));
         $this->assertResponseStatus($response, [Response::HTTP_OK, Response::HTTP_NOT_FOUND]);
 
         return $response->getStatusCode() === Response::HTTP_OK;
@@ -63,7 +69,7 @@ final class RemoteFeatureRepository implements FeatureRepository
 
     public function add(string $environment, Feature $feature): void
     {
-        $response = $this->client->request(Request::METHOD_POST, sprintf('/%s/create-feature', $environment), [
+        $response = $this->client->request(Request::METHOD_POST, $this->basePath . sprintf('/%s/create-feature', $environment), [
             'json' => [
                 'name' => $feature->name(),
                 'enabled' => $feature->state()->isEnabled(),
@@ -83,7 +89,7 @@ final class RemoteFeatureRepository implements FeatureRepository
 
     public function update(string $environment, Feature $feature): void
     {
-        $response = $this->client->request(Request::METHOD_PUT, sprintf('/%s/%s', $environment, $feature->name()), [
+        $response = $this->client->request(Request::METHOD_PUT, $this->basePath . sprintf('/%s/%s', $environment, $feature->name()), [
             'json' => [
                 'enabled' => $feature->state()->isEnabled(),
             ],
@@ -97,7 +103,7 @@ final class RemoteFeatureRepository implements FeatureRepository
 
     public function remove(string $environment, Feature $feature): void
     {
-        $response = $this->client->request(Request::METHOD_DELETE, sprintf('/%s/%s', $environment, $feature->name()));
+        $response = $this->client->request(Request::METHOD_DELETE, $this->basePath . sprintf('/%s/%s', $environment, $feature->name()));
         $this->assertResponseStatus($response, [Response::HTTP_OK, Response::HTTP_NOT_FOUND]);
 
         if ($response->getStatusCode() === Response::HTTP_NOT_FOUND) {

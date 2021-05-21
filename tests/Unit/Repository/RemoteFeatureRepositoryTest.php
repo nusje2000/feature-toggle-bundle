@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Unit\Repository;
+namespace Nusje2000\FeatureToggleBundle\Tests\Unit\Repository;
 
 use Nusje2000\FeatureToggleBundle\Exception\DuplicateFeature;
 use Nusje2000\FeatureToggleBundle\Exception\Http\InvalidResponse;
@@ -22,7 +22,7 @@ final class RemoteFeatureRepositoryTest extends TestCase
     public function testAll(): void
     {
         $client = $this->createMock(HttpClientInterface::class);
-        $repository = new RemoteFeatureRepository($client);
+        $repository = new RemoteFeatureRepository($client, '/base-path');
 
         $response = $this->createResponse(Response::HTTP_OK, [
             'name' => 'environment',
@@ -32,7 +32,7 @@ final class RemoteFeatureRepositoryTest extends TestCase
             ],
         ]);
 
-        $client->expects(self::once())->method('request')->with(Request::METHOD_GET, '/environment')->willReturn($response);
+        $client->expects(self::once())->method('request')->with(Request::METHOD_GET, '/base-path/environment')->willReturn($response);
 
         $environment = $repository->all('environment');
         self::assertEquals(['feature' => new SimpleFeature('feature', State::ENABLED())], $environment);
@@ -41,7 +41,7 @@ final class RemoteFeatureRepositoryTest extends TestCase
     public function testAllWithUnexpectedStatusCode(): void
     {
         $client = $this->createMock(HttpClientInterface::class);
-        $repository = new RemoteFeatureRepository($client);
+        $repository = new RemoteFeatureRepository($client, '/base-path');
 
         $client->expects(self::once())->method('request')->willReturn(
             $this->createResponse(Response::HTTP_I_AM_A_TEAPOT)
@@ -54,14 +54,14 @@ final class RemoteFeatureRepositoryTest extends TestCase
     public function testFind(): void
     {
         $client = $this->createMock(HttpClientInterface::class);
-        $repository = new RemoteFeatureRepository($client);
+        $repository = new RemoteFeatureRepository($client, '/base-path');
 
         $response = $this->createResponse(Response::HTTP_OK, [
             'name' => 'feature',
             'enabled' => true,
         ]);
 
-        $client->expects(self::once())->method('request')->with(Request::METHOD_GET, '/environment/feature')->willReturn($response);
+        $client->expects(self::once())->method('request')->with(Request::METHOD_GET, '/base-path/environment/feature')->willReturn($response);
 
         self::assertEquals(new SimpleFeature('feature', State::ENABLED()), $repository->find('environment', 'feature'));
     }
@@ -69,11 +69,11 @@ final class RemoteFeatureRepositoryTest extends TestCase
     public function testFindWithUndefinedFeature(): void
     {
         $client = $this->createMock(HttpClientInterface::class);
-        $repository = new RemoteFeatureRepository($client);
+        $repository = new RemoteFeatureRepository($client, '/base-path');
 
         $response = $this->createResponse(Response::HTTP_NOT_FOUND);
 
-        $client->expects(self::once())->method('request')->with(Request::METHOD_GET, '/environment/feature')->willReturn($response);
+        $client->expects(self::once())->method('request')->with(Request::METHOD_GET, '/base-path/environment/feature')->willReturn($response);
 
         $this->expectExceptionObject(UndefinedFeature::inEnvironment('environment', 'feature'));
         $repository->find('environment', 'feature');
@@ -82,7 +82,7 @@ final class RemoteFeatureRepositoryTest extends TestCase
     public function testFindWithUnexpectedStatusCode(): void
     {
         $client = $this->createMock(HttpClientInterface::class);
-        $repository = new RemoteFeatureRepository($client);
+        $repository = new RemoteFeatureRepository($client, '/base-path');
 
         $client->expects(self::once())->method('request')->willReturn(
             $this->createResponse(Response::HTTP_I_AM_A_TEAPOT)
@@ -95,11 +95,11 @@ final class RemoteFeatureRepositoryTest extends TestCase
     public function testExists(): void
     {
         $client = $this->createMock(HttpClientInterface::class);
-        $repository = new RemoteFeatureRepository($client);
+        $repository = new RemoteFeatureRepository($client, '/base-path');
 
         $response = $this->createResponse(Response::HTTP_OK);
 
-        $client->expects(self::once())->method('request')->with(Request::METHOD_HEAD, '/environment/feature')->willReturn($response);
+        $client->expects(self::once())->method('request')->with(Request::METHOD_HEAD, '/base-path/environment/feature')->willReturn($response);
 
         self::assertTrue($repository->exists('environment', 'feature'));
     }
@@ -107,11 +107,11 @@ final class RemoteFeatureRepositoryTest extends TestCase
     public function testExistsWithUndefinedFeature(): void
     {
         $client = $this->createMock(HttpClientInterface::class);
-        $repository = new RemoteFeatureRepository($client);
+        $repository = new RemoteFeatureRepository($client, '/base-path');
 
         $response = $this->createResponse(Response::HTTP_NOT_FOUND);
 
-        $client->expects(self::once())->method('request')->with(Request::METHOD_HEAD, '/environment/feature')->willReturn($response);
+        $client->expects(self::once())->method('request')->with(Request::METHOD_HEAD, '/base-path/environment/feature')->willReturn($response);
 
         self::assertFalse($repository->exists('environment', 'feature'));
     }
@@ -119,7 +119,7 @@ final class RemoteFeatureRepositoryTest extends TestCase
     public function testExistsWithUnexpectedStatusCode(): void
     {
         $client = $this->createMock(HttpClientInterface::class);
-        $repository = new RemoteFeatureRepository($client);
+        $repository = new RemoteFeatureRepository($client, '/base-path');
 
         $client->expects(self::once())->method('request')->willReturn(
             $this->createResponse(Response::HTTP_I_AM_A_TEAPOT)
@@ -132,11 +132,11 @@ final class RemoteFeatureRepositoryTest extends TestCase
     public function testAdd(): void
     {
         $client = $this->createMock(HttpClientInterface::class);
-        $repository = new RemoteFeatureRepository($client);
+        $repository = new RemoteFeatureRepository($client, '/base-path');
 
         $response = $this->createResponse(Response::HTTP_OK);
 
-        $client->expects(self::once())->method('request')->with(Request::METHOD_POST, '/environment/create-feature', [
+        $client->expects(self::once())->method('request')->with(Request::METHOD_POST, '/base-path/environment/create-feature', [
             'json' => [
                 'name' => 'new-feature',
                 'enabled' => false,
@@ -149,7 +149,7 @@ final class RemoteFeatureRepositoryTest extends TestCase
     public function testAddInUndefinedEnvironment(): void
     {
         $client = $this->createMock(HttpClientInterface::class);
-        $repository = new RemoteFeatureRepository($client);
+        $repository = new RemoteFeatureRepository($client, '/base-path');
 
         $response = $this->createResponse(Response::HTTP_NOT_FOUND);
 
@@ -162,7 +162,7 @@ final class RemoteFeatureRepositoryTest extends TestCase
     public function testAddWithDefinedFeature(): void
     {
         $client = $this->createMock(HttpClientInterface::class);
-        $repository = new RemoteFeatureRepository($client);
+        $repository = new RemoteFeatureRepository($client, '/base-path');
 
         $response = $this->createResponse(Response::HTTP_CONFLICT);
 
@@ -175,7 +175,7 @@ final class RemoteFeatureRepositoryTest extends TestCase
     public function testAddWithUnexpectedStatusCode(): void
     {
         $client = $this->createMock(HttpClientInterface::class);
-        $repository = new RemoteFeatureRepository($client);
+        $repository = new RemoteFeatureRepository($client, '/base-path');
 
         $client->expects(self::once())->method('request')->willReturn(
             $this->createResponse(Response::HTTP_I_AM_A_TEAPOT)
@@ -192,11 +192,11 @@ final class RemoteFeatureRepositoryTest extends TestCase
     public function testUpdate(): void
     {
         $client = $this->createMock(HttpClientInterface::class);
-        $repository = new RemoteFeatureRepository($client);
+        $repository = new RemoteFeatureRepository($client, '/base-path');
 
         $response = $this->createResponse(Response::HTTP_OK);
 
-        $client->expects(self::once())->method('request')->with(Request::METHOD_PUT, '/environment/existing-feature', [
+        $client->expects(self::once())->method('request')->with(Request::METHOD_PUT, '/base-path/environment/existing-feature', [
             'json' => [
                 'enabled' => true,
             ],
@@ -208,7 +208,7 @@ final class RemoteFeatureRepositoryTest extends TestCase
     public function testUpdateUndefinedFeature(): void
     {
         $client = $this->createMock(HttpClientInterface::class);
-        $repository = new RemoteFeatureRepository($client);
+        $repository = new RemoteFeatureRepository($client, '/base-path');
 
         $response = $this->createResponse(Response::HTTP_NOT_FOUND);
 
@@ -221,7 +221,7 @@ final class RemoteFeatureRepositoryTest extends TestCase
     public function testUpdateWithUnexpectedStatusCode(): void
     {
         $client = $this->createMock(HttpClientInterface::class);
-        $repository = new RemoteFeatureRepository($client);
+        $repository = new RemoteFeatureRepository($client, '/base-path');
 
         $client->expects(self::once())->method('request')->willReturn(
             $this->createResponse(Response::HTTP_I_AM_A_TEAPOT)
@@ -234,11 +234,11 @@ final class RemoteFeatureRepositoryTest extends TestCase
     public function testRemove(): void
     {
         $client = $this->createMock(HttpClientInterface::class);
-        $repository = new RemoteFeatureRepository($client);
+        $repository = new RemoteFeatureRepository($client, '/base-path');
 
         $response = $this->createResponse(Response::HTTP_OK);
 
-        $client->expects(self::once())->method('request')->with(Request::METHOD_DELETE, '/environment/existing-feature')->willReturn($response);
+        $client->expects(self::once())->method('request')->with(Request::METHOD_DELETE, '/base-path/environment/existing-feature')->willReturn($response);
 
         $repository->remove('environment', new SimpleFeature('existing-feature', State::ENABLED()));
     }
@@ -246,7 +246,7 @@ final class RemoteFeatureRepositoryTest extends TestCase
     public function testRemoveWithUnexpectedStatusCode(): void
     {
         $client = $this->createMock(HttpClientInterface::class);
-        $repository = new RemoteFeatureRepository($client);
+        $repository = new RemoteFeatureRepository($client, '/base-path');
 
         $client->expects(self::once())->method('request')->willReturn(
             $this->createResponse(Response::HTTP_I_AM_A_TEAPOT)
@@ -259,7 +259,7 @@ final class RemoteFeatureRepositoryTest extends TestCase
     public function testRemoveUndefinedFeature(): void
     {
         $client = $this->createMock(HttpClientInterface::class);
-        $repository = new RemoteFeatureRepository($client);
+        $repository = new RemoteFeatureRepository($client, '/base-path');
 
         $response = $this->createResponse(Response::HTTP_NOT_FOUND);
 

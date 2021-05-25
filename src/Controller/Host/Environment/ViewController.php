@@ -25,7 +25,7 @@ final class ViewController
     {
         $environment = $this->repository->find($name);
 
-        return new JsonResponse([
+        $response = new JsonResponse([
             'name' => $environment->name(),
             'hosts' => $environment->hosts(),
             'features' => array_map(
@@ -38,5 +38,14 @@ final class ViewController
                 array_values($environment->features())
             ),
         ]);
+
+        $response->setCache([
+            'public' => true,
+            'max_age' => 86400,
+        ]);
+
+        $response->headers->set('Symfony-Session-NoAutoCacheControl', 'true');
+
+        return $response;
     }
 }

@@ -1,5 +1,5 @@
 # Client API
 
-### PURGE /api/feature-toggle/cache
+### PURGE|DELETE /api/feature-toggle/cache
 
 Purges the cache.

@@ -24,9 +24,18 @@ final class ViewController
     {
         $feature = $this->repository->find($environment, $name);
 
-        return new JsonResponse([
+        $response = new JsonResponse([
             'name' => $feature->name(),
             'enabled' => $feature->state()->isEnabled(),
         ]);
+
+        $response->setCache([
+            'public' => true,
+            'max_age' => 86400,
+        ]);
+
+        $response->headers->set('Symfony-Session-NoAutoCacheControl', 'true');
+
+        return $response;
     }
 }

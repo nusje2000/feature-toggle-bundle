@@ -72,13 +72,17 @@ final class UpdateCommand extends Command
 
         $this->invalidator->invalidate();
 
+        $io->writeln(sprintf('Checking environment "%s".', $this->defaultEnvironment->name()));
         if (!$this->environmentRepository->exists($this->defaultEnvironment->name())) {
+            $io->writeln(sprintf('Creating environment "%s".', $this->defaultEnvironment->name()));
             $environment = new SimpleEnvironment($this->defaultEnvironment->name(), $this->defaultEnvironment->hosts(), []);
             $this->environmentRepository->add($environment);
         }
 
         foreach ($this->defaultEnvironment->features() as $feature) {
+            $io->writeln(sprintf('Checking feature "%s".', $feature->name()));
             if (!$this->featureRepository->exists($this->defaultEnvironment->name(), $feature->name())) {
+                $io->writeln(sprintf('Creating feature "%s".', $feature->name()));
                 $this->featureRepository->add($this->defaultEnvironment->name(), $feature);
             }
         }

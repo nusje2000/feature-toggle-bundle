@@ -26,7 +26,7 @@ final class ListController
     {
         $environments = $this->repository->all();
 
-        return new JsonResponse(array_map(static function (Environment $environment) {
+        $response = new JsonResponse(array_map(static function (Environment $environment) {
             return [
                 'name' => $environment->name(),
                 'hosts' => $environment->hosts(),
@@ -41,5 +41,14 @@ final class ListController
                 ),
             ];
         }, $environments));
+
+        $response->setCache([
+            'public' => true,
+            'max_age' => 86400,
+        ]);
+
+        $response->headers->set('Symfony-Session-NoAutoCacheControl', 'true');
+
+        return $response;
     }
 }

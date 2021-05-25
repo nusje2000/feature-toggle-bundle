@@ -43,7 +43,21 @@ final class UpdateCommandTest extends TestCase
             new SimpleFeature('disabled_feature', State::DISABLED()),
         ]));
 
-        $command->run($input, new BufferedOutput());
+        $output = new BufferedOutput();
+        $command->run($input, $output);
+
+        self::assertSame([
+            'Checking environment "environment".',
+            'Creating environment "environment".',
+            'Checking feature "enabled_feature".',
+            'Creating feature "enabled_feature".',
+            'Checking feature "disabled_feature".',
+            'Creating feature "disabled_feature".',
+            '',
+            '[OK] Environment has been updated.',
+            '',
+            '',
+        ], array_map('trim', explode(PHP_EOL, $output->fetch())));
     }
 
     public function testRunOnExistingEnvironment(): void

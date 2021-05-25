@@ -6,17 +6,18 @@ namespace Nusje2000\FeatureToggleBundle\Tests\Unit\Cache;
 
 use Nusje2000\FeatureToggleBundle\Cache\FileStoreInvalidator;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Filesystem\Filesystem;
 
 final class FileStoreInvalidatorTest extends TestCase
 {
     public function testInvalidate(): void
     {
-        $dir = sys_get_temp_dir() . '/' . uniqid('', true);
-        mkdir($dir);
+        $dir = 'some-dir-name';
 
-        self::assertDirectoryExists($dir);
-        $invalidator = new FileStoreInvalidator($dir);
+        $filesystem = $this->createMock(Filesystem::class);
+        $filesystem->expects(self::once())->method('remove')->with($dir);
+
+        $invalidator = new FileStoreInvalidator($dir, $filesystem);
         $invalidator->invalidate();
-        self::assertDirectoryDoesNotExist($dir);
     }
 }

@@ -24,7 +24,7 @@
         <default key="_controller">nusje2000_feature_toggle.controller.host.feature.create</default>
     </route>
 
-    <route id="nusje2000_feature_toggle_api_host_feature_update" path="/{environment}/{name}" methods="PUT">
+    <route id="nusje2000_feature_toggle_api_host_feature_update" path="/{environment}/{name}" methods="PATCH">
         <default key="_controller">nusje2000_feature_toggle.controller.host.feature.update</default>
     </route>
 

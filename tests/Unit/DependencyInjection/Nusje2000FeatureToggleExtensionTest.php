@@ -17,6 +17,8 @@ use Nusje2000\FeatureToggleBundle\FeatureToggle;
 use Nusje2000\FeatureToggleBundle\Repository\ArrayEnvironmentRepository;
 use Nusje2000\FeatureToggleBundle\Repository\ArrayFeatureRepository;
 use Nusje2000\FeatureToggleBundle\Repository\EnvironmentRepository;
+use Nusje2000\FeatureToggleBundle\Repository\FallbackEnvironmentRepository;
+use Nusje2000\FeatureToggleBundle\Repository\FallbackFeatureRepository;
 use Nusje2000\FeatureToggleBundle\Repository\FeatureRepository;
 use Nusje2000\FeatureToggleBundle\Repository\RemoteEnvironmentRepository;
 use Nusje2000\FeatureToggleBundle\Repository\RemoteFeatureRepository;
@@ -24,7 +26,11 @@ use Nusje2000\FeatureToggleBundle\RepositoryFeatureToggle;
 use Nusje2000\FeatureToggleBundle\Subscriber\ExceptionSubscriber;
 use Nusje2000\FeatureToggleBundle\Twig\TwigExtension;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
+use Symfony\Component\DependencyInjection\Compiler\DecoratorServicePass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpClient\ScopingHttpClient;
 use Symfony\Component\HttpKernel\HttpCache\StoreInterface;
 
@@ -55,6 +61,54 @@ final class Nusje2000FeatureToggleExtensionTest extends TestCase
         $this->assertDefinition($container, 'nusje2000_feature_toggle.controller.host.feature.update', Feature\UpdateController::class, false);
         $this->assertDefinition($container, 'nusje2000_feature_toggle.controller.host.feature.delete', Feature\DeleteController::class, false);
         $this->assertDefinition($container, 'nusje2000_feature_toggle.controller.host.feature.view', Feature\ViewController::class, false);
+    }
+
+    public function testLoadWithoutLoggerConfiguration(): void
+    {
+        $container = new ContainerBuilder();
+
+        $extension = new Nusje2000FeatureToggleExtension();
+        $extension->load([], $container);
+
+        $this->assertDefinition($container, 'nusje2000_feature_toggle.logger', NullLogger::class, true);
+    }
+
+    public function testLoadWithLoggerConfiguration(): void
+    {
+        $logger = $this->createStub(LoggerInterface::class);
+
+        $container = new ContainerBuilder();
+        $container->set('existing_logger', $logger);
+
+        $extension = new Nusje2000FeatureToggleExtension();
+        $extension->load([['logger' => 'existing_logger']], $container);
+
+        $this->assertDefinition($container, 'nusje2000_feature_toggle.logger', get_class($logger), true);
+    }
+
+    public function testLoadWithoutLoggerConfigurationAndPrecentLoggerService(): void
+    {
+        $logger = $this->createStub(LoggerInterface::class);
+
+        $container = new ContainerBuilder();
+        $container->set('logger', $logger);
+
+        $extension = new Nusje2000FeatureToggleExtension();
+        $extension->load([], $container);
+
+        $this->assertDefinition($container, 'nusje2000_feature_toggle.logger', get_class($logger), true);
+    }
+
+    public function testLoadWithDisabledLoggerConfiguration(): void
+    {
+        $container = new ContainerBuilder();
+
+        $extension = new Nusje2000FeatureToggleExtension();
+        $extension->load([
+            ['logger' => false],
+        ], $container);
+
+        $this->assertDefinition($container, 'nusje2000_feature_toggle.logger', NullLogger::class, true);
     }
 
     public function testLoadWithDefinedEnvironmentConfiguration(): void
@@ -244,6 +298,74 @@ final class Nusje2000FeatureToggleExtensionTest extends TestCase
         $this->assertDefinition($container, 'nusje2000_feature_toggle.repository.feature', ArrayFeatureRepository::class, true);
     }
 
+    public function testLoadWithFallbackConfiguration(): void
+    {
+        $container = new ContainerBuilder();
+        $container->addCompilerPass(new DecoratorServicePass());
+
+        $environmentRepository = $this->createStub(EnvironmentRepository::class);
+        $container->set('fallback_environment_repository', $environmentRepository);
+
+        $featureRepository = $this->createStub(FeatureRepository::class);
+        $container->set('fallback_feature_repository', $featureRepository);
+
+        $extension = new Nusje2000FeatureToggleExtension();
+        $extension->load([
+            [
+                'repository' => [
+                    'fallback' => [
+                        'environment' => 'fallback_environment_repository',
+                        'feature' => 'fallback_feature_repository',
+                    ],
+                ],
+            ],
+        ], $container);
+
+        $definition = $container->getDefinition('nusje2000_feature_toggle.repository.environment.fallback');
+        self::assertSame(['nusje2000_feature_toggle.repository.environment', null, 0], $definition->getDecoratedService());
+
+        $definition = $container->getDefinition('nusje2000_feature_toggle.repository.feature.fallback');
+        self::assertSame(['nusje2000_feature_toggle.repository.feature', null, 0], $definition->getDecoratedService());
+
+        $container->compile();
+
+        $this->assertDefinition($container, 'nusje2000_feature_toggle.repository.feature', FallbackFeatureRepository::class, true);
+        $this->assertDefinition($container, 'nusje2000_feature_toggle.repository.environment', FallbackEnvironmentRepository::class, true);
+    }
+
+    public function testLoadWithStaticFallback(): void
+    {
+        $container = new ContainerBuilder();
+        $container->addCompilerPass(new DecoratorServicePass());
+
+        $extension = new Nusje2000FeatureToggleExtension();
+        $extension->load([
+            [
+                'repository' => [
+                    'fallback' => [
+                        'environment' => 'static',
+                        'feature' => 'static',
+                    ],
+                ],
+            ],
+        ], $container);
+
+        $definition = $container->getDefinition('nusje2000_feature_toggle.repository.environment.fallback');
+        self::assertSame(['nusje2000_feature_toggle.repository.environment', null, 0], $definition->getDecoratedService());
+        self::assertEquals(new Reference('nusje2000_feature_toggle.repository.environment.fallback.inner'), $definition->getArgument(1));
+        self::assertEquals(new Reference('nusje2000_feature_toggle.repository.environment.static'), $definition->getArgument(2));
+
+        $definition = $container->getDefinition('nusje2000_feature_toggle.repository.feature.fallback');
+        self::assertSame(['nusje2000_feature_toggle.repository.feature', null, 0], $definition->getDecoratedService());
+        self::assertEquals(new Reference('nusje2000_feature_toggle.repository.feature.fallback.inner'), $definition->getArgument(1));
+        self::assertEquals(new Reference('nusje2000_feature_toggle.repository.feature.static'), $definition->getArgument(2));
+
+        $container->compile();
+
+        $this->assertDefinition($container, 'nusje2000_feature_toggle.repository.feature', FallbackFeatureRepository::class, true);
+        $this->assertDefinition($container, 'nusje2000_feature_toggle.repository.environment', FallbackEnvironmentRepository::class, true);
+    }
+
     public function testLoadWithMultipleRepositories(): void
     {
         $container = new ContainerBuilder();
@@ -268,13 +390,15 @@ final class Nusje2000FeatureToggleExtensionTest extends TestCase
     {
         self::assertTrue($builder->has($id), sprintf('Definition for "%s" does not exist.', $id));
 
+        if ($builder->hasDefinition($id)) {
+            self::assertSame($public, $builder->getDefinition($id)->isPublic(), sprintf('Visibility of %s does not match expected.', $id));
+        }
+
         if ($builder->hasAlias($id)) {
+            self::assertSame($public, $builder->getAlias($id)->isPublic(), sprintf('Visibility of %s does not match expected.', $id));
             $id = (string) $builder->getAlias($id);
         }
 
         self::assertInstanceOf($class, $builder->get($id));
-
-        $definition = $builder->getDefinition($id);
-        self::assertSame($public, $definition->isPublic());
     }
 }

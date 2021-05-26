@@ -23,8 +23,11 @@ final class Configuration implements ConfigurationInterface
             return count(array_diff(['remote', 'static', 'service'], array_keys($config))) < 2;
         })->thenInvalid('Only one of ["service", "static", "remote"] can be configured')->end();
 
-        $repository->children()->scalarNode('cache_adapter')->defaultNull();
         $repository->children()->booleanNode('static')->defaultNull();
+
+        $service = $repository->children()->arrayNode('fallback')->canBeEnabled()->children();
+        $service->scalarNode('environment');
+        $service->scalarNode('feature');
 
         $service = $repository->children()->arrayNode('service')->canBeEnabled()->children();
         $service->scalarNode('environment')->isRequired();
@@ -40,6 +43,8 @@ final class Configuration implements ConfigurationInterface
         $environment->scalarNode('name')->isRequired();
         $environment->arrayNode('hosts')->requiresAtLeastOneElement()->isRequired()->scalarPrototype();
         $environment->arrayNode('features')->booleanPrototype();
+
+        $root->children()->scalarNode('logger')->defaultNull();
 
         return $treeBuilder;
     }

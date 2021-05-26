@@ -25,20 +25,23 @@ $toggle->assertDefined('feature-name');
 
 ```yaml
 nusje2000_feature_toggle:
+    logger: 'service_id' # should reference a psr logger or false to disable the logging
     repository:
-        cache_adapter: 'service.id' // service used for caching, not enabled by default
-        service: // when using a custom repository
+        fallback:
+            environment: 'fallback_service_id' # or 'static' for configured defaults
+            feature: 'fallback_service_id' # or 'static' for configured defaults
+        service: # when using a custom repository
             environment: 'environment_repository.service_id'
             feature: 'feature_repository.service_id'
-        remote: // when using the API of another host
-            host: 'host.domain' // the API host
-            cache_store: 'service_id' // the service id of the cache store
-            base_path: '/api/feature-toggle' // default
-        static: false // uses an internal array as storage (changes are therefore not persistent)
-    environment: // required when application is a client
-        name: 'environment-name' // custom name for the environment
-        hosts: [ 'localhost' ] // when using the api, this will be called by the host to invalidate the cache
-        features: // list of features, these will be used as default values
+        remote: # when using the API of another host
+            host: 'host.domain' # the API host
+            cache_store: 'service_id' # the service id of the cache store
+            base_path: '/api/feature-toggle' # default
+        static: false # uses an internal array as storage (changes are therefore not persistent)
+    environment: # required when application is a client
+        name: 'environment-name' # custom name for the environment
+        hosts: [ 'localhost' ] # when using the api, this will be called by the host to invalidate the cache
+        features: # list of features, these will be used as default values
             feature_1: true
             feature_2: true
             feature_3: false
@@ -50,7 +53,7 @@ nusje2000_feature_toggle:
 nusje2000_feature_toggle:
     repository:
         remote:
-            cache_store: 'service_id' // the service id of the cache store
+            cache_store: 'service_id' # the service id of the cache store
 ```
 
 Using a cache does require a way to invalidate the cache.

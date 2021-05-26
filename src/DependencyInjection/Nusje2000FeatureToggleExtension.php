@@ -6,7 +6,11 @@ namespace Nusje2000\FeatureToggleBundle\DependencyInjection;
 
 use Nusje2000\FeatureToggleBundle\Feature\SimpleFeature;
 use Nusje2000\FeatureToggleBundle\Feature\State;
+use Nusje2000\FeatureToggleBundle\Repository\FallbackEnvironmentRepository;
+use Nusje2000\FeatureToggleBundle\Repository\FallbackFeatureRepository;
+use Psr\Log\NullLogger;
 use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Extension\Extension;
@@ -25,12 +29,18 @@ final class Nusje2000FeatureToggleExtension extends Extension
         $xmlLoader->load('subscribers.xml');
 
         /** @var array{
+         *      logger: string|false|null,
          *      repository: array{
          *          enabled: bool,
          *          service: array{
          *              enabled: bool,
          *              feature: string,
          *              environment: string
+         *          },
+         *          fallback: array{
+         *              enabled: bool,
+         *              feature: string|null,
+         *              environment: string|null
          *          },
          *          static: bool|null,
          *          remote: array{
@@ -51,8 +61,31 @@ final class Nusje2000FeatureToggleExtension extends Extension
          */
         $config = $this->processConfiguration(new Configuration(), $configs);
 
+        $this->configureLogger($container, $config['logger']);
         $this->configureRepository($container, $xmlLoader, $config['repository']);
         $this->configureEnvironment($container, $xmlLoader, $config['environment']);
+    }
+
+    /**
+     * @param string|null|false $loggerConfig
+     */
+    private function configureLogger(ContainerBuilder $container, $loggerConfig): void
+    {
+        if (null === $loggerConfig && $container->has('logger')) {
+            $loggerConfig = 'logger';
+        }
+
+        if (null === $loggerConfig || false === $loggerConfig) {
+            $definition = new Definition(NullLogger::class);
+            $definition->setPublic(true);
+            $container->setDefinition('nusje2000_feature_toggle.logger', $definition);
+
+            return;
+        }
+
+        $container->addAliases([
+            'nusje2000_feature_toggle.logger' => new Alias($loggerConfig, true),
+        ]);
     }
 
     /**
@@ -109,6 +142,11 @@ final class Nusje2000FeatureToggleExtension extends Extension
      *         feature: string,
      *         environment: string
      *     },
+     *     fallback: array{
+     *         enabled: bool,
+     *         feature: string|null,
+     *         environment: string|null
+     *     },
      *     static: bool|null,
      *     remote: array{
      *         enabled: bool,
@@ -121,11 +159,8 @@ final class Nusje2000FeatureToggleExtension extends Extension
      */
     private function configureRepository(ContainerBuilder $container, XmlFileLoader $xmlLoader, array $config): void
     {
-        if (true === $config['static']) {
-            $xmlLoader->load('repository/static.xml');
+        $xmlLoader->load('repository/default_repository.xml');
 
-            return;
-        }
         if (true === $config['remote']['enabled']) {
             $container->setParameter('nusje2000_feature_toggle.remote.host', $config['remote']['host']);
             $container->setParameter('nusje2000_feature_toggle.remote.scheme', $config['remote']['scheme']);
@@ -147,19 +182,66 @@ final class Nusje2000FeatureToggleExtension extends Extension
                     new Reference('nusje2000_feature_toggle.http_client.caching')
                 );
             }
-
-            return;
         }
 
         if ($config['service']['enabled']) {
             $container->addAliases([
-                'nusje2000_feature_toggle.repository.environment' => $config['service']['environment'],
-                'nusje2000_feature_toggle.repository.feature' => $config['service']['feature'],
+                'nusje2000_feature_toggle.repository.environment' => new Alias($config['service']['environment'], true),
+                'nusje2000_feature_toggle.repository.feature' => new Alias($config['service']['feature'], true),
             ]);
+        }
 
+        $this->configureFallback($container, $config['fallback']);
+    }
+
+    /**
+     * @param ContainerBuilder $builder
+     * @param array{
+     *     enabled: bool,
+     *     feature: string|null,
+     *     environment: string|null
+     * } $config
+     */
+    private function configureFallback(ContainerBuilder $builder, array $config): void
+    {
+        if (true !== $config['enabled']) {
             return;
         }
 
-        $xmlLoader->load('repository/static.xml');
+        $feature = $config['feature'];
+        if ('static' === $feature) {
+            $feature = 'nusje2000_feature_toggle.repository.feature.static';
+        }
+
+        if (null !== $feature) {
+            $definition = new Definition(FallbackFeatureRepository::class, [
+                new Reference('nusje2000_feature_toggle.logger'),
+                new Reference('nusje2000_feature_toggle.repository.feature.fallback.inner'),
+                new Reference($feature),
+            ]);
+
+            $definition->setPublic(true);
+            $definition->setDecoratedService('nusje2000_feature_toggle.repository.feature');
+
+            $builder->setDefinition('nusje2000_feature_toggle.repository.feature.fallback', $definition);
+        }
+
+        $environment = $config['environment'];
+        if ('static' === $environment) {
+            $environment = 'nusje2000_feature_toggle.repository.environment.static';
+        }
+
+        if (null !== $environment) {
+            $definition = new Definition(FallbackEnvironmentRepository::class, [
+                new Reference('nusje2000_feature_toggle.logger'),
+                new Reference('nusje2000_feature_toggle.repository.environment.fallback.inner'),
+                new Reference($environment),
+            ]);
+
+            $definition->setPublic(true);
+            $definition->setDecoratedService('nusje2000_feature_toggle.repository.environment');
+
+            $builder->setDefinition('nusje2000_feature_toggle.repository.environment.fallback', $definition);
+        }
     }
 }

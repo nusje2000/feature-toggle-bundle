@@ -28,10 +28,10 @@
             <argument type="string">%nusje2000_feature_toggle.remote.base_path%</argument>
         </service>
 
-        <service id="nusje2000_feature_toggle.repository.environment" alias="nusje2000_feature_toggle.repository.environment.remote"/>
-        <service id="nusje2000_feature_toggle.repository.feature" alias="nusje2000_feature_toggle.repository.feature.remote"/>
+        <service id="nusje2000_feature_toggle.repository.environment" alias="nusje2000_feature_toggle.repository.environment.remote" public="true"/>
+        <service id="nusje2000_feature_toggle.repository.feature" alias="nusje2000_feature_toggle.repository.feature.remote" public="true"/>
 
-        <service id="Nusje2000\FeatureToggleBundle\Repository\EnvironmentRepository" alias="nusje2000_feature_toggle.repository.environment.remote"/>
-        <service id="Nusje2000\FeatureToggleBundle\Repository\FeatureRepository" alias="nusje2000_feature_toggle.repository.feature.remote"/>
+        <service id="Nusje2000\FeatureToggleBundle\Repository\EnvironmentRepository" alias="nusje2000_feature_toggle.repository.environment.remote" public="true"/>
+        <service id="Nusje2000\FeatureToggleBundle\Repository\FeatureRepository" alias="nusje2000_feature_toggle.repository.feature.remote" public="true"/>
     </services>
 </container>

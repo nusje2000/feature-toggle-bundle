@@ -25,9 +25,6 @@ final class ArrayFeatureRepositoryTest extends TestCase
             'disabled-feature' => new SimpleFeature('disabled-feature', State::ENABLED()),
             'enabled-feature' => new SimpleFeature('enabled-feature', State::DISABLED()),
         ], $repository->all('existing-env'));
-
-        $this->expectExceptionObject(UndefinedEnvironment::create('undefined-env'));
-        $repository->all('undefined-env');
     }
 
     public function testAllInUndefinedEnvironment(): void

@@ -9,7 +9,7 @@
             <argument type="string">%nusje2000_feature_toggle.environment_name%</argument>
         </service>
 
-        <service id="Nusje2000\FeatureToggleBundle\FeatureToggle" alias="nusje2000_feature_toggle.feature_toggle"/>
+        <service id="Nusje2000\FeatureToggleBundle\FeatureToggle" alias="nusje2000_feature_toggle.feature_toggle" public="true"/>
 
         <service id="nusje2000_feature_toggle.default_environment" class="Nusje2000\FeatureToggleBundle\Environment\SimpleEnvironment">
             <argument type="string">%nusje2000_feature_toggle.environment_name%</argument>

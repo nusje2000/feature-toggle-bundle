@@ -17,6 +17,7 @@ final class FileStoreInvalidatorTest extends TestCase
         $filesystem = $this->createMock(Filesystem::class);
         $filesystem->expects(self::once())->method('remove')->with($dir);
 
+        /** @psalm-suppress DeprecatedClass */
         $invalidator = new FileStoreInvalidator($dir, $filesystem);
         $invalidator->invalidate();
     }

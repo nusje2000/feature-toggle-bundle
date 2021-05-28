@@ -34,8 +34,6 @@ final class ViewController
             'max_age' => 86400,
         ]);
 
-        $response->headers->set('Symfony-Session-NoAutoCacheControl', 'true');
-
         return $response;
     }
 }

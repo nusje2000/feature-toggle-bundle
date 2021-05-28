@@ -25,6 +25,8 @@ final class Configuration implements ConfigurationInterface
 
         $repository->children()->booleanNode('static')->defaultNull();
 
+        $repository->children()->scalarNode('cache_adapter')->defaultNull();
+
         $service = $repository->children()->arrayNode('fallback')->canBeEnabled()->children();
         $service->scalarNode('environment');
         $service->scalarNode('feature');
@@ -36,7 +38,7 @@ final class Configuration implements ConfigurationInterface
         $remote = $repository->children()->arrayNode('remote')->canBeEnabled()->children();
         $remote->scalarNode('host')->isRequired();
         $remote->scalarNode('scheme')->defaultValue('https');
-        $remote->scalarNode('cache_store')->defaultNull();
+        $remote->scalarNode('cache_store')->setDeprecated()->defaultNull();
         $remote->scalarNode('base_path')->defaultValue('/api/feature-toggle');
 
         $environment = $root->children()->arrayNode('environment')->canBeEnabled()->children();

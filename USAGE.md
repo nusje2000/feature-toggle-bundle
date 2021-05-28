@@ -27,6 +27,7 @@ $toggle->assertDefined('feature-name');
 nusje2000_feature_toggle:
     logger: 'service_id' # should reference a psr logger or false to disable the logging
     repository:
+        cache_adapter: 'adapter_id' # should reference a symfony cache adapter
         fallback:
             environment: 'fallback_service_id' # or 'static' for configured defaults
             feature: 'fallback_service_id' # or 'static' for configured defaults
@@ -52,8 +53,7 @@ nusje2000_feature_toggle:
 ```yaml
 nusje2000_feature_toggle:
     repository:
-        remote:
-            cache_store: 'service_id' # the service id of the cache store
+        cache_adapter: 'some_adapter_id'
 ```
 
 Using a cache does require a way to invalidate the cache.

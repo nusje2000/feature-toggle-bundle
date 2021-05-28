@@ -32,6 +32,7 @@ final class Nusje2000FeatureToggleExtension extends Extension
          *      logger: string|false|null,
          *      repository: array{
          *          enabled: bool,
+         *          cache_adapter: string|null,
          *          service: array{
          *              enabled: bool,
          *              feature: string,
@@ -137,6 +138,7 @@ final class Nusje2000FeatureToggleExtension extends Extension
     /**
      * @param array{
      *     enabled: bool|null,
+     *     cache_adapter: string|null,
      *     service: array{
      *         enabled: bool,
      *         feature: string,
@@ -168,6 +170,7 @@ final class Nusje2000FeatureToggleExtension extends Extension
 
             $xmlLoader->load('repository/remote.xml');
 
+            // This will be removed in 2.0
             if (null !== $config['remote']['cache_store']) {
                 $container->setDefinition('nusje2000_feature_toggle.http_client.caching', new Definition(
                     CachingHttpClient::class,
@@ -191,7 +194,21 @@ final class Nusje2000FeatureToggleExtension extends Extension
             ]);
         }
 
+        $this->configureCache($container, $xmlLoader, $config['cache_adapter']);
         $this->configureFallback($container, $config['fallback']);
+    }
+
+    private function configureCache(ContainerBuilder $builder, XmlFileLoader $xmlLoader, ?string $adapterId): void
+    {
+        if (null === $adapterId) {
+            return;
+        }
+
+        $builder->addAliases([
+            'nusje2000_feature_toggle.cache_adapter' => new Alias($adapterId, true),
+        ]);
+
+        $xmlLoader->load('repository/caching.xml');
     }
 
     /**

@@ -9,6 +9,8 @@ use Nusje2000\FeatureToggleBundle\Cache\NullInvalidator;
 use Nusje2000\FeatureToggleBundle\Console\UpdateCommand;
 use Nusje2000\FeatureToggleBundle\Controller\Host\Environment;
 use Nusje2000\FeatureToggleBundle\Controller\Host\Feature;
+use Nusje2000\FeatureToggleBundle\Decorator\CachingEnvironmentRepository;
+use Nusje2000\FeatureToggleBundle\Decorator\CachingFeatureRepository;
 use Nusje2000\FeatureToggleBundle\DependencyInjection\Nusje2000FeatureToggleExtension;
 use Nusje2000\FeatureToggleBundle\Environment\SimpleEnvironment;
 use Nusje2000\FeatureToggleBundle\Feature\SimpleFeature;
@@ -28,8 +30,10 @@ use Nusje2000\FeatureToggleBundle\Twig\TwigExtension;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\DependencyInjection\Compiler\DecoratorServicePass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpClient\ScopingHttpClient;
 use Symfony\Component\HttpKernel\HttpCache\StoreInterface;
@@ -364,6 +368,29 @@ final class Nusje2000FeatureToggleExtensionTest extends TestCase
 
         $this->assertDefinition($container, 'nusje2000_feature_toggle.repository.feature', FallbackFeatureRepository::class, true);
         $this->assertDefinition($container, 'nusje2000_feature_toggle.repository.environment', FallbackEnvironmentRepository::class, true);
+    }
+
+    public function testLoadWithCache(): void
+    {
+        $container = new ContainerBuilder();
+        $container->addCompilerPass(new DecoratorServicePass());
+        $container->setDefinition('some_cache_adapter', new Definition(ArrayAdapter::class));
+
+        $extension = new Nusje2000FeatureToggleExtension();
+        $extension->load([
+            [
+                'repository' => [
+                    'cache_adapter' => 'some_cache_adapter',
+                ],
+            ],
+        ], $container);
+
+        $this->assertDefinition($container, 'nusje2000_feature_toggle.cache_adapter', ArrayAdapter::class, true);
+
+        $container->compile();
+
+        $this->assertDefinition($container, 'nusje2000_feature_toggle.repository.feature', CachingFeatureRepository::class, true);
+        $this->assertDefinition($container, 'nusje2000_feature_toggle.repository.environment', CachingEnvironmentRepository::class, true);
     }
 
     public function testLoadWithMultipleRepositories(): void

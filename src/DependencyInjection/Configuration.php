@@ -44,7 +44,7 @@ final class Configuration implements ConfigurationInterface
         $environment = $root->children()->arrayNode('environment')->canBeEnabled()->children();
         $environment->scalarNode('name')->isRequired();
         $environment->arrayNode('hosts')->requiresAtLeastOneElement()->isRequired()->scalarPrototype();
-        $environment->arrayNode('features')->booleanPrototype();
+        $environment->arrayNode('features')->useAttributeAsKey('name')->booleanPrototype();
 
         $root->children()->scalarNode('logger')->defaultNull();
 

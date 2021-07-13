@@ -65,6 +65,9 @@ final class AccessMapRequestValidatorTest extends TestCase
         $validator->validate(new Request());
     }
 
+    /**
+     * @param list<Requirement> $requirements
+     */
     private function createMap(array $requirements): AccessMap
     {
         $map = new AccessMap();
@@ -76,7 +79,7 @@ final class AccessMapRequestValidatorTest extends TestCase
     /**
      * @param list<Requirement> $requirements
      */
-    protected function createPattern(bool $matches, array $requirements)
+    protected function createPattern(bool $matches, array $requirements): Pattern
     {
         $pattern = $this->createMock(Pattern::class);
         $pattern->method('matches')->willReturn($matches);

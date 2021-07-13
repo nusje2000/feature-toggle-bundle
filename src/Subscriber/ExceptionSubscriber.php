@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Nusje2000\FeatureToggleBundle\Subscriber;
 
+use Nusje2000\FeatureToggleBundle\Exception\AccessControl\UnmetRequirement;
 use Nusje2000\FeatureToggleBundle\Exception\DisabledFeature;
 use Nusje2000\FeatureToggleBundle\Exception\DuplicateEnvironment;
 use Nusje2000\FeatureToggleBundle\Exception\DuplicateFeature;
@@ -20,6 +21,7 @@ final class ExceptionSubscriber implements EventSubscriberInterface
 {
     /** @var array<class-string<Throwable>, int> */
     private const MAPPING = [
+        UnmetRequirement::class => Response::HTTP_NOT_FOUND,
         UndefinedFeature::class => Response::HTTP_NOT_FOUND,
         UndefinedEnvironment::class => Response::HTTP_NOT_FOUND,
         DuplicateEnvironment::class => Response::HTTP_CONFLICT,

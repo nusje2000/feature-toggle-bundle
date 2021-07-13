@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Nusje2000\FeatureToggleBundle\DependencyInjection;
 
+use Nusje2000\FeatureToggleBundle\AccessControl\RequestMatcherPattern;
+use Nusje2000\FeatureToggleBundle\AccessControl\Requirement;
 use Nusje2000\FeatureToggleBundle\Feature\SimpleFeature;
 use Nusje2000\FeatureToggleBundle\Feature\State;
 use Nusje2000\FeatureToggleBundle\Repository\FallbackEnvironmentRepository;
@@ -17,6 +19,7 @@ use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpClient\CachingHttpClient;
+use Symfony\Component\HttpFoundation\RequestMatcher;
 
 final class Nusje2000FeatureToggleExtension extends Extension
 {
@@ -56,7 +59,15 @@ final class Nusje2000FeatureToggleExtension extends Extension
          *          enabled: bool,
          *          name: string,
          *          hosts: list<string>,
-         *          features: array<array-key, bool>
+         *          features: array<array-key, bool>,
+         *          access_control: list<array{
+         *              path: string|null,
+         *              host: string|null,
+         *              port: int|null,
+         *              ips: list<string>,
+         *              methods: list<string>,
+         *              features: array<string, bool>
+         *          }>
          *      }
          *  } $config
          */
@@ -94,7 +105,15 @@ final class Nusje2000FeatureToggleExtension extends Extension
      *     enabled: bool,
      *     name: string,
      *     hosts: list<string>,
-     *     features: array<array-key, bool>
+     *     features: array<array-key, bool>,
+     *     access_control: list<array{
+     *         path: string|null,
+     *         host: string|null,
+     *         port: int|null,
+     *         ips: list<string>,
+     *         methods: list<string>,
+     *         features: array<string, bool>
+     *     }>
      * } $config
      */
     private function configureEnvironment(ContainerBuilder $container, XmlFileLoader $xmlLoader, array $config): void
@@ -126,6 +145,51 @@ final class Nusje2000FeatureToggleExtension extends Extension
                     ]),
                 ]),
             ]);
+        }
+
+        $patterns = [];
+
+        foreach ($config['access_control'] as $pattern) {
+            $hash = ContainerBuilder::hash($pattern);
+
+            $requestMatcherId = '.nusje2000_feature_toggle.access_control.request_matcher.' . $hash;
+            $patterns[] = $patternId = '.nusje2000_feature_toggle.access_control.pattern.' . $hash;
+
+            $requirements = [];
+            foreach ($pattern['features'] as $name => $enabled) {
+                $requirements[] = new Definition(Requirement::class, [
+                    $name,
+                    new Definition(State::class, [
+                        State::fromBoolean($enabled)->getValue(),
+                    ]),
+                ]);
+            }
+
+            $container->setDefinition($requestMatcherId, new Definition(
+                RequestMatcher::class,
+                [
+                    $pattern['path'],
+                    $pattern['host'],
+                    $pattern['methods'],
+                    $pattern['ips'],
+                    [],
+                    null,
+                    $pattern['port'],
+                ]
+            ));
+
+            $container->setDefinition($patternId, new Definition(
+                RequestMatcherPattern::class,
+                [
+                    new Reference($requestMatcherId),
+                    $requirements,
+                ]
+            ));
+        }
+
+        $map = $container->getDefinition('nusje2000_feature_toggle.access_control.access_map');
+        foreach ($patterns as $pattern) {
+            $map->addMethodCall('add', [new Reference($pattern)]);
         }
 
         if ($container->hasDefinition('nusje2000_feature_toggle.repository.environment.static')) {

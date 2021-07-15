@@ -46,6 +46,14 @@ final class Configuration implements ConfigurationInterface
         $environment->arrayNode('hosts')->requiresAtLeastOneElement()->isRequired()->scalarPrototype();
         $environment->arrayNode('features')->useAttributeAsKey('name')->booleanPrototype();
 
+        $accessControl = $environment->arrayNode('access_control')->cannotBeOverwritten()->arrayPrototype()->children();
+        $accessControl->scalarNode('path')->defaultNull();
+        $accessControl->scalarNode('host')->defaultNull();
+        $accessControl->integerNode('port')->defaultNull();
+        $accessControl->arrayNode('ips')->scalarPrototype();
+        $accessControl->arrayNode('methods')->scalarPrototype();
+        $accessControl->arrayNode('features')->useAttributeAsKey('name')->booleanPrototype();
+
         $root->children()->scalarNode('logger')->defaultNull();
 
         return $treeBuilder;

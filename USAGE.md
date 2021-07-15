@@ -67,6 +67,8 @@ nusje2000_feature_toggle:
             - { path: '^/feature-4-and-5-protected', methods: [ POST, PUT ], features: { feature_4: false, feature_5: true } }
 ```
 
+> [NOTE] Only the requirements of the first match will be used. The `access_control` is evaluated from top to bottom.
+
 ##### Defining route requirements
 
 - **path**: a regex representing the path that should be protected

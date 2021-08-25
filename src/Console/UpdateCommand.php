@@ -45,10 +45,10 @@ final class UpdateCommand extends Command
         EnvironmentRepository $environmentRepository,
         FeatureRepository $featureRepository,
         Invalidator $invalidator,
-        Environment $defaultEnvironment,
-        string $name = null
+        Environment $defaultEnvironment
     ) {
-        parent::__construct($name);
+        parent::__construct();
+
         $this->environmentRepository = $environmentRepository;
         $this->featureRepository = $featureRepository;
         $this->invalidator = $invalidator;
@@ -67,7 +67,7 @@ final class UpdateCommand extends Command
         if ($input->getOption('dry-run')) {
             $this->dryRun($io);
 
-            return 0;
+            return self::SUCCESS;
         }
 
         $this->invalidator->invalidate();
@@ -89,7 +89,7 @@ final class UpdateCommand extends Command
 
         $io->success('Environment has been updated.');
 
-        return 0;
+        return self::SUCCESS;
     }
 
     private function dryRun(SymfonyStyle $io): void

@@ -6,6 +6,7 @@ namespace Nusje2000\FeatureToggleBundle\Tests\Unit\DependencyInjection;
 
 use InvalidArgumentException;
 use Nusje2000\FeatureToggleBundle\Cache\NullInvalidator;
+use Nusje2000\FeatureToggleBundle\Console\CleanupCommand;
 use Nusje2000\FeatureToggleBundle\Console\UpdateCommand;
 use Nusje2000\FeatureToggleBundle\Controller\Host\Environment;
 use Nusje2000\FeatureToggleBundle\Controller\Host\Feature;
@@ -144,6 +145,7 @@ final class Nusje2000FeatureToggleExtensionTest extends TestCase
         $this->assertDefinition($container, 'nusje2000_feature_toggle.repository.environment', ArrayEnvironmentRepository::class, true);
         $this->assertDefinition($container, 'nusje2000_feature_toggle.repository.feature', ArrayFeatureRepository::class, true);
         $this->assertDefinition($container, 'nusje2000_feature_toggle.console.update_command', UpdateCommand::class, true);
+        $this->assertDefinition($container, 'nusje2000_feature_toggle.console.cleanup_command', CleanupCommand::class, true);
 
         self::assertSame('some_environment', $container->getParameter('nusje2000_feature_toggle.environment_name'));
 

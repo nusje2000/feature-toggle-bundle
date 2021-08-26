@@ -57,6 +57,7 @@ final class CleanupCommandTest extends TestCase
 
         $input = $this->createInput(false);
         $output = new BufferedOutput();
+        $output->setDecorated(false);
 
         $command->run($input, $output);
 

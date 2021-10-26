@@ -38,8 +38,6 @@ use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpClient\ScopingHttpClient;
 use Symfony\Component\HttpKernel\HttpCache\StoreInterface;
 
-use function Safe\sprintf;
-
 final class Nusje2000FeatureToggleExtensionTest extends TestCase
 {
     public function testLoadWithDefaultConfiguration(): void

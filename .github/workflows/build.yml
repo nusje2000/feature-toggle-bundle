@@ -8,13 +8,16 @@ on:
 
 jobs:
     code_analysis:
-        name: 'Code Analysis'
+        name: Code Analysis - PHP ${{ matrix.php-versions }}
         runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                php-versions: [ '7.4', '8.0' ]
         steps:
             -   name: Setup PHP, with composer and extensions
                 uses: shivammathur/setup-php@v2
                 with:
-                    php-version: 7.4
+                    php-version: ${{ matrix.php-versions }}
                     extensions: mbstring, xml, ctype, iconv, mysql, curl, intl
                     coverage: pcov
             -   uses: actions/checkout@v1
@@ -24,13 +27,16 @@ jobs:
             -   name: Psalm
                 run: vendor/bin/psalm
     tests:
-        name: 'Tests'
+        name: 'Tests - PHP ${{ matrix.php-versions }}'
         runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                php-versions: [ '7.4', '8.0' ]
         steps:
             -   name: Setup PHP, with composer and extensions
                 uses: shivammathur/setup-php@v2
                 with:
-                    php-version: 7.4
+                    php-version: ${{ matrix.php-versions }}
                     extensions: mbstring, xml, ctype, iconv, mysql, curl, intl
                     coverage: pcov
             -   uses: actions/checkout@v1

@@ -7,8 +7,6 @@ namespace Nusje2000\FeatureToggleBundle\Exception\Http;
 use Nusje2000\FeatureToggleBundle\Exception\Throwable;
 use UnexpectedValueException;
 
-use function Safe\sprintf;
-
 final class InvalidResponse extends UnexpectedValueException implements Throwable
 {
     private function __construct(string $message, ?Throwable $previous = null)

@@ -9,8 +9,6 @@ use Nusje2000\FeatureToggleBundle\Repository\FeatureRepository;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Cache\Adapter\AdapterInterface;
 
-use function Safe\sprintf;
-
 final class CachingFeatureRepository implements FeatureRepository
 {
     private const CACHE_PREFIX = 'nusje2000_feature_toggle';

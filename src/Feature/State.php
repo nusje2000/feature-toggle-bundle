@@ -30,11 +30,13 @@ final class State extends Enum
 
     public function isEnabled(): bool
     {
+        /** @psalm-suppress ImpureMethodCall */
         return $this->equals(self::ENABLED());
     }
 
     public function isDisabled(): bool
     {
+        /** @psalm-suppress ImpureMethodCall */
         return $this->equals(self::DISABLED());
     }
 }

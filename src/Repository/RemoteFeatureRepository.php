@@ -16,8 +16,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
-use function Safe\sprintf;
-
 final class RemoteFeatureRepository implements FeatureRepository
 {
     /**

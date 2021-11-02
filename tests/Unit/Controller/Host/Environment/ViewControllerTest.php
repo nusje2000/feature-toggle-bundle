@@ -11,8 +11,6 @@ use Nusje2000\FeatureToggleBundle\Feature\State;
 use Nusje2000\FeatureToggleBundle\Repository\EnvironmentRepository;
 use PHPUnit\Framework\TestCase;
 
-use function Safe\json_decode;
-
 final class ViewControllerTest extends TestCase
 {
     public function testInvoke(): void

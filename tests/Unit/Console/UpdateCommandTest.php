@@ -13,7 +13,7 @@ use Nusje2000\FeatureToggleBundle\Repository\EnvironmentRepository;
 use Nusje2000\FeatureToggleBundle\Repository\FeatureRepository;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\BufferedOutput;
+use Symfony\Component\Console\Tester\CommandTester;
 
 final class UpdateCommandTest extends TestCase
 {
@@ -38,13 +38,10 @@ final class UpdateCommandTest extends TestCase
         $invalidator = $this->createMock(Invalidator::class);
         $invalidator->expects(self::once())->method('invalidate');
 
-        $command = new UpdateCommand($environmentRepository, $featureRepository, $invalidator, new SimpleEnvironment('environment', ['host_1', 'host_2'], [
-            new SimpleFeature('enabled_feature', State::ENABLED()),
-            new SimpleFeature('disabled_feature', State::DISABLED()),
-        ]));
+        $command = $this->command($environmentRepository, $featureRepository, $invalidator);
 
-        $output = new BufferedOutput();
-        $command->run($input, $output);
+        $tester = new CommandTester($command);
+        $tester->execute([]);
 
         self::assertSame([
             'Checking environment "environment".',
@@ -57,14 +54,11 @@ final class UpdateCommandTest extends TestCase
             '[OK] Environment has been updated.',
             '',
             '',
-        ], array_map('trim', explode(PHP_EOL, $output->fetch())));
+        ], array_map('trim', explode(PHP_EOL, $tester->getDisplay())));
     }
 
     public function testRunOnExistingEnvironment(): void
     {
-        $input = $this->createMock(InputInterface::class);
-        $input->method('getOption')->with('dry-run')->willReturn(false);
-
         $environmentRepository = $this->createMock(EnvironmentRepository::class);
         $environmentRepository->method('exists')->willReturn(true);
         $environmentRepository->expects(self::never())->method('add');
@@ -78,19 +72,14 @@ final class UpdateCommandTest extends TestCase
         $invalidator = $this->createMock(Invalidator::class);
         $invalidator->expects(self::once())->method('invalidate');
 
-        $command = new UpdateCommand($environmentRepository, $featureRepository, $invalidator, new SimpleEnvironment('environment', ['host_1', 'host_2'], [
-            new SimpleFeature('enabled_feature', State::ENABLED()),
-            new SimpleFeature('disabled_feature', State::DISABLED()),
-        ]));
+        $command = $this->command($environmentRepository, $featureRepository, $invalidator);
 
-        $command->run($input, new BufferedOutput());
+        $tester = new CommandTester($command);
+        $tester->execute([]);
     }
 
     public function testDryRun(): void
     {
-        $input = $this->createMock(InputInterface::class);
-        $input->method('getOption')->with('dry-run')->willReturn(true);
-
         $environmentRepository = $this->createMock(EnvironmentRepository::class);
         $environmentRepository->method('exists')->willReturn(false);
         $environmentRepository->expects(self::never())->method('add');
@@ -100,13 +89,10 @@ final class UpdateCommandTest extends TestCase
         $invalidator = $this->createMock(Invalidator::class);
         $invalidator->expects(self::never())->method('invalidate');
 
-        $command = new UpdateCommand($environmentRepository, $featureRepository, $invalidator, new SimpleEnvironment('environment', ['host_1', 'host_2'], [
-            new SimpleFeature('enabled_feature', State::ENABLED()),
-            new SimpleFeature('disabled_feature', State::DISABLED()),
-        ]));
+        $command = $this->command($environmentRepository, $featureRepository, $invalidator);
 
-        $output = new BufferedOutput();
-        $command->run($input, $output);
+        $tester = new CommandTester($command);
+        $tester->execute(['--dry-run' => null]);
 
         self::assertSame([
             '',
@@ -116,14 +102,11 @@ final class UpdateCommandTest extends TestCase
             'Create feature "enabled_feature" with default state "ENABLED".',
             'Create feature "disabled_feature" with default state "DISABLED".',
             '',
-        ], array_map('trim', explode(PHP_EOL, $output->fetch())));
+        ], array_map('trim', explode(PHP_EOL, $tester->getDisplay())));
     }
 
     public function testDryRunWithExistingEnvironment(): void
     {
-        $input = $this->createMock(InputInterface::class);
-        $input->method('getOption')->with('dry-run')->willReturn(true);
-
         $environmentRepository = $this->createStub(EnvironmentRepository::class);
         $environmentRepository->method('exists')->willReturn(true);
         $featureRepository = $this->createStub(FeatureRepository::class);
@@ -131,13 +114,10 @@ final class UpdateCommandTest extends TestCase
         $invalidator = $this->createMock(Invalidator::class);
         $invalidator->expects(self::never())->method('invalidate');
 
-        $command = new UpdateCommand($environmentRepository, $featureRepository, $invalidator, new SimpleEnvironment('environment', ['host_1', 'host_2'], [
-            new SimpleFeature('enabled_feature', State::ENABLED()),
-            new SimpleFeature('disabled_feature', State::DISABLED()),
-        ]));
+        $command = $this->command($environmentRepository, $featureRepository, $invalidator);
 
-        $output = new BufferedOutput();
-        $command->run($input, $output);
+        $tester = new CommandTester($command);
+        $tester->execute(['--dry-run' => null]);
 
         self::assertSame([
             '',
@@ -146,14 +126,11 @@ final class UpdateCommandTest extends TestCase
             'Create feature "enabled_feature" with default state "ENABLED".',
             'Create feature "disabled_feature" with default state "DISABLED".',
             '',
-        ], array_map('trim', explode(PHP_EOL, $output->fetch())));
+        ], array_map('trim', explode(PHP_EOL, $tester->getDisplay())));
     }
 
     public function testDryRunWithUpToDateEnvironment(): void
     {
-        $input = $this->createMock(InputInterface::class);
-        $input->method('getOption')->with('dry-run')->willReturn(true);
-
         $environmentRepository = $this->createStub(EnvironmentRepository::class);
         $environmentRepository->method('exists')->willReturn(true);
         $featureRepository = $this->createStub(FeatureRepository::class);
@@ -162,19 +139,24 @@ final class UpdateCommandTest extends TestCase
         $invalidator = $this->createMock(Invalidator::class);
         $invalidator->expects(self::never())->method('invalidate');
 
-        $command = new UpdateCommand($environmentRepository, $featureRepository, $invalidator, new SimpleEnvironment('environment', ['host_1', 'host_2'], [
-            new SimpleFeature('enabled_feature', State::ENABLED()),
-            new SimpleFeature('disabled_feature', State::DISABLED()),
-        ]));
+        $command = $this->command($environmentRepository, $featureRepository, $invalidator);
 
-        $output = new BufferedOutput();
-        $command->run($input, $output);
+        $tester = new CommandTester($command);
+        $tester->execute(['--dry-run' => null]);
 
         self::assertSame([
             '',
             '[OK] The environment is up to date.',
             '',
             '',
-        ], array_map('trim', explode(PHP_EOL, $output->fetch())));
+        ], array_map('trim', explode(PHP_EOL, $tester->getDisplay())));
+    }
+
+    private function command(EnvironmentRepository $environmentRepository, FeatureRepository $featureRepository, Invalidator $invalidator): UpdateCommand
+    {
+        return new UpdateCommand($environmentRepository, $featureRepository, $invalidator, new SimpleEnvironment('environment', ['host_1', 'host_2'], [
+            new SimpleFeature('enabled_feature', State::ENABLED()),
+            new SimpleFeature('disabled_feature', State::DISABLED()),
+        ]));
     }
 }

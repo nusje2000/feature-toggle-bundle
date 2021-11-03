@@ -80,6 +80,26 @@ feature_toggle_client:
     resource: '@Nusje2000FeatureToggleBundle/Resources/config/routing/client.xml'
 ```
 
+### CLI
+
+#### feature-toggle:update
+
+Registers new features to the configured repository.
+
+```bash
+bin/console feature-toggle:update
+bin/console feature-toggle:update --dry-run # will only show actions that will be taken
+```
+
+#### feature-toggle:cleanup
+
+Will remove features from the repository that do not exist in the default environment.
+
+```bash
+bin/console feature-toggle:cleanup
+bin/console feature-toggle:cleanup --dry-run # will only show actions that will be taken
+```
+
 ### Advanced usage
 
 #### Using the API

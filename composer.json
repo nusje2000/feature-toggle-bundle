@@ -33,6 +33,7 @@
         "phpstan/phpstan-symfony": "^0.12.33",
         "phpunit/phpunit": "^9.5",
         "psalm/plugin-phpunit": "^0.15.1",
+        "symfony/phpunit-bridge": "^5.0",
         "twig/twig": "^3.0",
         "vimeo/psalm": "^4.7"
     },

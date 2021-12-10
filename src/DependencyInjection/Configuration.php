@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Nusje2000\FeatureToggleBundle\DependencyInjection;
 
+use Symfony\Component\Config\Definition\BaseNode;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -38,7 +39,7 @@ final class Configuration implements ConfigurationInterface
         $remote = $repository->children()->arrayNode('remote')->canBeEnabled()->children();
         $remote->scalarNode('host')->isRequired();
         $remote->scalarNode('scheme')->defaultValue('https');
-        $remote->scalarNode('cache_store')->setDeprecated()->defaultNull();
+        $remote->scalarNode('cache_store')->setDeprecated(...$this->getDeprecationParameters('1.1.1'))->defaultNull();
         $remote->scalarNode('base_path')->defaultValue('/api/feature-toggle');
 
         $environment = $root->children()->arrayNode('environment')->canBeEnabled()->children();
@@ -49,5 +50,21 @@ final class Configuration implements ConfigurationInterface
         $root->children()->scalarNode('logger')->defaultNull();
 
         return $treeBuilder;
+    }
+
+    /**
+     * @return array{0: string|null}|array{0: string, 1: string, 2:string|null}
+     */
+    private function getDeprecationParameters(string $version, ?string $message = null): array
+    {
+        if (method_exists(BaseNode::class, 'getDeprecation')) {
+            return [
+                'nusje2000/feature-toggle-bundle',
+                $version,
+                $message,
+            ];
+        }
+
+        return [$message];
     }
 }

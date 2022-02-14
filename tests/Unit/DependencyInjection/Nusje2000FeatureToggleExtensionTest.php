@@ -10,6 +10,7 @@ use Nusje2000\FeatureToggleBundle\AccessControl\AccessMapRequestValidator;
 use Nusje2000\FeatureToggleBundle\AccessControl\RequestMatcherPattern;
 use Nusje2000\FeatureToggleBundle\AccessControl\Requirement;
 use Nusje2000\FeatureToggleBundle\Cache\NullInvalidator;
+use Nusje2000\FeatureToggleBundle\Console\CleanupCommand;
 use Nusje2000\FeatureToggleBundle\Console\UpdateCommand;
 use Nusje2000\FeatureToggleBundle\Controller\Host\Environment;
 use Nusje2000\FeatureToggleBundle\Controller\Host\Feature;
@@ -43,8 +44,6 @@ use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpClient\ScopingHttpClient;
 use Symfony\Component\HttpFoundation\RequestMatcher;
 use Symfony\Component\HttpKernel\HttpCache\StoreInterface;
-
-use function Safe\sprintf;
 
 final class Nusje2000FeatureToggleExtensionTest extends TestCase
 {
@@ -154,6 +153,7 @@ final class Nusje2000FeatureToggleExtensionTest extends TestCase
         $this->assertDefinition($container, 'nusje2000_feature_toggle.repository.environment', ArrayEnvironmentRepository::class, true);
         $this->assertDefinition($container, 'nusje2000_feature_toggle.repository.feature', ArrayFeatureRepository::class, true);
         $this->assertDefinition($container, 'nusje2000_feature_toggle.console.update_command', UpdateCommand::class, true);
+        $this->assertDefinition($container, 'nusje2000_feature_toggle.console.cleanup_command', CleanupCommand::class, true);
 
         self::assertSame('some_environment', $container->getParameter('nusje2000_feature_toggle.environment_name'));
 

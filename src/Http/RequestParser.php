@@ -4,11 +4,8 @@ declare(strict_types=1);
 
 namespace Nusje2000\FeatureToggleBundle\Http;
 
-use Safe\Exceptions\JsonException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-
-use function Safe\json_decode;
 
 final class RequestParser
 {
@@ -37,11 +34,14 @@ final class RequestParser
      */
     private function parseJsonRequest(string $raw): array
     {
-        try {
-            /** @var array<mixed> $parsed */
-            $parsed = json_decode($raw, true);
-        } catch (JsonException $jsonException) {
-            throw new BadRequestHttpException($jsonException->getMessage(), $jsonException);
+        $parsed = json_decode($raw, true);
+
+        if (JSON_ERROR_NONE !== json_last_error()) {
+            throw new BadRequestHttpException(json_last_error_msg(), null, json_last_error());
+        }
+
+        if (!is_array($parsed)) {
+            throw new BadRequestHttpException('Could not decode json.');
         }
 
         return $parsed;

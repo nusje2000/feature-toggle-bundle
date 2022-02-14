@@ -9,8 +9,6 @@ use Nusje2000\FeatureToggleBundle\AccessControl\Requirement;
 use Nusje2000\FeatureToggleBundle\Exception\Throwable;
 use Nusje2000\FeatureToggleBundle\Feature\Feature;
 
-use function Safe\sprintf;
-
 final class UnmetRequirement extends LogicException implements Throwable
 {
     private function __construct(string $message, ?Throwable $previous = null)

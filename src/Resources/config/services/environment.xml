@@ -38,5 +38,13 @@
 
             <tag name="kernel.event_subscriber"/>
         </service>
+
+        <service id="nusje2000_feature_toggle.console.cleanup_command" class="Nusje2000\FeatureToggleBundle\Console\CleanupCommand" public="true">
+            <argument type="service" id="nusje2000_feature_toggle.repository.feature"/>
+            <argument type="service" id="nusje2000_feature_toggle.cache.invalidator"/>
+            <argument type="service" id="nusje2000_feature_toggle.default_environment"/>
+
+            <tag name="console.command"/>
+        </service>
     </services>
 </container>

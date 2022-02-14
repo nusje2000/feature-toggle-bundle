@@ -26,6 +26,19 @@
             <tag name="console.command"/>
         </service>
 
+        <service id="nusje2000_feature_toggle.access_control.access_map" class="Nusje2000\FeatureToggleBundle\AccessControl\AccessMap"/>
+
+        <service id="nusje2000_feature_toggle.access_control.request_validator" class="Nusje2000\FeatureToggleBundle\AccessControl\AccessMapRequestValidator">
+            <argument type="service" id="nusje2000_feature_toggle.access_control.access_map"/>
+            <argument type="service" id="nusje2000_feature_toggle.feature_toggle"/>
+        </service>
+
+        <service id="nusje2000_feature_toggle.subscriber.request" class="Nusje2000\FeatureToggleBundle\Subscriber\RequestSubscriber">
+            <argument type="service" id="nusje2000_feature_toggle.access_control.request_validator"/>
+
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
         <service id="nusje2000_feature_toggle.console.cleanup_command" class="Nusje2000\FeatureToggleBundle\Console\CleanupCommand" public="true">
             <argument type="service" id="nusje2000_feature_toggle.repository.feature"/>
             <argument type="service" id="nusje2000_feature_toggle.cache.invalidator"/>

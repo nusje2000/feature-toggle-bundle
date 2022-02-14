@@ -5,6 +5,10 @@ declare(strict_types=1);
 namespace Nusje2000\FeatureToggleBundle\Tests\Unit\DependencyInjection;
 
 use InvalidArgumentException;
+use Nusje2000\FeatureToggleBundle\AccessControl\AccessMap;
+use Nusje2000\FeatureToggleBundle\AccessControl\AccessMapRequestValidator;
+use Nusje2000\FeatureToggleBundle\AccessControl\RequestMatcherPattern;
+use Nusje2000\FeatureToggleBundle\AccessControl\Requirement;
 use Nusje2000\FeatureToggleBundle\Cache\NullInvalidator;
 use Nusje2000\FeatureToggleBundle\Console\CleanupCommand;
 use Nusje2000\FeatureToggleBundle\Console\UpdateCommand;
@@ -27,6 +31,7 @@ use Nusje2000\FeatureToggleBundle\Repository\RemoteEnvironmentRepository;
 use Nusje2000\FeatureToggleBundle\Repository\RemoteFeatureRepository;
 use Nusje2000\FeatureToggleBundle\RepositoryFeatureToggle;
 use Nusje2000\FeatureToggleBundle\Subscriber\ExceptionSubscriber;
+use Nusje2000\FeatureToggleBundle\Subscriber\RequestSubscriber;
 use Nusje2000\FeatureToggleBundle\Twig\TwigExtension;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
@@ -37,6 +42,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpClient\ScopingHttpClient;
+use Symfony\Component\HttpFoundation\RequestMatcher;
 use Symfony\Component\HttpKernel\HttpCache\StoreInterface;
 
 final class Nusje2000FeatureToggleExtensionTest extends TestCase
@@ -140,6 +146,10 @@ final class Nusje2000FeatureToggleExtensionTest extends TestCase
             ],
         ], $container);
 
+        $this->assertDefinition($container, 'nusje2000_feature_toggle.access_control.access_map', AccessMap::class, false);
+        $this->assertDefinition($container, 'nusje2000_feature_toggle.access_control.request_validator', AccessMapRequestValidator::class, false);
+        $this->assertDefinition($container, 'nusje2000_feature_toggle.subscriber.request', RequestSubscriber::class, false);
+
         $this->assertDefinition($container, 'nusje2000_feature_toggle.repository.environment', ArrayEnvironmentRepository::class, true);
         $this->assertDefinition($container, 'nusje2000_feature_toggle.repository.feature', ArrayFeatureRepository::class, true);
         $this->assertDefinition($container, 'nusje2000_feature_toggle.console.update_command', UpdateCommand::class, true);
@@ -187,6 +197,49 @@ final class Nusje2000FeatureToggleExtensionTest extends TestCase
         $this->assertDefinition($container, 'nusje2000_feature_toggle.repository.feature', ArrayFeatureRepository::class, true);
         $this->assertDefinition($container, EnvironmentRepository::class, ArrayEnvironmentRepository::class, true);
         $this->assertDefinition($container, FeatureRepository::class, ArrayFeatureRepository::class, true);
+    }
+
+    public function testLoadWithAccessControl(): void
+    {
+        $container = new ContainerBuilder();
+        $container->setParameter('kernel.bundles', ['TwigBundle' => []]);
+
+        $extension = new Nusje2000FeatureToggleExtension();
+        $extension->load([
+            [
+                'environment' => [
+                    'name' => 'some_environment',
+                    'hosts' => ['localhost'],
+                    'features' => [],
+                    'access_control' => [
+                        ['path' => '^/feature-1-protected', 'ips' => ['127.0.0.1'], 'port' => 8080, 'features' => ['feature_1' => true]],
+                        ['path' => '^/feature-2-protected', 'ips' => ['127.0.0.1'], 'features' => ['feature_2' => true]],
+                        ['path' => '^/feature-3-protected', 'host' => 'symfony\.com$', 'features' => ['feature_3' => false]],
+                        ['path' => '^/feature-4-and-5-protected', 'methods' => ['POST', 'PUT'], 'features' => ['feature_4' => false, 'feature_5' => true]],
+                    ],
+                ],
+            ],
+        ], $container);
+
+        $expectedMap = new AccessMap();
+        $expectedMap->add(new RequestMatcherPattern(
+            new RequestMatcher('^/feature-1-protected', null, [], ['127.0.0.1'], [], null, 8080),
+            [new Requirement('feature_1', State::ENABLED())]
+        ));
+        $expectedMap->add(new RequestMatcherPattern(
+            new RequestMatcher('^/feature-2-protected', null, [], ['127.0.0.1'], [], null, null),
+            [new Requirement('feature_2', State::ENABLED())]
+        ));
+        $expectedMap->add(new RequestMatcherPattern(
+            new RequestMatcher('^/feature-3-protected', 'symfony\.com$', [], [], [], null, null),
+            [new Requirement('feature_3', State::DISABLED())]
+        ));
+        $expectedMap->add(new RequestMatcherPattern(
+            new RequestMatcher('^/feature-4-and-5-protected', null, ['POST', 'PUT'], [], [], null, null),
+            [new Requirement('feature_4', State::DISABLED()), new Requirement('feature_5', State::ENABLED())]
+        ));
+
+        self::assertEquals($container->get('nusje2000_feature_toggle.access_control.access_map'), $expectedMap);
     }
 
     public function testLoadWithTwigBundle(): void

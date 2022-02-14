@@ -37,7 +37,7 @@ final class RequestSubscriber implements EventSubscriberInterface
         try {
             $this->validator->validate($event->getRequest());
         } catch (UnmetRequirement $exception) {
-            throw new NotFoundHttpException($exception);
+            throw new NotFoundHttpException($exception->getMessage(), $exception);
         }
     }
 }

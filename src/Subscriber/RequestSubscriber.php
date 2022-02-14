@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Nusje2000\FeatureToggleBundle\Subscriber;
 
 use Nusje2000\FeatureToggleBundle\AccessControl\RequestValidator;
+use Nusje2000\FeatureToggleBundle\Exception\AccessControl\UnmetRequirement;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 final class RequestSubscriber implements EventSubscriberInterface
 {
@@ -32,6 +34,10 @@ final class RequestSubscriber implements EventSubscriberInterface
 
     public function validateAccess(RequestEvent $event): void
     {
-        $this->validator->validate($event->getRequest());
+        try {
+            $this->validator->validate($event->getRequest());
+        } catch (UnmetRequirement $exception) {
+            throw new NotFoundHttpException($exception);
+        }
     }
 }

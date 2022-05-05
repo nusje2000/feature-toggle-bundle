@@ -53,18 +53,18 @@ final class Configuration implements ConfigurationInterface
     }
 
     /**
-     * @return array{0: string|null}|array{0: string, 1: string, 2:string|null}
+     * @return array{0: null}|array{0: string, 1: string, 2:null}
      */
-    private function getDeprecationParameters(string $version, ?string $message = null): array
+    private function getDeprecationParameters(string $version): array
     {
         if (method_exists(BaseNode::class, 'getDeprecation')) {
             return [
                 'nusje2000/feature-toggle-bundle',
                 $version,
-                $message,
+                null,
             ];
         }
 
-        return [$message];
+        return [null];
     }
 }

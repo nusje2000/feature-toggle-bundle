@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Nusje2000\FeatureToggleBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\BaseNode;
-use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
@@ -15,7 +14,6 @@ final class Configuration implements ConfigurationInterface
     {
         $treeBuilder = new TreeBuilder('nusje2000_feature_toggle');
 
-        /** @var ArrayNodeDefinition $root */
         $root = $treeBuilder->getRootNode();
 
         $repository = $root->children()->arrayNode('repository')->canBeEnabled();

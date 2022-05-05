@@ -21,12 +21,7 @@ final class RequestParser
 
     private function getRequestContent(Request $request): string
     {
-        $raw = $request->getContent();
-        if (!is_string($raw)) {
-            throw new BadRequestHttpException('Invalid body, no content found.');
-        }
-
-        return $raw;
+        return $request->getContent();
     }
 
     /**

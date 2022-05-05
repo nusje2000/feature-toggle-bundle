@@ -54,7 +54,7 @@ final class CleanupCommand extends Command
     {
         $this->invalidator->invalidate();
 
-        $dryRun = (bool) $input->getOption('dry-run');
+        $dryRun = $input->getOption('dry-run');
 
         $io = new SymfonyStyle($input, $output);
 

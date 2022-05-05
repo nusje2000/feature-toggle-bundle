@@ -19,17 +19,6 @@ final class RequestParserTest extends TestCase
         self::assertSame(['key' => 'value'], (new RequestParser())->json($request));
     }
 
-    public function testJsonWithNoContent(): void
-    {
-        $request = $this->createStub(Request::class);
-        $request->method('getContent')->willReturn(false);
-
-        $this->expectException(BadRequestHttpException::class);
-        $this->expectExceptionMessage('Invalid body, no content found.');
-
-        (new RequestParser())->json($request);
-    }
-
     public function testJsonWithInvalidJson(): void
     {
         $request = $this->createStub(Request::class);

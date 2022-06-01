@@ -63,4 +63,21 @@ final class UpdateControllerTest extends TestCase
 
         $controller($request, 'environment', 'feature');
     }
+
+    public function testInvokeWithChangedDescription(): void
+    {
+        $repository = $this->createMock(FeatureRepository::class);
+        $repository->method('find')->willReturn(new SimpleFeature('feature_1', State::DISABLED()));
+        $repository->expects(self::once())->method('update')->with(
+            'environment',
+            new SimpleFeature('feature_1', State::ENABLED(), 'fooBar')
+        );
+
+        $controller = new UpdateController(new RequestParser(), $repository);
+
+        $request = $this->createStub(Request::class);
+        $request->method('getContent')->willReturn('{"enabled": true, "description": "fooBar"}');
+
+        $controller($request, 'environment', 'feature');
+    }
 }

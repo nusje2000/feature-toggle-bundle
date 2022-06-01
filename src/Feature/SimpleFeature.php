@@ -52,4 +52,9 @@ final class SimpleFeature implements Feature
     {
         return $this->description;
     }
+
+    public function setDescription(?string $description): void
+    {
+        $this->description = $description;
+    }
 }

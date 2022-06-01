@@ -15,4 +15,6 @@ interface Feature
     public function disable(): void;
 
     public function description(): ?string;
+
+    public function setDescription(?string $description): void;
 }

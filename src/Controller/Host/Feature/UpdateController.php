@@ -34,7 +34,8 @@ final class UpdateController
         $feature = $this->repository->find($environment, $name);
 
         $json = $this->requestParser->json($request);
-        $this->updateFeature($feature, $json);
+        $this->updateFeatureState($feature, $json);
+        $this->updateFeatureDescription($feature, $json);
         $this->repository->update($environment, $feature);
 
         return new Response(sprintf('Updated feature named "%s" in environment "%s".', $name, $environment));
@@ -43,7 +44,7 @@ final class UpdateController
     /**
      * @param array<mixed> $json
      */
-    private function updateFeature(Feature $feature, array $json): void
+    private function updateFeatureState(Feature $feature, array $json): void
     {
         $enabled = $json['enabled'] ?? null;
         if (!is_bool($enabled)) {
@@ -57,5 +58,20 @@ final class UpdateController
         }
 
         $feature->disable();
+    }
+
+    /**
+     * @param array<mixed> $json
+     */
+    private function updateFeatureDescription(Feature $feature, array $json): void
+    {
+        $description = $json['description'] ?? null;
+        if (!is_null($description) && !is_string($description)) {
+            throw new BadRequestHttpException('Invalid feature description, please provide a string or null value for the "description" key, or exclude the value from the json.');
+        }
+
+        if ($feature->description() !== $description) {
+            $feature->setDescription($description);
+        }
     }
 }

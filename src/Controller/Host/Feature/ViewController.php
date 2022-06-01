@@ -27,6 +27,7 @@ final class ViewController
         $response = new JsonResponse([
             'name' => $feature->name(),
             'enabled' => $feature->state()->isEnabled(),
+            'description' => $feature->description(),
         ]);
 
         $response->setCache([

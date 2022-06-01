@@ -26,6 +26,11 @@ final class FeatureMapper
             throw InvalidResponse::invalidKeyType('enabled', 'bool', $enabled);
         }
 
-        return new SimpleFeature($name, State::fromBoolean($enabled));
+        $description = $json['description'] ?? null;
+        if (!is_null($description) && !is_string($description)) {
+            throw InvalidResponse::invalidKeyType('description', 'string|null', $description);
+        }
+
+        return new SimpleFeature($name, State::fromBoolean($enabled), $description);
     }
 }

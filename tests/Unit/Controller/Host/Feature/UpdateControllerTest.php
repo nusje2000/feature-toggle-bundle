@@ -80,4 +80,19 @@ final class UpdateControllerTest extends TestCase
 
         $controller($request, 'environment', 'feature');
     }
+
+    public function testInvokeWithInvalidDescription(): void
+    {
+        $repository = $this->createMock(FeatureRepository::class);
+
+        $controller = new UpdateController(new RequestParser(), $repository);
+
+        $request = $this->createStub(Request::class);
+        $request->method('getContent')->willReturn('{"enabled": true, "description": []}');
+
+        $this->expectException(BadRequestHttpException::class);
+        $this->expectExceptionMessage('Invalid feature description, please provide a string or null value for the "description" key, or exclude the value from the json.');
+
+        $controller($request, 'environment', 'feature');
+    }
 }

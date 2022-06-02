@@ -59,7 +59,10 @@ final class Nusje2000FeatureToggleExtension extends Extension
          *          enabled: bool,
          *          name: string,
          *          hosts: list<string>,
-         *          features: array<array-key, bool>,
+         *          features: array<array-key, array{
+         *              value: bool,
+         *              description: string|null
+         *          }>,
          *          access_control: list<array{
          *              path: string|null,
          *              host: string|null,
@@ -105,7 +108,10 @@ final class Nusje2000FeatureToggleExtension extends Extension
      *     enabled: bool,
      *     name: string,
      *     hosts: list<string>,
-     *     features: array<array-key, bool>,
+     *     features: array<array-key, array{
+     *          value: bool,
+     *          description: string|null
+     *     }>,
      *     access_control: list<array{
      *         path: string|null,
      *         host: string|null,
@@ -136,13 +142,14 @@ final class Nusje2000FeatureToggleExtension extends Extension
             }
         }
 
-        foreach ($config['features'] as $name => $enabled) {
+        foreach ($config['features'] as $name => $feature) {
             $container->getDefinition('nusje2000_feature_toggle.default_environment')->addMethodCall('addFeature', [
                 new Definition(SimpleFeature::class, [
                     (string) $name,
                     new Definition(State::class, [
-                        State::fromBoolean($enabled)->getValue(),
+                        State::fromBoolean($feature['value'])->getValue(),
                     ]),
+                    $feature['description'],
                 ]),
             ]);
         }

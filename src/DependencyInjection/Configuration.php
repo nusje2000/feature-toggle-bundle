@@ -45,14 +45,14 @@ final class Configuration implements ConfigurationInterface
         $environment->arrayNode('hosts')->requiresAtLeastOneElement()->isRequired()->scalarPrototype();
         $features = $environment->arrayNode('features')->useAttributeAsKey('name')->arrayPrototype();
         $features->beforeNormalization()
-            ->ifTrue(function ($v) {
-                return is_bool($v);
-            })->then(function (bool $v) {
+            ->ifTrue(/** @param mixed $v */
+                function ($v) {
+                    return is_bool($v);
+                })->then(function (bool $v) {
                 return ['value' => $v];
             });
-        $features->children()
-            ->booleanNode('value')->isRequired()->end()
-            ->scalarNode('description')->defaultNull();
+        $features->children()->booleanNode('value')->isRequired();
+        $features->children()->scalarNode('description')->defaultNull();
 
         $accessControl = $environment->arrayNode('access_control')->cannotBeOverwritten()->arrayPrototype()->children();
         $accessControl->scalarNode('path')->defaultNull();

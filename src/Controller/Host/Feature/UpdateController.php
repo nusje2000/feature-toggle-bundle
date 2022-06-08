@@ -46,9 +46,13 @@ final class UpdateController
      */
     private function updateFeatureState(Feature $feature, array $json): void
     {
-        $enabled = $json['enabled'] ?? null;
+        if (!array_key_exists('enabled', $json)) {
+            return;
+        }
+
+        $enabled = $json['enabled'];
         if (!is_bool($enabled)) {
-            throw new BadRequestHttpException('Missing/Invalid feature state, please provide a boolean value for the "enabled" key.');
+            throw new BadRequestHttpException('Invalid feature state, please provide a boolean value for the "enabled" key.');
         }
 
         if ($enabled) {
@@ -65,7 +69,11 @@ final class UpdateController
      */
     private function updateFeatureDescription(Feature $feature, array $json): void
     {
-        $description = $json['description'] ?? null;
+        if (!array_key_exists('description', $json)) {
+            return;
+        }
+
+        $description = $json['description'];
         if (!is_null($description) && !is_string($description)) {
             throw new BadRequestHttpException('Invalid feature description, please provide a string or null value for the "description" key, or exclude the value from the json.');
         }

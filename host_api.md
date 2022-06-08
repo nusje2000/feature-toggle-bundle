@@ -109,12 +109,15 @@ Defines a new feature toggle with a default value. Will return a 201 status if t
 
 ### PATCH /{environment}/{name}
 
-Updates an existing feature toggle with a new value. Will return a 200 status if the update was succesfull.
+Updates an existing feature toggle with a new value and/or description.
+The state and description will only be updated if the keys are present in the payload.
+Will return a 200 status if the update was succesfull.
 
 ```json5
 // Request
 {
-    "enabled": true // boolean
+    "enabled": true, // boolean
+    "description": "FooBar" // string|null
 }
 ```
 

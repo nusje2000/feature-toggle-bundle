@@ -15,70 +15,55 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 final class UpdateControllerTest extends TestCase
 {
-    public function testInvokeWithEnableRequest(): void
+    /**
+     * @dataProvider invokeSupplier
+     */
+    public function testInvoke(SimpleFeature $initialFeature, SimpleFeature $updatedFeature, string $requestContent): void
     {
         $repository = $this->createMock(FeatureRepository::class);
-        $repository->method('find')->willReturn(new SimpleFeature('feature_1', State::DISABLED()));
-        $repository->expects(self::once())->method('update')->with(
-            'environment',
-            new SimpleFeature('feature_1', State::ENABLED())
-        );
+        $repository->method('find')->willReturn($initialFeature);
+        $repository->expects(self::once())->method('update')->with('environment', $updatedFeature);
 
         $controller = new UpdateController(new RequestParser(), $repository);
 
         $request = $this->createStub(Request::class);
-        $request->method('getContent')->willReturn('{"enabled": true}');
+        $request->method('getContent')->willReturn($requestContent);
 
         $controller($request, 'environment', 'feature');
     }
 
-    public function testInvokeWithDisableRequest(): void
+    /**
+     * @return iterable<string, array{0: SimpleFeature, 1: SimpleFeature, 2: string}>
+     */
+    public function invokeSupplier(): iterable
     {
-        $repository = $this->createMock(FeatureRepository::class);
-        $repository->method('find')->willReturn(new SimpleFeature('feature_1', State::ENABLED()));
-        $repository->expects(self::once())->method('update')->with(
-            'environment',
-            new SimpleFeature('feature_1', State::DISABLED())
-        );
-
-        $controller = new UpdateController(new RequestParser(), $repository);
-
-        $request = $this->createStub(Request::class);
-        $request->method('getContent')->willReturn('{"enabled": false}');
-
-        $controller($request, 'environment', 'feature');
-    }
-
-    public function testInvokeWithMissingState(): void
-    {
-        $repository = $this->createMock(FeatureRepository::class);
-
-        $controller = new UpdateController(new RequestParser(), $repository);
-
-        $request = $this->createStub(Request::class);
-        $request->method('getContent')->willReturn('{"name": "some_env"}');
-
-        $this->expectException(BadRequestHttpException::class);
-        $this->expectExceptionMessage('Missing/Invalid feature state, please provide a boolean value for the "enabled" key.');
-
-        $controller($request, 'environment', 'feature');
-    }
-
-    public function testInvokeWithChangedDescription(): void
-    {
-        $repository = $this->createMock(FeatureRepository::class);
-        $repository->method('find')->willReturn(new SimpleFeature('feature_1', State::DISABLED()));
-        $repository->expects(self::once())->method('update')->with(
-            'environment',
-            new SimpleFeature('feature_1', State::ENABLED(), 'fooBar')
-        );
-
-        $controller = new UpdateController(new RequestParser(), $repository);
-
-        $request = $this->createStub(Request::class);
-        $request->method('getContent')->willReturn('{"enabled": true, "description": "fooBar"}');
-
-        $controller($request, 'environment', 'feature');
+        return [
+            'enable_state' => [
+                new SimpleFeature('feature_1', State::DISABLED(), null),
+                new SimpleFeature('feature_1', State::ENABLED(), null),
+                '{"enabled": true}',
+            ],
+            'disable_state' => [
+                new SimpleFeature('feature_1', State::ENABLED(), null),
+                new SimpleFeature('feature_1', State::DISABLED(), null),
+                '{"enabled": false}',
+            ],
+            'only_update_description' => [
+                new SimpleFeature('feature_1', State::DISABLED(), null),
+                new SimpleFeature('feature_1', State::DISABLED(), 'fooBar'),
+                '{"description": "fooBar"}',
+            ],
+            'update_state_and_description' => [
+                new SimpleFeature('feature_1', State::DISABLED(), null),
+                new SimpleFeature('feature_1', State::ENABLED(), 'fooBar'),
+                '{"enabled": true, "description": "fooBar"}',
+            ],
+            'update_nothing' => [
+                new SimpleFeature('feature_1', State::ENABLED(), 'fooBar'),
+                new SimpleFeature('feature_1', State::ENABLED(), 'fooBar'),
+                '{}',
+            ],
+        ];
     }
 
     public function testInvokeWithInvalidDescription(): void
@@ -92,6 +77,21 @@ final class UpdateControllerTest extends TestCase
 
         $this->expectException(BadRequestHttpException::class);
         $this->expectExceptionMessage('Invalid feature description, please provide a string or null value for the "description" key, or exclude the value from the json.');
+
+        $controller($request, 'environment', 'feature');
+    }
+
+    public function testInvokeWithInvalidState(): void
+    {
+        $repository = $this->createMock(FeatureRepository::class);
+
+        $controller = new UpdateController(new RequestParser(), $repository);
+
+        $request = $this->createStub(Request::class);
+        $request->method('getContent')->willReturn('{"enabled": "FooBar"}');
+
+        $this->expectException(BadRequestHttpException::class);
+        $this->expectExceptionMessage('Invalid feature state, please provide a boolean value for the "enabled" key.');
 
         $controller($request, 'environment', 'feature');
     }

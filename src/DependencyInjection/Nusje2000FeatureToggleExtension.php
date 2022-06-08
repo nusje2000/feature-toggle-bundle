@@ -60,7 +60,7 @@ final class Nusje2000FeatureToggleExtension extends Extension
          *          name: string,
          *          hosts: list<string>,
          *          features: array<array-key, array{
-         *              value: bool,
+         *              enabled: bool,
          *              description: string|null
          *          }>,
          *          access_control: list<array{
@@ -109,7 +109,7 @@ final class Nusje2000FeatureToggleExtension extends Extension
      *     name: string,
      *     hosts: list<string>,
      *     features: array<array-key, array{
-     *          value: bool,
+     *          enabled: bool,
      *          description: string|null
      *     }>,
      *     access_control: list<array{
@@ -147,7 +147,7 @@ final class Nusje2000FeatureToggleExtension extends Extension
                 new Definition(SimpleFeature::class, [
                     (string) $name,
                     new Definition(State::class, [
-                        State::fromBoolean($feature['value'])->getValue(),
+                        State::fromBoolean($feature['enabled'])->getValue(),
                     ]),
                     $feature['description'],
                 ]),

@@ -49,9 +49,9 @@ final class Configuration implements ConfigurationInterface
                 function ($v) {
                     return is_bool($v);
                 })->then(function (bool $v) {
-                return ['value' => $v];
+                return ['enabled' => $v];
             });
-        $features->children()->booleanNode('value')->isRequired();
+        $features->children()->booleanNode('enabled')->isRequired();
         $features->children()->scalarNode('description')->defaultNull();
 
         $accessControl = $environment->arrayNode('access_control')->cannotBeOverwritten()->arrayPrototype()->children();

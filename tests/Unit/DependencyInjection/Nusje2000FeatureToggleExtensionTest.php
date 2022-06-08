@@ -135,7 +135,7 @@ final class Nusje2000FeatureToggleExtensionTest extends TestCase
                         'disabled_feature' => false,
                         'overwriten_feature' => false,
                         'descriptive_feature' => [
-                            'value' => true,
+                            'enabled' => true,
                             'description' => 'fooBar',
                         ],
                     ],
@@ -164,10 +164,10 @@ final class Nusje2000FeatureToggleExtensionTest extends TestCase
         self::assertEquals(['localhost'], $container->getParameter('nusje2000_feature_toggle.hosts'));
 
         self::assertEquals([
-            'enabled_feature' => ['value' => true, 'description' => null],
-            'disabled_feature' => ['value' => false, 'description' => null],
-            'overwriten_feature' => ['value' => true, 'description' => null],
-            'descriptive_feature' => ['value' => true, 'description' => 'fooBar'],
+            'enabled_feature' => ['enabled' => true, 'description' => null],
+            'disabled_feature' => ['enabled' => false, 'description' => null],
+            'overwriten_feature' => ['enabled' => true, 'description' => null],
+            'descriptive_feature' => ['enabled' => true, 'description' => 'fooBar'],
         ], $container->getParameter('nusje2000_feature_toggle.feature_defaults'));
 
         /** @var EnvironmentRepository $repository */

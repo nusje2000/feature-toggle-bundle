@@ -47,7 +47,7 @@ nusje2000_feature_toggle:
             feature_2: true
             feature_3: false
             feature_4:
-                value: true
+                enabled: true
                 description: 'This is a feature with a description!'
         access_control:
             - { path: '^/feature-protected', ips: [ 127.0.0.1 ], port: 8080, features: { some_feature: true } }

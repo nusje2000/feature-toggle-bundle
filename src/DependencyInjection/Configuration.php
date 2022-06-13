@@ -63,7 +63,7 @@ final class Configuration implements ConfigurationInterface
     }
 
     /**
-     * @return array{0: null}|array{0: string, 1: string, 2:null}
+     * @return array{0: null}|array{0: string, 1: string}
      */
     private function getDeprecationParameters(string $version): array
     {

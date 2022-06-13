@@ -38,6 +38,7 @@ final class Configuration implements ConfigurationInterface
         $remote->scalarNode('host')->isRequired();
         $remote->scalarNode('scheme')->defaultValue('https');
         /** @psalm-suppress TooFewArguments */
+        /** @psalm-suppress MixedArgument */
         $remote->scalarNode('cache_store')->setDeprecated(...$this->getDeprecationParameters('1.1.1'))->defaultNull(); // @phpstan-ignore-line
         $remote->scalarNode('base_path')->defaultValue('/api/feature-toggle');
 
@@ -67,7 +68,7 @@ final class Configuration implements ConfigurationInterface
         if (method_exists(BaseNode::class, 'getDeprecation')) {
             return [
                 'nusje2000/feature-toggle-bundle',
-                $version
+                $version,
             ];
         }
 

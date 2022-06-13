@@ -37,7 +37,7 @@ final class Configuration implements ConfigurationInterface
         $remote = $repository->children()->arrayNode('remote')->canBeEnabled()->children();
         $remote->scalarNode('host')->isRequired();
         $remote->scalarNode('scheme')->defaultValue('https');
-        $remote->scalarNode('cache_store')->setDeprecated(...$this->getDeprecationParameters('1.1.1'))->defaultNull();
+        $remote->scalarNode('cache_store')->setDeprecated(...$this->getDeprecationParameters('1.1.1'))->defaultNull(); // @phpstan-ignore-line
         $remote->scalarNode('base_path')->defaultValue('/api/feature-toggle');
 
         $environment = $root->children()->arrayNode('environment')->canBeEnabled()->children();

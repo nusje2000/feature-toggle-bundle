@@ -46,7 +46,7 @@ final class CachingFeatureRepository implements FeatureRepository
         if ($item->isHit()) {
             $this->logger->info(sprintf('Attempting to use cache with key "%s".', $item->getKey()));
 
-            /** @psalm-var mixed $value */
+            /** @var mixed $value */
             $value = $item->get();
 
             if ($this->isValidFeatureArray($value)) {
@@ -75,7 +75,7 @@ final class CachingFeatureRepository implements FeatureRepository
         if ($item->isHit()) {
             $this->logger->info(sprintf('Attempting to use cache with key "%s".', $item->getKey()));
 
-            /** @psalm-var mixed $value */
+            /** @var mixed $value */
             $value = $item->get();
 
             if ($value instanceof Feature) {
@@ -104,7 +104,7 @@ final class CachingFeatureRepository implements FeatureRepository
         if ($item->isHit()) {
             $this->logger->info(sprintf('Attempting to use cache with key "%s".', $item->getKey()));
 
-            /** @psalm-var mixed $value */
+            /** @var mixed $value */
             $value = $item->get();
 
             if (is_bool($value)) {

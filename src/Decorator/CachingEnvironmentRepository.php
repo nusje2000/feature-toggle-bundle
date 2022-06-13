@@ -47,7 +47,7 @@ final class CachingEnvironmentRepository implements EnvironmentRepository
         if ($item->isHit()) {
             $this->logger->info(sprintf('Attempting to use cache with key "%s".', $item->getKey()));
 
-            /** @psalm-var mixed $value */
+            /** @var mixed $value */
             $value = $item->get();
 
             if ($this->isValidEnvironmentArray($value)) {
@@ -76,7 +76,7 @@ final class CachingEnvironmentRepository implements EnvironmentRepository
         if ($item->isHit()) {
             $this->logger->info(sprintf('Attempting to use cache with key "%s".', $item->getKey()));
 
-            /** @psalm-var mixed $value */
+            /** @var mixed $value */
             $value = $item->get();
 
             if ($value instanceof Environment) {
@@ -105,7 +105,7 @@ final class CachingEnvironmentRepository implements EnvironmentRepository
         if ($item->isHit()) {
             $this->logger->info(sprintf('Attempting to use cache with key "%s".', $item->getKey()));
 
-            /** @psalm-var mixed $value */
+            /** @var mixed $value */
             $value = $item->get();
 
             if (is_bool($value)) {

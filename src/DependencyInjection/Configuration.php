@@ -66,8 +66,7 @@ final class Configuration implements ConfigurationInterface
         if (method_exists(BaseNode::class, 'getDeprecation')) {
             return [
                 'nusje2000/feature-toggle-bundle',
-                $version,
-                null,
+                $version
             ];
         }
 

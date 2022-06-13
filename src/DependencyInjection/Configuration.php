@@ -37,7 +37,11 @@ final class Configuration implements ConfigurationInterface
         $remote = $repository->children()->arrayNode('remote')->canBeEnabled()->children();
         $remote->scalarNode('host')->isRequired();
         $remote->scalarNode('scheme')->defaultValue('https');
-        $remote->scalarNode('cache_store')->setDeprecated(...$this->getDeprecationParameters('1.1.1'))->defaultNull();
+        /**
+         * @psalm-suppress MixedArgument
+         * @psalm-suppress TooFewArguments
+         */
+        $remote->scalarNode('cache_store')->setDeprecated(...$this->getDeprecationParameters('1.1.1'))->defaultNull(); // @phpstan-ignore-line
         $remote->scalarNode('base_path')->defaultValue('/api/feature-toggle');
 
         $environment = $root->children()->arrayNode('environment')->canBeEnabled()->children();
@@ -59,7 +63,7 @@ final class Configuration implements ConfigurationInterface
     }
 
     /**
-     * @return array{0: null}|array{0: string, 1: string, 2:null}
+     * @return array{0: null}|array{0: string, 1: string}
      */
     private function getDeprecationParameters(string $version): array
     {
@@ -67,7 +71,6 @@ final class Configuration implements ConfigurationInterface
             return [
                 'nusje2000/feature-toggle-bundle',
                 $version,
-                null,
             ];
         }
 

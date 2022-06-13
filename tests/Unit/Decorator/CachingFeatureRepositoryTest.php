@@ -10,6 +10,7 @@ use Nusje2000\FeatureToggleBundle\Repository\FeatureRepository;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Cache\Adapter\AdapterInterface;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Contracts\Cache\ItemInterface;
 
 final class CachingFeatureRepositoryTest extends TestCase
@@ -18,9 +19,7 @@ final class CachingFeatureRepositoryTest extends TestCase
     {
         $logger = $this->createMock(LoggerInterface::class);
 
-        $adapter = $this->createAdapterWithItem(
-            $this->createCacheItem('nusje2000_feature_toggle.feature.some_env._all', null, true)
-        );
+        $adapter = new ArrayAdapter();
 
         $wrapped = $this->createMock(FeatureRepository::class);
         $wrapped->expects(self::once())->method('all')->willReturn([
@@ -37,11 +36,12 @@ final class CachingFeatureRepositoryTest extends TestCase
     {
         $logger = $this->createMock(LoggerInterface::class);
 
-        $adapter = $this->createAdapterWithItem(
-            $this->createCacheItem('nusje2000_feature_toggle.feature.some_env._all', [
-                'some_feature' => $this->createFeature(),
-            ], false)
-        );
+        $adapter = new ArrayAdapter();
+        $item = $adapter->getItem('nusje2000_feature_toggle.feature.some_env._all');
+        $item->set([
+            'some_feature' => $this->createFeature(),
+        ]);
+        $adapter->save($item);
 
         $wrapped = $this->createMock(FeatureRepository::class);
         $wrapped->expects(self::never())->method('all');
@@ -56,9 +56,10 @@ final class CachingFeatureRepositoryTest extends TestCase
     {
         $logger = $this->createMock(LoggerInterface::class);
 
-        $adapter = $this->createAdapterWithItem(
-            $this->createCacheItem('nusje2000_feature_toggle.feature.some_env._all', 1, true)
-        );
+        $adapter = new ArrayAdapter();
+        $item = $adapter->getItem('nusje2000_feature_toggle.feature.some_env._all');
+        $item->set(1);
+        $adapter->save($item);
 
         $wrapped = $this->createMock(FeatureRepository::class);
         $wrapped->expects(self::once())->method('all')->willReturn([
@@ -75,9 +76,10 @@ final class CachingFeatureRepositoryTest extends TestCase
     {
         $logger = $this->createMock(LoggerInterface::class);
 
-        $adapter = $this->createAdapterWithItem(
-            $this->createCacheItem('nusje2000_feature_toggle.feature.some_env._all', ['feature' => 1], true)
-        );
+        $adapter = new ArrayAdapter();
+        $item = $adapter->getItem('nusje2000_feature_toggle.feature.some_env._all');
+        $item->set(['feature' => 1]);
+        $adapter->save($item);
 
         $wrapped = $this->createMock(FeatureRepository::class);
         $wrapped->expects(self::once())->method('all')->willReturn([
@@ -94,9 +96,10 @@ final class CachingFeatureRepositoryTest extends TestCase
     {
         $logger = $this->createMock(LoggerInterface::class);
 
-        $adapter = $this->createAdapterWithItem(
-            $this->createCacheItem('nusje2000_feature_toggle.feature.some_env._all', [1 => $this->createFeature()], true)
-        );
+        $adapter = new ArrayAdapter();
+        $item = $adapter->getItem('nusje2000_feature_toggle.feature.some_env._all');
+        $item->set([1 => $this->createFeature()]);
+        $adapter->save($item);
 
         $wrapped = $this->createMock(FeatureRepository::class);
         $wrapped->expects(self::once())->method('all')->willReturn([
@@ -113,9 +116,7 @@ final class CachingFeatureRepositoryTest extends TestCase
     {
         $logger = $this->createMock(LoggerInterface::class);
 
-        $adapter = $this->createAdapterWithItem(
-            $this->createCacheItem('nusje2000_feature_toggle.feature.some_env.some_feature', null, true)
-        );
+        $adapter = new ArrayAdapter();
 
         $wrapped = $this->createMock(FeatureRepository::class);
         $wrapped->expects(self::once())->method('find')->willReturn($this->createFeature());
@@ -128,9 +129,10 @@ final class CachingFeatureRepositoryTest extends TestCase
     {
         $logger = $this->createMock(LoggerInterface::class);
 
-        $adapter = $this->createAdapterWithItem(
-            $this->createCacheItem('nusje2000_feature_toggle.feature.some_env.some_feature', $this->createFeature(), false)
-        );
+        $adapter = new ArrayAdapter();
+        $item = $adapter->getItem('nusje2000_feature_toggle.feature.some_env.some_feature');
+        $item->set($this->createFeature());
+        $adapter->save($item);
 
         $wrapped = $this->createMock(FeatureRepository::class);
         $wrapped->expects(self::never())->method('find');
@@ -143,9 +145,10 @@ final class CachingFeatureRepositoryTest extends TestCase
     {
         $logger = $this->createMock(LoggerInterface::class);
 
-        $adapter = $this->createAdapterWithItem(
-            $this->createCacheItem('nusje2000_feature_toggle.feature.some_env.some_feature', 1, true)
-        );
+        $adapter = new ArrayAdapter();
+        $item = $adapter->getItem('nusje2000_feature_toggle.feature.some_env.some_feature');
+        $item->set(1);
+        $adapter->save($item);
 
         $wrapped = $this->createMock(FeatureRepository::class);
         $wrapped->expects(self::once())->method('find')->willReturn($this->createFeature());
@@ -158,9 +161,7 @@ final class CachingFeatureRepositoryTest extends TestCase
     {
         $logger = $this->createMock(LoggerInterface::class);
 
-        $adapter = $this->createAdapterWithItem(
-            $this->createCacheItem('nusje2000_feature_toggle.feature.some_env._exists.some_feature', null, true)
-        );
+        $adapter = new ArrayAdapter();
 
         $wrapped = $this->createMock(FeatureRepository::class);
         $wrapped->expects(self::once())->method('exists')->willReturn(true);
@@ -173,9 +174,10 @@ final class CachingFeatureRepositoryTest extends TestCase
     {
         $logger = $this->createMock(LoggerInterface::class);
 
-        $adapter = $this->createAdapterWithItem(
-            $this->createCacheItem('nusje2000_feature_toggle.feature.some_env._exists.some_feature', true, false)
-        );
+        $adapter = new ArrayAdapter();
+        $item = $adapter->getItem('nusje2000_feature_toggle.feature.some_env._exists.some_feature');
+        $item->set(true);
+        $adapter->save($item);
 
         $wrapped = $this->createMock(FeatureRepository::class);
         $wrapped->expects(self::never())->method('exists');
@@ -188,9 +190,10 @@ final class CachingFeatureRepositoryTest extends TestCase
     {
         $logger = $this->createMock(LoggerInterface::class);
 
-        $adapter = $this->createAdapterWithItem(
-            $this->createCacheItem('nusje2000_feature_toggle.feature.some_env._exists.some_feature', 1, true)
-        );
+        $adapter = new ArrayAdapter();
+        $item = $adapter->getItem('nusje2000_feature_toggle.feature.some_env._exists.some_feature');
+        $item->set(1);
+        $adapter->save($item);
 
         $wrapped = $this->createMock(FeatureRepository::class);
         $wrapped->expects(self::once())->method('exists')->willReturn(true);

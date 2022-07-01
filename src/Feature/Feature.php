@@ -13,4 +13,8 @@ interface Feature
     public function enable(): void;
 
     public function disable(): void;
+
+    public function description(): ?string;
+
+    public function setDescription(?string $description): void;
 }

@@ -59,6 +59,12 @@ final class CreateController
             throw new BadRequestHttpException('Missing/Invalid feature state, please provide a boolean value for the "enabled" key.');
         }
 
-        return new SimpleFeature($name, State::fromBoolean($enabled));
+        /** @var mixed $description */
+        $description = $json['description'] ?? null;
+        if (!is_null($description) && !is_string($description)) {
+            throw new BadRequestHttpException('Invalid feature description, please provide a string or null value for the "description" key, or exclude the value from the json.');
+        }
+
+        return new SimpleFeature($name, State::fromBoolean($enabled), $description);
     }
 }

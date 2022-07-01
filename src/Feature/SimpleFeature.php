@@ -16,10 +16,16 @@ final class SimpleFeature implements Feature
      */
     private $state;
 
-    public function __construct(string $name, State $state)
+    /**
+     * @var string|null
+     */
+    private $description;
+
+    public function __construct(string $name, State $state, ?string $description = null)
     {
         $this->name = $name;
         $this->state = $state;
+        $this->description = $description;
     }
 
     public function name(): string
@@ -40,5 +46,15 @@ final class SimpleFeature implements Feature
     public function disable(): void
     {
         $this->state = State::DISABLED();
+    }
+
+    public function description(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): void
+    {
+        $this->description = $description;
     }
 }

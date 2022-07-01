@@ -27,6 +27,28 @@ final class ViewControllerTest extends TestCase
             [
                 'name' => 'feature_1',
                 'enabled' => true,
+                'description' => null,
+            ],
+            json_decode($content, true)
+        );
+    }
+
+    public function testInvokeWithDescription(): void
+    {
+        $repository = $this->createMock(FeatureRepository::class);
+        $repository->method('find')->willReturn(new SimpleFeature('feature_1', State::ENABLED(), 'fooBar'));
+
+        $controller = new ViewController($repository);
+
+        $response = $controller('some_env', 'feature_1');
+
+        $content = $response->getContent();
+        self::assertNotFalse($content);
+        self::assertSame(
+            [
+                'name' => 'feature_1',
+                'enabled' => true,
+                'description' => 'fooBar',
             ],
             json_decode($content, true)
         );

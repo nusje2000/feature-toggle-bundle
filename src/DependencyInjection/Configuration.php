@@ -47,7 +47,16 @@ final class Configuration implements ConfigurationInterface
         $environment = $root->children()->arrayNode('environment')->canBeEnabled()->children();
         $environment->scalarNode('name')->isRequired();
         $environment->arrayNode('hosts')->requiresAtLeastOneElement()->isRequired()->scalarPrototype();
-        $environment->arrayNode('features')->useAttributeAsKey('name')->booleanPrototype();
+        $features = $environment->arrayNode('features')->useAttributeAsKey('name')->arrayPrototype();
+        $features->beforeNormalization()
+            ->ifTrue(/** @param mixed $v */
+                function ($v) {
+                    return is_bool($v);
+                })->then(function (bool $v) {
+                return ['enabled' => $v];
+            });
+        $features->children()->booleanNode('enabled')->isRequired();
+        $features->children()->scalarNode('description')->defaultNull();
 
         $accessControl = $environment->arrayNode('access_control')->cannotBeOverwritten()->arrayPrototype()->children();
         $accessControl->scalarNode('path')->defaultNull();

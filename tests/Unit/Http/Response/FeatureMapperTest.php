@@ -22,6 +22,10 @@ final class FeatureMapperTest extends TestCase
             new SimpleFeature('feature_1', State::DISABLED()),
             FeatureMapper::map(['name' => 'feature_1', 'enabled' => false])
         );
+        self::assertEquals(
+            new SimpleFeature('feature_1', State::ENABLED(), 'fooBar'),
+            FeatureMapper::map(['name' => 'feature_1', 'enabled' => true, 'description' => 'fooBar'])
+        );
     }
 
     public function testMapWithMissingName(): void
@@ -46,5 +50,11 @@ final class FeatureMapperTest extends TestCase
     {
         $this->expectExceptionObject(InvalidResponse::invalidKeyType('enabled', 'bool', 1));
         FeatureMapper::map(['name' => 'feature_1', 'enabled' => 1]);
+    }
+
+    public function testMapWithInvalidDescription(): void
+    {
+        $this->expectExceptionObject(InvalidResponse::invalidKeyType('description', 'string|null', []));
+        FeatureMapper::map(['name' => 'feature_1', 'enabled' => true, 'description' => []]);
     }
 }

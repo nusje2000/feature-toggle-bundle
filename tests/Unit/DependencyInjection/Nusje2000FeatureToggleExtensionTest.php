@@ -134,6 +134,10 @@ final class Nusje2000FeatureToggleExtensionTest extends TestCase
                         'enabled_feature' => true,
                         'disabled_feature' => false,
                         'overwriten_feature' => false,
+                        'descriptive_feature' => [
+                            'enabled' => true,
+                            'description' => 'fooBar',
+                        ],
                     ],
                 ],
             ],
@@ -160,9 +164,10 @@ final class Nusje2000FeatureToggleExtensionTest extends TestCase
         self::assertEquals(['localhost'], $container->getParameter('nusje2000_feature_toggle.hosts'));
 
         self::assertEquals([
-            'enabled_feature' => true,
-            'disabled_feature' => false,
-            'overwriten_feature' => true,
+            'enabled_feature' => ['enabled' => true, 'description' => null],
+            'disabled_feature' => ['enabled' => false, 'description' => null],
+            'overwriten_feature' => ['enabled' => true, 'description' => null],
+            'descriptive_feature' => ['enabled' => true, 'description' => 'fooBar'],
         ], $container->getParameter('nusje2000_feature_toggle.feature_defaults'));
 
         /** @var EnvironmentRepository $repository */
@@ -177,6 +182,7 @@ final class Nusje2000FeatureToggleExtensionTest extends TestCase
                     new SimpleFeature('enabled_feature', State::ENABLED()),
                     new SimpleFeature('disabled_feature', State::DISABLED()),
                     new SimpleFeature('overwriten_feature', State::ENABLED()),
+                    new SimpleFeature('descriptive_feature', State::ENABLED(), 'fooBar'),
                 ]
             ),
         ], $environments);
@@ -188,6 +194,7 @@ final class Nusje2000FeatureToggleExtensionTest extends TestCase
                 new SimpleFeature('enabled_feature', State::ENABLED()),
                 new SimpleFeature('disabled_feature', State::DISABLED()),
                 new SimpleFeature('overwriten_feature', State::ENABLED()),
+                new SimpleFeature('descriptive_feature', State::ENABLED(), 'fooBar'),
             ]
         ), $container->get('nusje2000_feature_toggle.default_environment'));
 

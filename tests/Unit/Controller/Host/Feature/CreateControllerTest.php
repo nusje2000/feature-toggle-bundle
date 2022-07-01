@@ -31,6 +31,22 @@ final class CreateControllerTest extends TestCase
         $controller($request, 'environment');
     }
 
+    public function testInvokeWithDescription(): void
+    {
+        $repository = $this->createMock(FeatureRepository::class);
+        $repository->expects(self::once())->method('add')->with(
+            'environment',
+            new SimpleFeature('feature_1', State::ENABLED(), 'fooBar')
+        );
+
+        $controller = new CreateController(new RequestParser(), $repository);
+
+        $request = $this->createStub(Request::class);
+        $request->method('getContent')->willReturn('{"name": "feature_1", "enabled": true, "description": "fooBar"}');
+
+        $controller($request, 'environment');
+    }
+
     public function testInvokeWithMissingName(): void
     {
         $repository = $this->createMock(FeatureRepository::class);
@@ -57,6 +73,21 @@ final class CreateControllerTest extends TestCase
 
         $this->expectException(BadRequestHttpException::class);
         $this->expectExceptionMessage('Missing/Invalid feature state, please provide a boolean value for the "enabled" key.');
+
+        $controller($request, 'environment');
+    }
+
+    public function testInvokeWithInvalidDescription(): void
+    {
+        $repository = $this->createMock(FeatureRepository::class);
+
+        $controller = new CreateController(new RequestParser(), $repository);
+
+        $request = $this->createStub(Request::class);
+        $request->method('getContent')->willReturn('{"name": "feature_1", "enabled": false, "description": []}');
+
+        $this->expectException(BadRequestHttpException::class);
+        $this->expectExceptionMessage('Invalid feature description, please provide a string or null value for the "description" key, or exclude the value from the json.');
 
         $controller($request, 'environment');
     }

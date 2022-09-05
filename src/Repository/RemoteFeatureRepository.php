@@ -71,6 +71,7 @@ final class RemoteFeatureRepository implements FeatureRepository
             'json' => [
                 'name' => $feature->name(),
                 'enabled' => $feature->state()->isEnabled(),
+                'description' => $feature->description(),
             ],
         ]);
 
@@ -90,6 +91,7 @@ final class RemoteFeatureRepository implements FeatureRepository
         $response = $this->client->request(Request::METHOD_PUT, $this->basePath . sprintf('/%s/%s', $environment, $feature->name()), [
             'json' => [
                 'enabled' => $feature->state()->isEnabled(),
+                'description' => $feature->description(),
             ],
         ]);
         $this->assertResponseStatus($response, [Response::HTTP_OK, Response::HTTP_NOT_FOUND]);

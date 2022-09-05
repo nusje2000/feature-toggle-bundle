@@ -41,7 +41,7 @@ final class Configuration implements ConfigurationInterface
          * @psalm-suppress MixedArgument
          * @psalm-suppress TooFewArguments
          */
-        $remote->scalarNode('cache_store')->setDeprecated(...$this->getDeprecationParameters('1.1.1'))->defaultNull(); // @phpstan-ignore-line
+        $remote->scalarNode('cache_store')->setDeprecated(...$this->getDeprecationParameters('1.1.1'))->defaultNull();
         $remote->scalarNode('base_path')->defaultValue('/api/feature-toggle');
 
         $environment = $root->children()->arrayNode('environment')->canBeEnabled()->children();

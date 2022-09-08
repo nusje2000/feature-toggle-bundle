@@ -41,7 +41,7 @@ final class Configuration implements ConfigurationInterface
          * @psalm-suppress MixedArgument
          * @psalm-suppress TooFewArguments
          */
-        $remote->scalarNode('cache_store')->setDeprecated(...$this->getDeprecationParameters('1.1.1'))->defaultNull();
+        $remote->scalarNode('cache_store')->setDeprecated('nusje2000/feature-toggle-bundle', '1.1.1')->defaultNull();
         $remote->scalarNode('base_path')->defaultValue('/api/feature-toggle');
 
         $environment = $root->children()->arrayNode('environment')->canBeEnabled()->children();
@@ -69,16 +69,5 @@ final class Configuration implements ConfigurationInterface
         $root->children()->scalarNode('logger')->defaultNull();
 
         return $treeBuilder;
-    }
-
-    /**
-     * @return array{0: string, 1: string}
-     */
-    private function getDeprecationParameters(string $version): array
-    {
-        return [
-            'nusje2000/feature-toggle-bundle',
-            $version,
-        ];
     }
 }

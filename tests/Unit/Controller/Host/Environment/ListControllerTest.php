@@ -24,12 +24,14 @@ final class ListControllerTest extends TestCase
             ], [
                 new SimpleFeature('feature_1', State::ENABLED()),
                 new SimpleFeature('feature_2', State::DISABLED()),
+                new SimpleFeature('feature_3', State::DISABLED(), 'FooBar'),
             ]),
             new SimpleEnvironment('env_2', [
                 'env_2.host.com',
             ], [
                 new SimpleFeature('feature_2', State::ENABLED()),
                 new SimpleFeature('feature_3', State::DISABLED()),
+                new SimpleFeature('feature_4', State::DISABLED(), 'FooBar'),
             ]),
         ]);
 
@@ -52,10 +54,17 @@ final class ListControllerTest extends TestCase
                         [
                             'name' => 'feature_1',
                             'enabled' => true,
+                            'description' => null,
                         ],
                         [
                             'name' => 'feature_2',
                             'enabled' => false,
+                            'description' => null,
+                        ],
+                        [
+                            'name' => 'feature_3',
+                            'enabled' => false,
+                            'description' => 'FooBar',
                         ],
                     ],
                 ],
@@ -68,10 +77,17 @@ final class ListControllerTest extends TestCase
                         [
                             'name' => 'feature_2',
                             'enabled' => true,
+                            'description' => null,
                         ],
                         [
                             'name' => 'feature_3',
                             'enabled' => false,
+                            'description' => null,
+                        ],
+                        [
+                            'name' => 'feature_4',
+                            'enabled' => false,
+                            'description' => 'FooBar',
                         ],
                     ],
                 ],

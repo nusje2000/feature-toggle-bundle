@@ -33,6 +33,7 @@ final class ViewController
                     return [
                         'name' => $feature->name(),
                         'enabled' => $feature->state()->isEnabled(),
+                        'description' => $feature->description(),
                     ];
                 },
                 array_values($environment->features())

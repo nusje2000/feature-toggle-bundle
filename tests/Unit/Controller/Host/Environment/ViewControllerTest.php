@@ -23,6 +23,7 @@ final class ViewControllerTest extends TestCase
         ], [
             new SimpleFeature('feature_1', State::ENABLED()),
             new SimpleFeature('feature_2', State::DISABLED()),
+            new SimpleFeature('feature_3', State::DISABLED(), 'FooBar'),
         ]));
 
         $controller = new ViewController($repository);
@@ -43,10 +44,17 @@ final class ViewControllerTest extends TestCase
                     [
                         'name' => 'feature_1',
                         'enabled' => true,
+                        'description' => null
                     ],
                     [
                         'name' => 'feature_2',
                         'enabled' => false,
+                        'description' => null
+                    ],
+                    [
+                        'name' => 'feature_3',
+                        'enabled' => false,
+                        'description' => 'FooBar'
                     ],
                 ],
             ],

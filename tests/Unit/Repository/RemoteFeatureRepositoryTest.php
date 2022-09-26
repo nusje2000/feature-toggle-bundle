@@ -8,6 +8,7 @@ use Nusje2000\FeatureToggleBundle\Exception\DuplicateFeature;
 use Nusje2000\FeatureToggleBundle\Exception\Http\InvalidResponse;
 use Nusje2000\FeatureToggleBundle\Exception\UndefinedEnvironment;
 use Nusje2000\FeatureToggleBundle\Exception\UndefinedFeature;
+use Nusje2000\FeatureToggleBundle\Feature\Feature;
 use Nusje2000\FeatureToggleBundle\Feature\SimpleFeature;
 use Nusje2000\FeatureToggleBundle\Feature\State;
 use Nusje2000\FeatureToggleBundle\Repository\RemoteFeatureRepository;
@@ -129,21 +130,58 @@ final class RemoteFeatureRepositoryTest extends TestCase
         $repository->exists('environment', 'feature');
     }
 
-    public function testAdd(): void
+    /**
+     * @param list<mixed> $expectedWith
+     *
+     * @dataProvider addProvider
+     */
+    public function testAdd(Feature $feature, array $expectedWith): void
     {
         $client = $this->createMock(HttpClientInterface::class);
         $repository = new RemoteFeatureRepository($client, '/base-path');
 
         $response = $this->createResponse(Response::HTTP_OK);
 
-        $client->expects(self::once())->method('request')->with(Request::METHOD_POST, '/base-path/environment/create-feature', [
-            'json' => [
-                'name' => 'new-feature',
-                'enabled' => false,
-            ],
-        ])->willReturn($response);
+        $client->expects(self::once())->method('request')->with(...$expectedWith)->willReturn($response);
 
-        $repository->add('environment', new SimpleFeature('new-feature', State::DISABLED()));
+        $repository->add('environment', $feature);
+    }
+
+    /**
+     * @return iterable<string, array{0: Feature, 1: list<mixed>}>
+     */
+    public function addProvider(): iterable
+    {
+        return [
+            'feature_without_description' => [
+                new SimpleFeature('new-feature', State::DISABLED()),
+                [
+                    Request::METHOD_POST,
+                    '/base-path/environment/create-feature',
+                    [
+                        'json' => [
+                            'name' => 'new-feature',
+                            'enabled' => false,
+                            'description' => null,
+                        ],
+                    ],
+                ],
+            ],
+            'feature_with_description' => [
+                new SimpleFeature('new-feature', State::DISABLED(), 'FooBar'),
+                [
+                    Request::METHOD_POST,
+                    '/base-path/environment/create-feature',
+                    [
+                        'json' => [
+                            'name' => 'new-feature',
+                            'enabled' => false,
+                            'description' => 'FooBar',
+                        ],
+                    ],
+                ],
+            ],
+        ];
     }
 
     public function testAddInUndefinedEnvironment(): void
@@ -189,20 +227,56 @@ final class RemoteFeatureRepositoryTest extends TestCase
         $repository->add('environment', new SimpleFeature('feature', State::ENABLED()));
     }
 
-    public function testUpdate(): void
+    /**
+     * @param list<mixed> $expectedWith
+     *
+     * @dataProvider updateProvider
+     */
+    public function testUpdate(Feature $feature, array $expectedWith): void
     {
         $client = $this->createMock(HttpClientInterface::class);
         $repository = new RemoteFeatureRepository($client, '/base-path');
 
         $response = $this->createResponse(Response::HTTP_OK);
 
-        $client->expects(self::once())->method('request')->with(Request::METHOD_PUT, '/base-path/environment/existing-feature', [
-            'json' => [
-                'enabled' => true,
-            ],
-        ])->willReturn($response);
+        $client->expects(self::once())->method('request')->with(...$expectedWith)->willReturn($response);
 
-        $repository->update('environment', new SimpleFeature('existing-feature', State::ENABLED()));
+        $repository->update('environment', $feature);
+    }
+
+    /**
+     * @return iterable<string, array{0: Feature, 1: list<mixed>}>
+     */
+    public function updateProvider(): iterable
+    {
+        return [
+            'update_with_description' => [
+                new SimpleFeature('existing-feature', State::ENABLED()),
+                [
+                    Request::METHOD_PUT,
+                    '/base-path/environment/existing-feature',
+                    [
+                        'json' => [
+                            'enabled' => true,
+                            'description' => null,
+                        ],
+                    ],
+                ],
+            ],
+            'update_without_description' => [
+                new SimpleFeature('existing-feature', State::ENABLED(), 'FooBar'),
+                [
+                    Request::METHOD_PUT,
+                    '/base-path/environment/existing-feature',
+                    [
+                        'json' => [
+                            'enabled' => true,
+                            'description' => 'FooBar',
+                        ],
+                    ],
+                ],
+            ],
+        ];
     }
 
     public function testUpdateUndefinedFeature(): void

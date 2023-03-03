@@ -28,6 +28,7 @@ final class TwigExtension extends AbstractExtension
         return [
             new TwigFunction('is_feature_enabled', [$this->featureToggle, 'isEnabled']),
             new TwigFunction('is_feature_disabled', [$this->featureToggle, 'isDisabled']),
+            new TwigFunction('feature_exists', [$this->featureToggle, 'exists']),
         ];
     }
 }

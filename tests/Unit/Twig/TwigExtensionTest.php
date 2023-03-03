@@ -15,12 +15,14 @@ final class TwigExtensionTest extends TestCase
         $toggle = $this->createMock(FeatureToggle::class);
         $toggle->method('isEnabled')->with('feature')->willReturn(true);
         $toggle->method('isDisabled')->with('feature')->willReturn(false);
+        $toggle->method('exists')->with('feature')->willReturn(true);
 
         $functions = (new TwigExtension($toggle))->getFunctions();
 
-        self::assertCount(2, $functions);
+        self::assertCount(3, $functions);
         self::assertArrayHasKey(0, $functions);
         self::assertArrayHasKey(1, $functions);
+        self::assertArrayHasKey(2, $functions);
 
         $function = $functions[0];
         self::assertEquals('is_feature_enabled', $function->getName());
@@ -35,5 +37,12 @@ final class TwigExtensionTest extends TestCase
         self::assertEquals([$toggle, 'isDisabled'], $callable);
         self::assertIsCallable($callable);
         self::assertFalse($callable('feature'));
+
+        $function = $functions[2];
+        self::assertEquals('feature_exists', $function->getName());
+        $callable = $function->getCallable();
+        self::assertEquals([$toggle, 'exists'], $callable);
+        self::assertIsCallable($callable);
+        self::assertTrue($callable('feature'));
     }
 }

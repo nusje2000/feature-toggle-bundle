@@ -19,7 +19,12 @@ use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpClient\CachingHttpClient;
-use Symfony\Component\HttpFoundation\RequestMatcher;
+use Symfony\Component\HttpFoundation\ChainRequestMatcher;
+use Symfony\Component\HttpFoundation\RequestMatcher\HostRequestMatcher;
+use Symfony\Component\HttpFoundation\RequestMatcher\IpsRequestMatcher;
+use Symfony\Component\HttpFoundation\RequestMatcher\MethodRequestMatcher;
+use Symfony\Component\HttpFoundation\RequestMatcher\PathRequestMatcher;
+use Symfony\Component\HttpFoundation\RequestMatcher\PortRequestMatcher;
 
 final class Nusje2000FeatureToggleExtension extends Extension
 {
@@ -173,16 +178,10 @@ final class Nusje2000FeatureToggleExtension extends Extension
             }
 
             $container->setDefinition($requestMatcherId, new Definition(
-                RequestMatcher::class,
+                ChainRequestMatcher::class,
                 [
-                    $pattern['path'],
-                    $pattern['host'],
-                    $pattern['methods'],
-                    $pattern['ips'],
-                    [],
-                    null,
-                    $pattern['port'],
-                ]
+                    $this->getRequestMatchersFromPattern($pattern),
+                ],
             ));
 
             $container->setDefinition($patternId, new Definition(
@@ -331,5 +330,68 @@ final class Nusje2000FeatureToggleExtension extends Extension
 
             $builder->setDefinition('nusje2000_feature_toggle.repository.environment.fallback', $definition);
         }
+    }
+
+    /**
+     * @param array{
+     *         path: string|null,
+     *         host: string|null,
+     *         port: int|null,
+     *         ips: list<string>,
+     *         methods: list<string>,
+     *         features: array<string, bool>
+     *     } $pattern
+     *
+     * @return list<Definition>
+     */
+    private function getRequestMatchersFromPattern(array $pattern): array
+    {
+        $matchers = [];
+        if (is_string($pattern['path'])) {
+            $matchers[] = new Definition(
+                PathRequestMatcher::class,
+                [
+                    $pattern['path'],
+                ],
+            );
+        }
+
+        if (is_string($pattern['host'])) {
+            $matchers[] = new Definition(
+                HostRequestMatcher::class,
+                [
+                    $pattern['host'],
+                ],
+            );
+        }
+
+        if (is_int($pattern['port'])) {
+            $matchers[] = new Definition(
+                PortRequestMatcher::class,
+                [
+                    $pattern['port'],
+                ],
+            );
+        }
+
+        if (0 !== count($pattern['methods'])) {
+            $matchers[] = new Definition(
+                MethodRequestMatcher::class,
+                [
+                    $pattern['methods'],
+                ],
+            );
+        }
+
+        if (0 !== count($pattern['ips'])) {
+            $matchers[] = new Definition(
+                IpsRequestMatcher::class,
+                [
+                    $pattern['ips'],
+                ],
+            );
+        }
+
+        return $matchers;
     }
 }

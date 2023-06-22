@@ -12,14 +12,14 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 final class RequestSubscriber implements EventSubscriberInterface
 {
-    /**
-     * @var RequestValidator
-     */
-    private $validator;
+    private RequestValidator $validator;
 
-    public function __construct(RequestValidator $validator)
+    private ?string $errorController;
+
+    public function __construct(RequestValidator $validator, ?string $errorController = null)
     {
         $this->validator = $validator;
+        $this->errorController = $errorController;
     }
 
     /**
@@ -34,6 +34,12 @@ final class RequestSubscriber implements EventSubscriberInterface
 
     public function validateAccess(RequestEvent $event): void
     {
+        /** @var string|null $targetController */
+        $targetController = $event->getRequest()->attributes->get('_controller');
+        if ($this->errorController === $targetController) {
+            return;
+        }
+
         try {
             $this->validator->validate($event->getRequest());
         } catch (UnmetRequirement $exception) {

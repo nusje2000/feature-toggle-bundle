@@ -123,6 +123,7 @@ final class Nusje2000FeatureToggleExtensionTest extends TestCase
     public function testLoadWithDefinedEnvironmentConfiguration(): void
     {
         $container = new ContainerBuilder();
+        $container->setParameter('kernel.error_controller', null);
 
         $extension = new Nusje2000FeatureToggleExtension();
         $extension->load([

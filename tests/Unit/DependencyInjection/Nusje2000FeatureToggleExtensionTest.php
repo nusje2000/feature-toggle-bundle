@@ -42,7 +42,12 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpClient\ScopingHttpClient;
-use Symfony\Component\HttpFoundation\RequestMatcher;
+use Symfony\Component\HttpFoundation\ChainRequestMatcher;
+use Symfony\Component\HttpFoundation\RequestMatcher\HostRequestMatcher;
+use Symfony\Component\HttpFoundation\RequestMatcher\IpsRequestMatcher;
+use Symfony\Component\HttpFoundation\RequestMatcher\MethodRequestMatcher;
+use Symfony\Component\HttpFoundation\RequestMatcher\PathRequestMatcher;
+use Symfony\Component\HttpFoundation\RequestMatcher\PortRequestMatcher;
 use Symfony\Component\HttpKernel\HttpCache\StoreInterface;
 
 final class Nusje2000FeatureToggleExtensionTest extends TestCase
@@ -231,19 +236,32 @@ final class Nusje2000FeatureToggleExtensionTest extends TestCase
 
         $expectedMap = new AccessMap();
         $expectedMap->add(new RequestMatcherPattern(
-            new RequestMatcher('^/feature-1-protected', null, [], ['127.0.0.1'], [], null, 8080),
+            new ChainRequestMatcher([
+                new PathRequestMatcher('^/feature-1-protected'),
+                new PortRequestMatcher(8080),
+                new IpsRequestMatcher(['127.0.0.1']),
+            ]),
             [new Requirement('feature_1', State::ENABLED())]
         ));
         $expectedMap->add(new RequestMatcherPattern(
-            new RequestMatcher('^/feature-2-protected', null, [], ['127.0.0.1'], [], null, null),
+            new ChainRequestMatcher([
+                new PathRequestMatcher('^/feature-2-protected'),
+                new IpsRequestMatcher(['127.0.0.1']),
+            ]),
             [new Requirement('feature_2', State::ENABLED())]
         ));
         $expectedMap->add(new RequestMatcherPattern(
-            new RequestMatcher('^/feature-3-protected', 'symfony\.com$', [], [], [], null, null),
+            new ChainRequestMatcher([
+                new PathRequestMatcher('^/feature-3-protected'),
+                new HostRequestMatcher('symfony\.com$'),
+            ]),
             [new Requirement('feature_3', State::DISABLED())]
         ));
         $expectedMap->add(new RequestMatcherPattern(
-            new RequestMatcher('^/feature-4-and-5-protected', null, ['POST', 'PUT'], [], [], null, null),
+            new ChainRequestMatcher([
+                new PathRequestMatcher('^/feature-4-and-5-protected'),
+                new MethodRequestMatcher(['POST', 'PUT']),
+            ]),
             [new Requirement('feature_4', State::DISABLED()), new Requirement('feature_5', State::ENABLED())]
         ));
 
@@ -471,7 +489,7 @@ final class Nusje2000FeatureToggleExtensionTest extends TestCase
 
         $extension = new Nusje2000FeatureToggleExtension();
         $this->expectException(InvalidArgumentException::class);
-        $this->expectDeprecationMessage('Only one of ["service", "static", "remote"] can be configured');
+        $this->expectExceptionMessage('Only one of ["service", "static", "remote"] can be configured');
         $extension->load([
             [
                 'repository' => [

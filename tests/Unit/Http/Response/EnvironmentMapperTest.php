@@ -9,7 +9,7 @@ use Nusje2000\FeatureToggleBundle\Exception\Http\InvalidResponse;
 use Nusje2000\FeatureToggleBundle\Feature\SimpleFeature;
 use Nusje2000\FeatureToggleBundle\Feature\State;
 use Nusje2000\FeatureToggleBundle\Http\Response\EnvironmentMapper;
-use PHPStan\Testing\TestCase;
+use PHPUnit\Framework\TestCase;
 
 final class EnvironmentMapperTest extends TestCase
 {

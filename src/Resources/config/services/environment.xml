@@ -35,6 +35,7 @@
 
         <service id="nusje2000_feature_toggle.subscriber.request" class="Nusje2000\FeatureToggleBundle\Subscriber\RequestSubscriber">
             <argument type="service" id="nusje2000_feature_toggle.access_control.request_validator"/>
+            <argument type="string" on-invalid="null">%kernel.error_controller%</argument>
 
             <tag name="kernel.event_subscriber"/>
         </service>

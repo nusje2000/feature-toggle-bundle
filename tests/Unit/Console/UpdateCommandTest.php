@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Nusje2000\FeatureToggleBundle\Tests\Unit\Console;
 
+use Generator;
 use Nusje2000\FeatureToggleBundle\Cache\Invalidator;
 use Nusje2000\FeatureToggleBundle\Console\UpdateCommand;
 use Nusje2000\FeatureToggleBundle\Environment\SimpleEnvironment;
@@ -30,10 +31,19 @@ final class UpdateCommandTest extends TestCase
 
         $featureRepository = $this->createMock(FeatureRepository::class);
         $featureRepository->method('exists')->willReturn(false);
-        $featureRepository->expects(self::exactly(2))->method('add')->withConsecutive(
-            ['environment', new SimpleFeature('enabled_feature', State::ENABLED())],
-            ['environment', new SimpleFeature('disabled_feature', State::DISABLED())]
-        );
+
+        $expectedAddedFeaturesGenerator = (static function (): Generator {
+            yield ['environment', new SimpleFeature('enabled_feature', State::ENABLED())];
+            yield ['environment', new SimpleFeature('disabled_feature', State::DISABLED())];
+        })();
+        $featureRepository->expects(self::exactly(2))
+            ->method('add')
+            ->willReturnCallback(static function (mixed ...$args) use ($expectedAddedFeaturesGenerator) {
+                $expectedArguments = $expectedAddedFeaturesGenerator->current();
+                self::assertEquals($expectedArguments, $args);
+
+                $expectedAddedFeaturesGenerator->next();
+            });
 
         $invalidator = $this->createMock(Invalidator::class);
         $invalidator->expects(self::once())->method('invalidate');
@@ -65,9 +75,18 @@ final class UpdateCommandTest extends TestCase
 
         $featureRepository = $this->createMock(FeatureRepository::class);
         $featureRepository->method('exists')->willReturnOnConsecutiveCalls(true, false);
-        $featureRepository->expects(self::once())->method('add')->withConsecutive(
-            ['environment', new SimpleFeature('disabled_feature', State::DISABLED())]
-        );
+
+        $expectedAddedFeaturesGenerator = (static function (): Generator {
+            yield ['environment', new SimpleFeature('disabled_feature', State::DISABLED())];
+        })();
+        $featureRepository->expects(self::once())
+            ->method('add')
+            ->willReturnCallback(static function (mixed ...$args) use ($expectedAddedFeaturesGenerator) {
+                $expectedArguments = $expectedAddedFeaturesGenerator->current();
+                self::assertEquals($expectedArguments, $args);
+
+                $expectedAddedFeaturesGenerator->next();
+            });
 
         $invalidator = $this->createMock(Invalidator::class);
         $invalidator->expects(self::once())->method('invalidate');

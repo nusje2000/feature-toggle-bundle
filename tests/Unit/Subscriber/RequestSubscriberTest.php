@@ -27,7 +27,7 @@ final class RequestSubscriberTest extends TestCase
         $validator = $this->createMock(RequestValidator::class);
         $validator->expects(self::once())->method('validate')->with($request);
 
-        $subscriber = new RequestSubscriber($validator);
+        $subscriber = new RequestSubscriber($validator, 'error_controller');
         $subscriber->validateAccess(new RequestEvent($this->createStub(KernelInterface::class), $request, null));
     }
 }

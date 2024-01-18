@@ -96,7 +96,7 @@ final class UpdateCommand extends Command
 
         $environmentExists = $this->environmentRepository->exists($this->defaultEnvironment->name());
         if (!$environmentExists) {
-            $actions[] = sprintf(sprintf('Create environment "%s".', $this->defaultEnvironment->name()));
+            $actions[] = sprintf('Create environment "%s".', $this->defaultEnvironment->name());
         }
 
         foreach ($this->defaultEnvironment->features() as $feature) {
@@ -104,7 +104,7 @@ final class UpdateCommand extends Command
                 continue;
             }
 
-            $actions[] = sprintf(sprintf('Create feature "%s" with default state "%s".', $feature->name(), $feature->state()->getKey()));
+            $actions[] = sprintf('Create feature "%s" with default state "%s".', $feature->name(), $feature->state()->getKey());
         }
 
         if (count($actions) < 1) {

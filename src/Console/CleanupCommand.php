@@ -15,8 +15,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 final class CleanupCommand extends Command
 {
-    protected static $defaultName = 'feature-toggle:cleanup';
-
     /**
      * @var FeatureRepository
      */
@@ -46,6 +44,7 @@ final class CleanupCommand extends Command
 
     protected function configure(): void
     {
+        $this->setName('feature-toggle:cleanup');
         $this->setDescription('Removes redundant features from the repository.');
         $this->addOption('dry-run', 'd', InputOption::VALUE_NONE, 'Will only output a list of actions that will be taken.');
     }

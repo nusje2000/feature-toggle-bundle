@@ -17,8 +17,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 final class UpdateCommand extends Command
 {
-    protected static $defaultName = 'feature-toggle:update';
-
     /**
      * @var EnvironmentRepository
      */
@@ -55,6 +53,7 @@ final class UpdateCommand extends Command
 
     protected function configure(): void
     {
+        $this->setName('feature-toggle:update');
         $this->setDescription('Registers the environment and new features to the repository.');
         $this->addOption('dry-run', 'd', InputOption::VALUE_NONE, 'Will only output a list of actions that will be taken.');
     }

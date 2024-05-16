@@ -21,8 +21,8 @@ final class RepositoryFeatureToggleTest extends TestCase
     {
         $toggle = $this->createFeatureToggle();
 
-        self::assertEquals(new SimpleFeature('disabled-feature', State::DISABLED()), $toggle->get('disabled-feature'));
-        self::assertEquals(new SimpleFeature('enabled-feature', State::ENABLED()), $toggle->get('enabled-feature'));
+        self::assertEquals(new SimpleFeature('disabled-feature', State::DISABLED), $toggle->get('disabled-feature'));
+        self::assertEquals(new SimpleFeature('enabled-feature', State::ENABLED), $toggle->get('enabled-feature'));
     }
 
     public function testExists(): void
@@ -96,11 +96,11 @@ final class RepositoryFeatureToggleTest extends TestCase
             }
 
             if ('disabled-feature' === $feature) {
-                return new SimpleFeature('disabled-feature', State::DISABLED());
+                return new SimpleFeature('disabled-feature', State::DISABLED);
             }
 
             if ('enabled-feature' === $feature) {
-                return new SimpleFeature('enabled-feature', State::ENABLED());
+                return new SimpleFeature('enabled-feature', State::ENABLED);
             }
 
             throw UndefinedFeature::inEnvironment($environment, $feature);

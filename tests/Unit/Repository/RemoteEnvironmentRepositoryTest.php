@@ -39,7 +39,7 @@ final class RemoteEnvironmentRepositoryTest extends TestCase
 
         $environments = $repository->all();
 
-        self::assertEquals([new SimpleEnvironment('environment_1', ['host'], [new SimpleFeature('feature_1', State::ENABLED())])], $environments);
+        self::assertEquals([new SimpleEnvironment('environment_1', ['host'], [new SimpleFeature('feature_1', State::ENABLED)])], $environments);
     }
 
     public function testAllWithInvalidStatusCode(): void
@@ -71,7 +71,7 @@ final class RemoteEnvironmentRepositoryTest extends TestCase
         $client->expects(self::once())->method('request')->with(Request::METHOD_GET, '/base-path/environment_1')->willReturn($response);
 
         $environment = $repository->find('environment_1');
-        self::assertEquals(new SimpleEnvironment('environment_1', ['host'], [new SimpleFeature('feature_1', State::ENABLED())]), $environment);
+        self::assertEquals(new SimpleEnvironment('environment_1', ['host'], [new SimpleFeature('feature_1', State::ENABLED)]), $environment);
     }
 
     public function testFindUndefinedEnvironment(): void
@@ -162,7 +162,7 @@ final class RemoteEnvironmentRepositoryTest extends TestCase
         );
 
         $this->expectExceptionObject(new FeatureNotSupported('Cannot create an environment with preset features.'));
-        $repository->add(new SimpleEnvironment('new-environment', [], [new SimpleFeature('feature', State::ENABLED())]));
+        $repository->add(new SimpleEnvironment('new-environment', [], [new SimpleFeature('feature', State::ENABLED)]));
     }
 
     public function testAddExistingEnvironment(): void

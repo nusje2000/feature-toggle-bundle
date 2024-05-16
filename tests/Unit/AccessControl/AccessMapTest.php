@@ -18,23 +18,23 @@ final class AccessMapTest extends TestCase
         $request = new Request();
 
         $requirements = [
-            new Requirement('feature_1', State::ENABLED()),
-            new Requirement('feature_2', State::DISABLED()),
+            new Requirement('feature_1', State::ENABLED),
+            new Requirement('feature_2', State::DISABLED),
         ];
 
         $pattern = $this->createPattern(true, $requirements);
 
         $map = new AccessMap();
-        $map->add($this->createPattern(false, [new Requirement('feature_1', State::ENABLED())]));
-        $map->add($this->createPattern(false, [new Requirement('feature_2', State::ENABLED())]));
-        $map->add($this->createPattern(false, [new Requirement('feature_3', State::ENABLED())]));
+        $map->add($this->createPattern(false, [new Requirement('feature_1', State::ENABLED)]));
+        $map->add($this->createPattern(false, [new Requirement('feature_2', State::ENABLED)]));
+        $map->add($this->createPattern(false, [new Requirement('feature_3', State::ENABLED)]));
 
         self::assertEmpty($map->requirements($request));
 
         $map->add($pattern);
         self::assertSame($requirements, $map->requirements($request));
 
-        $map->add($this->createPattern(true, [new Requirement('feature_1', State::ENABLED())]));
+        $map->add($this->createPattern(true, [new Requirement('feature_1', State::ENABLED)]));
         self::assertSame($requirements, $map->requirements($request));
     }
 

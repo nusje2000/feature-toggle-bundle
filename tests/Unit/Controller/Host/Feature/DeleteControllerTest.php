@@ -15,10 +15,10 @@ final class DeleteControllerTest extends TestCase
     public function testInvoke(): void
     {
         $repository = $this->createMock(FeatureRepository::class);
-        $repository->method('find')->willReturn(new SimpleFeature('feature_1', State::ENABLED()));
+        $repository->method('find')->willReturn(new SimpleFeature('feature_1', State::ENABLED));
         $repository->expects(self::once())->method('remove')->with(
             'environment',
-            new SimpleFeature('feature_1', State::ENABLED())
+            new SimpleFeature('feature_1', State::ENABLED)
         );
 
         $controller = new DeleteController($repository);

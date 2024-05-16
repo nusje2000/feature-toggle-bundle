@@ -15,7 +15,7 @@ final class ViewControllerTest extends TestCase
     public function testInvoke(): void
     {
         $repository = $this->createMock(FeatureRepository::class);
-        $repository->method('find')->willReturn(new SimpleFeature('feature_1', State::ENABLED()));
+        $repository->method('find')->willReturn(new SimpleFeature('feature_1', State::ENABLED));
 
         $controller = new ViewController($repository);
 
@@ -36,7 +36,7 @@ final class ViewControllerTest extends TestCase
     public function testInvokeWithDescription(): void
     {
         $repository = $this->createMock(FeatureRepository::class);
-        $repository->method('find')->willReturn(new SimpleFeature('feature_1', State::ENABLED(), 'fooBar'));
+        $repository->method('find')->willReturn(new SimpleFeature('feature_1', State::ENABLED, 'fooBar'));
 
         $controller = new ViewController($repository);
 

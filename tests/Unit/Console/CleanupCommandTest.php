@@ -20,8 +20,8 @@ final class CleanupCommandTest extends TestCase
     {
         $featureRepository = $this->createMock(FeatureRepository::class);
         $featureRepository->method('all')->with('default_environment')->willReturn([
-            new SimpleFeature('feature_1', State::ENABLED()),
-            new SimpleFeature('feature_2', State::DISABLED()),
+            new SimpleFeature('feature_1', State::ENABLED),
+            new SimpleFeature('feature_2', State::DISABLED),
         ]);
         $featureRepository->expects(self::never())->method('remove');
 
@@ -38,12 +38,12 @@ final class CleanupCommandTest extends TestCase
 
     public function testRunWithRemovableFeatures(): void
     {
-        $removableFeature = new SimpleFeature('feature_3', State::DISABLED());
+        $removableFeature = new SimpleFeature('feature_3', State::DISABLED);
 
         $featureRepository = $this->createMock(FeatureRepository::class);
         $featureRepository->method('all')->with('default_environment')->willReturn([
-            new SimpleFeature('feature_1', State::ENABLED()),
-            new SimpleFeature('feature_2', State::DISABLED()),
+            new SimpleFeature('feature_1', State::ENABLED),
+            new SimpleFeature('feature_2', State::DISABLED),
             $removableFeature,
         ]);
         $featureRepository->expects(self::once())->method('remove')->with('default_environment', $removableFeature);
@@ -64,8 +64,8 @@ final class CleanupCommandTest extends TestCase
     {
         $featureRepository = $this->createMock(FeatureRepository::class);
         $featureRepository->method('all')->with('default_environment')->willReturn([
-            new SimpleFeature('feature_1', State::ENABLED()),
-            new SimpleFeature('feature_2', State::DISABLED()),
+            new SimpleFeature('feature_1', State::ENABLED),
+            new SimpleFeature('feature_2', State::DISABLED),
         ]);
         $featureRepository->expects(self::never())->method('remove');
 
@@ -82,12 +82,12 @@ final class CleanupCommandTest extends TestCase
 
     public function testDryRunWithRemovableFeatures(): void
     {
-        $removableFeature = new SimpleFeature('feature_3', State::DISABLED());
+        $removableFeature = new SimpleFeature('feature_3', State::DISABLED);
 
         $featureRepository = $this->createMock(FeatureRepository::class);
         $featureRepository->method('all')->with('default_environment')->willReturn([
-            new SimpleFeature('feature_1', State::ENABLED()),
-            new SimpleFeature('feature_2', State::DISABLED()),
+            new SimpleFeature('feature_1', State::ENABLED),
+            new SimpleFeature('feature_2', State::DISABLED),
             $removableFeature,
         ]);
         $featureRepository->expects(self::never())->method('remove');
@@ -114,8 +114,8 @@ final class CleanupCommandTest extends TestCase
     private function createDefaultEnvironment(): Environment
     {
         return new SimpleEnvironment('default_environment', [], [
-            new SimpleFeature('feature_1', State::ENABLED()),
-            new SimpleFeature('feature_2', State::DISABLED()),
+            new SimpleFeature('feature_1', State::ENABLED),
+            new SimpleFeature('feature_2', State::DISABLED),
         ]);
     }
 }

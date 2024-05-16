@@ -17,13 +17,13 @@ final class StateTest extends TestCase
 
     public function testIsEnabled(): void
     {
-        self::assertTrue(State::ENABLED()->isEnabled());
-        self::assertFalse(State::DISABLED()->isEnabled());
+        self::assertTrue(State::ENABLED->isEnabled());
+        self::assertFalse(State::DISABLED->isEnabled());
     }
 
     public function testIsDisabled(): void
     {
-        self::assertFalse(State::ENABLED()->isDisabled());
-        self::assertTrue(State::DISABLED()->isDisabled());
+        self::assertFalse(State::ENABLED->isDisabled());
+        self::assertTrue(State::DISABLED->isDisabled());
     }
 }

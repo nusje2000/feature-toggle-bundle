@@ -20,7 +20,7 @@ final class CreateControllerTest extends TestCase
         $repository = $this->createMock(FeatureRepository::class);
         $repository->expects(self::once())->method('add')->with(
             'environment',
-            new SimpleFeature('feature_1', State::ENABLED())
+            new SimpleFeature('feature_1', State::ENABLED)
         );
 
         $controller = new CreateController(new RequestParser(), $repository);
@@ -36,7 +36,7 @@ final class CreateControllerTest extends TestCase
         $repository = $this->createMock(FeatureRepository::class);
         $repository->expects(self::once())->method('add')->with(
             'environment',
-            new SimpleFeature('feature_1', State::ENABLED(), 'fooBar')
+            new SimpleFeature('feature_1', State::ENABLED, 'fooBar')
         );
 
         $controller = new CreateController(new RequestParser(), $repository);

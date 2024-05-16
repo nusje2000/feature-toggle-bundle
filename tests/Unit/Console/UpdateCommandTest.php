@@ -33,8 +33,8 @@ final class UpdateCommandTest extends TestCase
         $featureRepository->method('exists')->willReturn(false);
 
         $expectedAddedFeaturesGenerator = (static function (): Generator {
-            yield ['environment', new SimpleFeature('enabled_feature', State::ENABLED())];
-            yield ['environment', new SimpleFeature('disabled_feature', State::DISABLED())];
+            yield ['environment', new SimpleFeature('enabled_feature', State::ENABLED)];
+            yield ['environment', new SimpleFeature('disabled_feature', State::DISABLED)];
         })();
         $featureRepository->expects(self::exactly(2))
             ->method('add')
@@ -77,7 +77,7 @@ final class UpdateCommandTest extends TestCase
         $featureRepository->method('exists')->willReturnOnConsecutiveCalls(true, false);
 
         $expectedAddedFeaturesGenerator = (static function (): Generator {
-            yield ['environment', new SimpleFeature('disabled_feature', State::DISABLED())];
+            yield ['environment', new SimpleFeature('disabled_feature', State::DISABLED)];
         })();
         $featureRepository->expects(self::once())
             ->method('add')
@@ -174,8 +174,8 @@ final class UpdateCommandTest extends TestCase
     private function command(EnvironmentRepository $environmentRepository, FeatureRepository $featureRepository, Invalidator $invalidator): UpdateCommand
     {
         return new UpdateCommand($environmentRepository, $featureRepository, $invalidator, new SimpleEnvironment('environment', ['host_1', 'host_2'], [
-            new SimpleFeature('enabled_feature', State::ENABLED()),
-            new SimpleFeature('disabled_feature', State::DISABLED()),
+            new SimpleFeature('enabled_feature', State::ENABLED),
+            new SimpleFeature('disabled_feature', State::DISABLED),
         ]));
     }
 }

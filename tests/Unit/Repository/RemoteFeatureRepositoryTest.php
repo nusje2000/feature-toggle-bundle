@@ -36,7 +36,7 @@ final class RemoteFeatureRepositoryTest extends TestCase
         $client->expects(self::once())->method('request')->with(Request::METHOD_GET, '/base-path/environment')->willReturn($response);
 
         $environment = $repository->all('environment');
-        self::assertEquals(['feature' => new SimpleFeature('feature', State::ENABLED())], $environment);
+        self::assertEquals(['feature' => new SimpleFeature('feature', State::ENABLED)], $environment);
     }
 
     public function testAllWithUnexpectedStatusCode(): void
@@ -64,7 +64,7 @@ final class RemoteFeatureRepositoryTest extends TestCase
 
         $client->expects(self::once())->method('request')->with(Request::METHOD_GET, '/base-path/environment/feature')->willReturn($response);
 
-        self::assertEquals(new SimpleFeature('feature', State::ENABLED()), $repository->find('environment', 'feature'));
+        self::assertEquals(new SimpleFeature('feature', State::ENABLED), $repository->find('environment', 'feature'));
     }
 
     public function testFindWithUndefinedFeature(): void
@@ -154,7 +154,7 @@ final class RemoteFeatureRepositoryTest extends TestCase
     {
         return [
             'feature_without_description' => [
-                new SimpleFeature('new-feature', State::DISABLED()),
+                new SimpleFeature('new-feature', State::DISABLED),
                 [
                     Request::METHOD_POST,
                     '/base-path/environment/create-feature',
@@ -168,7 +168,7 @@ final class RemoteFeatureRepositoryTest extends TestCase
                 ],
             ],
             'feature_with_description' => [
-                new SimpleFeature('new-feature', State::DISABLED(), 'FooBar'),
+                new SimpleFeature('new-feature', State::DISABLED, 'FooBar'),
                 [
                     Request::METHOD_POST,
                     '/base-path/environment/create-feature',
@@ -194,7 +194,7 @@ final class RemoteFeatureRepositoryTest extends TestCase
         $client->expects(self::once())->method('request')->willReturn($response);
 
         $this->expectExceptionObject(UndefinedEnvironment::create('environment'));
-        $repository->add('environment', new SimpleFeature('new-feature', State::DISABLED()));
+        $repository->add('environment', new SimpleFeature('new-feature', State::DISABLED));
     }
 
     public function testAddWithDefinedFeature(): void
@@ -207,7 +207,7 @@ final class RemoteFeatureRepositoryTest extends TestCase
         $client->expects(self::once())->method('request')->willReturn($response);
 
         $this->expectExceptionObject(DuplicateFeature::inEnvironment('environment', 'existing-feature'));
-        $repository->add('environment', new SimpleFeature('existing-feature', State::DISABLED()));
+        $repository->add('environment', new SimpleFeature('existing-feature', State::DISABLED));
     }
 
     public function testAddWithUnexpectedStatusCode(): void
@@ -224,7 +224,7 @@ final class RemoteFeatureRepositoryTest extends TestCase
             Response::HTTP_NOT_FOUND,
             Response::HTTP_CONFLICT,
         ]));
-        $repository->add('environment', new SimpleFeature('feature', State::ENABLED()));
+        $repository->add('environment', new SimpleFeature('feature', State::ENABLED));
     }
 
     /**
@@ -251,7 +251,7 @@ final class RemoteFeatureRepositoryTest extends TestCase
     {
         return [
             'update_with_description' => [
-                new SimpleFeature('existing-feature', State::ENABLED()),
+                new SimpleFeature('existing-feature', State::ENABLED),
                 [
                     Request::METHOD_PUT,
                     '/base-path/environment/existing-feature',
@@ -264,7 +264,7 @@ final class RemoteFeatureRepositoryTest extends TestCase
                 ],
             ],
             'update_without_description' => [
-                new SimpleFeature('existing-feature', State::ENABLED(), 'FooBar'),
+                new SimpleFeature('existing-feature', State::ENABLED, 'FooBar'),
                 [
                     Request::METHOD_PUT,
                     '/base-path/environment/existing-feature',
@@ -289,7 +289,7 @@ final class RemoteFeatureRepositoryTest extends TestCase
         $client->expects(self::once())->method('request')->willReturn($response);
 
         $this->expectExceptionObject(UndefinedFeature::inEnvironment('environment', 'existing-feature'));
-        $repository->update('environment', new SimpleFeature('existing-feature', State::ENABLED()));
+        $repository->update('environment', new SimpleFeature('existing-feature', State::ENABLED));
     }
 
     public function testUpdateWithUnexpectedStatusCode(): void
@@ -302,7 +302,7 @@ final class RemoteFeatureRepositoryTest extends TestCase
         );
 
         $this->expectExceptionObject(InvalidResponse::unexpectedStatus(Response::HTTP_I_AM_A_TEAPOT, [Response::HTTP_OK, Response::HTTP_NOT_FOUND]));
-        $repository->update('environment', new SimpleFeature('feature', State::ENABLED()));
+        $repository->update('environment', new SimpleFeature('feature', State::ENABLED));
     }
 
     public function testRemove(): void
@@ -314,7 +314,7 @@ final class RemoteFeatureRepositoryTest extends TestCase
 
         $client->expects(self::once())->method('request')->with(Request::METHOD_DELETE, '/base-path/environment/existing-feature')->willReturn($response);
 
-        $repository->remove('environment', new SimpleFeature('existing-feature', State::ENABLED()));
+        $repository->remove('environment', new SimpleFeature('existing-feature', State::ENABLED));
     }
 
     public function testRemoveWithUnexpectedStatusCode(): void
@@ -327,7 +327,7 @@ final class RemoteFeatureRepositoryTest extends TestCase
         );
 
         $this->expectExceptionObject(InvalidResponse::unexpectedStatus(Response::HTTP_I_AM_A_TEAPOT, [Response::HTTP_OK, Response::HTTP_NOT_FOUND]));
-        $repository->update('environment', new SimpleFeature('feature', State::ENABLED()));
+        $repository->update('environment', new SimpleFeature('feature', State::ENABLED));
     }
 
     public function testRemoveUndefinedFeature(): void
@@ -340,7 +340,7 @@ final class RemoteFeatureRepositoryTest extends TestCase
         $client->expects(self::once())->method('request')->willReturn($response);
 
         $this->expectExceptionObject(UndefinedFeature::inEnvironment('environment', 'existing-feature'));
-        $repository->remove('environment', new SimpleFeature('existing-feature', State::ENABLED()));
+        $repository->remove('environment', new SimpleFeature('existing-feature', State::ENABLED));
     }
 
     /**

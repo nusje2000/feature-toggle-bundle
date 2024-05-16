@@ -39,28 +39,28 @@ final class UpdateControllerTest extends TestCase
     {
         return [
             'enable_state' => [
-                new SimpleFeature('feature_1', State::DISABLED(), null),
-                new SimpleFeature('feature_1', State::ENABLED(), null),
+                new SimpleFeature('feature_1', State::DISABLED, null),
+                new SimpleFeature('feature_1', State::ENABLED, null),
                 '{"enabled": true}',
             ],
             'disable_state' => [
-                new SimpleFeature('feature_1', State::ENABLED(), null),
-                new SimpleFeature('feature_1', State::DISABLED(), null),
+                new SimpleFeature('feature_1', State::ENABLED, null),
+                new SimpleFeature('feature_1', State::DISABLED, null),
                 '{"enabled": false}',
             ],
             'only_update_description' => [
-                new SimpleFeature('feature_1', State::DISABLED(), null),
-                new SimpleFeature('feature_1', State::DISABLED(), 'fooBar'),
+                new SimpleFeature('feature_1', State::DISABLED, null),
+                new SimpleFeature('feature_1', State::DISABLED, 'fooBar'),
                 '{"description": "fooBar"}',
             ],
             'update_state_and_description' => [
-                new SimpleFeature('feature_1', State::DISABLED(), null),
-                new SimpleFeature('feature_1', State::ENABLED(), 'fooBar'),
+                new SimpleFeature('feature_1', State::DISABLED, null),
+                new SimpleFeature('feature_1', State::ENABLED, 'fooBar'),
                 '{"enabled": true, "description": "fooBar"}',
             ],
             'update_nothing' => [
-                new SimpleFeature('feature_1', State::ENABLED(), 'fooBar'),
-                new SimpleFeature('feature_1', State::ENABLED(), 'fooBar'),
+                new SimpleFeature('feature_1', State::ENABLED, 'fooBar'),
+                new SimpleFeature('feature_1', State::ENABLED, 'fooBar'),
                 '{}',
             ],
         ];

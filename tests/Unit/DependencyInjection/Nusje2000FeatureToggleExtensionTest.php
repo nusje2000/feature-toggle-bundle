@@ -185,10 +185,10 @@ final class Nusje2000FeatureToggleExtensionTest extends TestCase
                 'some_environment',
                 ['localhost'],
                 [
-                    new SimpleFeature('enabled_feature', State::ENABLED()),
-                    new SimpleFeature('disabled_feature', State::DISABLED()),
-                    new SimpleFeature('overwriten_feature', State::ENABLED()),
-                    new SimpleFeature('descriptive_feature', State::ENABLED(), 'fooBar'),
+                    new SimpleFeature('enabled_feature', State::ENABLED),
+                    new SimpleFeature('disabled_feature', State::DISABLED),
+                    new SimpleFeature('overwriten_feature', State::ENABLED),
+                    new SimpleFeature('descriptive_feature', State::ENABLED, 'fooBar'),
                 ]
             ),
         ], $environments);
@@ -197,10 +197,10 @@ final class Nusje2000FeatureToggleExtensionTest extends TestCase
             'some_environment',
             ['localhost'],
             [
-                new SimpleFeature('enabled_feature', State::ENABLED()),
-                new SimpleFeature('disabled_feature', State::DISABLED()),
-                new SimpleFeature('overwriten_feature', State::ENABLED()),
-                new SimpleFeature('descriptive_feature', State::ENABLED(), 'fooBar'),
+                new SimpleFeature('enabled_feature', State::ENABLED),
+                new SimpleFeature('disabled_feature', State::DISABLED),
+                new SimpleFeature('overwriten_feature', State::ENABLED),
+                new SimpleFeature('descriptive_feature', State::ENABLED, 'fooBar'),
             ]
         ), $container->get('nusje2000_feature_toggle.default_environment'));
 
@@ -241,28 +241,28 @@ final class Nusje2000FeatureToggleExtensionTest extends TestCase
                 new PortRequestMatcher(8080),
                 new IpsRequestMatcher(['127.0.0.1']),
             ]),
-            [new Requirement('feature_1', State::ENABLED())]
+            [new Requirement('feature_1', State::ENABLED)]
         ));
         $expectedMap->add(new RequestMatcherPattern(
             new ChainRequestMatcher([
                 new PathRequestMatcher('^/feature-2-protected'),
                 new IpsRequestMatcher(['127.0.0.1']),
             ]),
-            [new Requirement('feature_2', State::ENABLED())]
+            [new Requirement('feature_2', State::ENABLED)]
         ));
         $expectedMap->add(new RequestMatcherPattern(
             new ChainRequestMatcher([
                 new PathRequestMatcher('^/feature-3-protected'),
                 new HostRequestMatcher('symfony\.com$'),
             ]),
-            [new Requirement('feature_3', State::DISABLED())]
+            [new Requirement('feature_3', State::DISABLED)]
         ));
         $expectedMap->add(new RequestMatcherPattern(
             new ChainRequestMatcher([
                 new PathRequestMatcher('^/feature-4-and-5-protected'),
                 new MethodRequestMatcher(['POST', 'PUT']),
             ]),
-            [new Requirement('feature_4', State::DISABLED()), new Requirement('feature_5', State::ENABLED())]
+            [new Requirement('feature_4', State::DISABLED), new Requirement('feature_5', State::ENABLED)]
         ));
 
         self::assertEquals($container->get('nusje2000_feature_toggle.access_control.access_map'), $expectedMap);

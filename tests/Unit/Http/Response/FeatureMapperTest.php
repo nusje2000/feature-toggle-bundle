@@ -15,15 +15,15 @@ final class FeatureMapperTest extends TestCase
     public function testMap(): void
     {
         self::assertEquals(
-            new SimpleFeature('feature_1', State::ENABLED()),
+            new SimpleFeature('feature_1', State::ENABLED),
             FeatureMapper::map(['name' => 'feature_1', 'enabled' => true])
         );
         self::assertEquals(
-            new SimpleFeature('feature_1', State::DISABLED()),
+            new SimpleFeature('feature_1', State::DISABLED),
             FeatureMapper::map(['name' => 'feature_1', 'enabled' => false])
         );
         self::assertEquals(
-            new SimpleFeature('feature_1', State::ENABLED(), 'fooBar'),
+            new SimpleFeature('feature_1', State::ENABLED, 'fooBar'),
             FeatureMapper::map(['name' => 'feature_1', 'enabled' => true, 'description' => 'fooBar'])
         );
     }

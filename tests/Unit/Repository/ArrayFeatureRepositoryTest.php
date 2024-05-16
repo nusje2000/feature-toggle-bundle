@@ -22,8 +22,8 @@ final class ArrayFeatureRepositoryTest extends TestCase
         $repository = $this->createRepository();
 
         self::assertEquals([
-            'disabled-feature' => new SimpleFeature('disabled-feature', State::ENABLED()),
-            'enabled-feature' => new SimpleFeature('enabled-feature', State::DISABLED()),
+            'disabled-feature' => new SimpleFeature('disabled-feature', State::ENABLED),
+            'enabled-feature' => new SimpleFeature('enabled-feature', State::DISABLED),
         ], $repository->all('existing-env'));
     }
 
@@ -37,8 +37,8 @@ final class ArrayFeatureRepositoryTest extends TestCase
     public function testFind(): void
     {
         $repository = $this->createRepository();
-        self::assertEquals(new SimpleFeature('disabled-feature', State::ENABLED()), $repository->find('existing-env', 'disabled-feature'));
-        self::assertEquals(new SimpleFeature('enabled-feature', State::DISABLED()), $repository->find('existing-env', 'enabled-feature'));
+        self::assertEquals(new SimpleFeature('disabled-feature', State::ENABLED), $repository->find('existing-env', 'disabled-feature'));
+        self::assertEquals(new SimpleFeature('enabled-feature', State::DISABLED), $repository->find('existing-env', 'enabled-feature'));
 
         $this->expectExceptionObject(UndefinedFeature::inEnvironment('existing-env', 'undefined-feature'));
         $repository->find('existing-env', 'undefined-feature');
@@ -73,7 +73,7 @@ final class ArrayFeatureRepositoryTest extends TestCase
         $environmentRepository->method('find')->willReturn($environment);
 
         $repository = $this->createRepository($environmentRepository);
-        $feature = new SimpleFeature('feature_1', State::ENABLED());
+        $feature = new SimpleFeature('feature_1', State::ENABLED);
         $repository->add('existing-env', $feature);
         self::assertTrue($environment->hasFeature($feature));
     }
@@ -85,7 +85,7 @@ final class ArrayFeatureRepositoryTest extends TestCase
         $environmentRepository->method('find')->willReturn($environment);
 
         $repository = $this->createRepository($environmentRepository);
-        $feature = new SimpleFeature('feature_1', State::ENABLED());
+        $feature = new SimpleFeature('feature_1', State::ENABLED);
         $repository->add('existing-env', $feature);
         $this->expectExceptionObject(DuplicateFeature::inEnvironment('existing-env', 'feature_1'));
         $repository->add('existing-env', $feature);
@@ -97,11 +97,11 @@ final class ArrayFeatureRepositoryTest extends TestCase
         $environmentRepository = $this->createMock(EnvironmentRepository::class);
         $environmentRepository->method('find')->willReturn($environment);
 
-        $environment->addFeature(new SimpleFeature('feature_1', State::DISABLED()));
+        $environment->addFeature(new SimpleFeature('feature_1', State::DISABLED));
 
         $repository = $this->createRepository($environmentRepository);
 
-        $repository->update('existing-env', new SimpleFeature('feature_1', State::ENABLED()));
+        $repository->update('existing-env', new SimpleFeature('feature_1', State::ENABLED));
         self::assertTrue($environment->feature('feature_1')->state()->isEnabled());
     }
 
@@ -114,7 +114,7 @@ final class ArrayFeatureRepositoryTest extends TestCase
         $repository = $this->createRepository($environmentRepository);
 
         $this->expectExceptionObject(UndefinedFeature::inEnvironment('existing-env', 'feature_1'));
-        $repository->update('existing-env', new SimpleFeature('feature_1', State::ENABLED()));
+        $repository->update('existing-env', new SimpleFeature('feature_1', State::ENABLED));
     }
 
     public function testRemove(): void
@@ -124,7 +124,7 @@ final class ArrayFeatureRepositoryTest extends TestCase
         $environmentRepository->method('find')->willReturn($environment);
 
         $repository = $this->createRepository($environmentRepository);
-        $feature = new SimpleFeature('feature_1', State::ENABLED());
+        $feature = new SimpleFeature('feature_1', State::ENABLED);
         $environment->addFeature($feature);
         $repository->remove('existing-env', $feature);
         self::assertFalse($environment->hasFeature($feature));
@@ -139,7 +139,7 @@ final class ArrayFeatureRepositoryTest extends TestCase
         $repository = $this->createRepository($environmentRepository);
 
         $this->expectExceptionObject(UndefinedFeature::inEnvironment('existing-env', 'feature_1'));
-        $repository->remove('existing-env', new SimpleFeature('feature_1', State::ENABLED()));
+        $repository->remove('existing-env', new SimpleFeature('feature_1', State::ENABLED));
     }
 
     private function createRepository(?EnvironmentRepository $environmentRepository = null): FeatureRepository
@@ -149,8 +149,8 @@ final class ArrayFeatureRepositoryTest extends TestCase
             $environmentRepository->method('find')->willReturnCallback(static function (string $name) {
                 if ('existing-env' === $name) {
                     return new SimpleEnvironment('existing-env', [], [
-                        new SimpleFeature('disabled-feature', State::ENABLED()),
-                        new SimpleFeature('enabled-feature', State::DISABLED()),
+                        new SimpleFeature('disabled-feature', State::ENABLED),
+                        new SimpleFeature('enabled-feature', State::DISABLED),
                     ]);
                 }
 

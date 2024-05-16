@@ -22,16 +22,16 @@ final class ListControllerTest extends TestCase
                 'internal.host.com',
                 '0.0.0.0',
             ], [
-                new SimpleFeature('feature_1', State::ENABLED()),
-                new SimpleFeature('feature_2', State::DISABLED()),
-                new SimpleFeature('feature_3', State::DISABLED(), 'FooBar'),
+                new SimpleFeature('feature_1', State::ENABLED),
+                new SimpleFeature('feature_2', State::DISABLED),
+                new SimpleFeature('feature_3', State::DISABLED, 'FooBar'),
             ]),
             new SimpleEnvironment('env_2', [
                 'env_2.host.com',
             ], [
-                new SimpleFeature('feature_2', State::ENABLED()),
-                new SimpleFeature('feature_3', State::DISABLED()),
-                new SimpleFeature('feature_4', State::DISABLED(), 'FooBar'),
+                new SimpleFeature('feature_2', State::ENABLED),
+                new SimpleFeature('feature_3', State::DISABLED),
+                new SimpleFeature('feature_4', State::DISABLED, 'FooBar'),
             ]),
         ]);
 

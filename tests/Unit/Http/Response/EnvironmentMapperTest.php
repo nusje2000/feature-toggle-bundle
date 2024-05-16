@@ -20,8 +20,8 @@ final class EnvironmentMapperTest extends TestCase
                 'environment-name',
                 ['0.0.0.0', 'domain', 'www.host.com'],
                 [
-                    new SimpleFeature('feature_1', State::ENABLED()),
-                    new SimpleFeature('feature_2', State::DISABLED()),
+                    new SimpleFeature('feature_1', State::ENABLED),
+                    new SimpleFeature('feature_2', State::DISABLED),
                 ]
             ),
             EnvironmentMapper::map([

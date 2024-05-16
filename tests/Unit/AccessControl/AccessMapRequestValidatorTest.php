@@ -34,8 +34,8 @@ final class AccessMapRequestValidatorTest extends TestCase
         $toggle = $this->createMock(FeatureToggle::class);
 
         $expectedFetchedFeaturesGenerator = (function (): Generator {
-            yield [['feature_1'], new SimpleFeature('feature_1', State::ENABLED())];
-            yield [['feature_2'], new SimpleFeature('feature_2', State::DISABLED())];
+            yield [['feature_1'], new SimpleFeature('feature_1', State::ENABLED)];
+            yield [['feature_2'], new SimpleFeature('feature_2', State::DISABLED)];
         })();
         $toggle->expects(self::exactly(2))
             ->method('get')
@@ -48,8 +48,8 @@ final class AccessMapRequestValidatorTest extends TestCase
             });
 
         $map = $this->createMap([
-            new Requirement('feature_1', State::ENABLED()),
-            new Requirement('feature_2', State::DISABLED()),
+            new Requirement('feature_1', State::ENABLED),
+            new Requirement('feature_2', State::DISABLED),
         ]);
 
         $validator = new AccessMapRequestValidator($map, $toggle);
@@ -61,8 +61,8 @@ final class AccessMapRequestValidatorTest extends TestCase
         $toggle = $this->createMock(FeatureToggle::class);
 
         $expectedFetchedFeaturesGenerator = (function (): Generator {
-            yield [['feature_1'], new SimpleFeature('feature_1', State::ENABLED())];
-            yield [['feature_2'], new SimpleFeature('feature_2', State::ENABLED())];
+            yield [['feature_1'], new SimpleFeature('feature_1', State::ENABLED)];
+            yield [['feature_2'], new SimpleFeature('feature_2', State::ENABLED)];
         })();
         $toggle->expects(self::exactly(2))
             ->method('get')
@@ -75,13 +75,13 @@ final class AccessMapRequestValidatorTest extends TestCase
             });
 
         $map = $this->createMap([
-            new Requirement('feature_1', State::ENABLED()),
-            new Requirement('feature_2', State::DISABLED()),
+            new Requirement('feature_1', State::ENABLED),
+            new Requirement('feature_2', State::DISABLED),
         ]);
 
         $validator = new AccessMapRequestValidator($map, $toggle);
         $this->expectExceptionObject(
-            UnmetRequirement::byFeature(new SimpleFeature('feature_2', State::ENABLED()), new Requirement('feature_2', State::DISABLED()))
+            UnmetRequirement::byFeature(new SimpleFeature('feature_2', State::ENABLED), new Requirement('feature_2', State::DISABLED))
         );
         $validator->validate(new Request());
     }

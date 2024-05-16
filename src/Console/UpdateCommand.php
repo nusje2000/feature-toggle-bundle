@@ -17,38 +17,13 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 final class UpdateCommand extends Command
 {
-    /**
-     * @var EnvironmentRepository
-     */
-    private $environmentRepository;
-
-    /**
-     * @var FeatureRepository
-     */
-    private $featureRepository;
-
-    /**
-     * @var Invalidator
-     */
-    private $invalidator;
-
-    /**
-     * @var Environment
-     */
-    private $defaultEnvironment;
-
     public function __construct(
-        EnvironmentRepository $environmentRepository,
-        FeatureRepository $featureRepository,
-        Invalidator $invalidator,
-        Environment $defaultEnvironment
+        private readonly EnvironmentRepository $environmentRepository,
+        private readonly FeatureRepository $featureRepository,
+        private readonly Invalidator $invalidator,
+        private readonly Environment $defaultEnvironment
     ) {
         parent::__construct();
-
-        $this->environmentRepository = $environmentRepository;
-        $this->featureRepository = $featureRepository;
-        $this->invalidator = $invalidator;
-        $this->defaultEnvironment = $defaultEnvironment;
     }
 
     protected function configure(): void

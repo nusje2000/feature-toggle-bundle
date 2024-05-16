@@ -15,31 +15,12 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 final class CleanupCommand extends Command
 {
-    /**
-     * @var FeatureRepository
-     */
-    private $featureRepository;
-
-    /**
-     * @var Invalidator
-     */
-    private $invalidator;
-
-    /**
-     * @var Environment
-     */
-    private $defaultEnvironment;
-
     public function __construct(
-        FeatureRepository $featureRepository,
-        Invalidator $invalidator,
-        Environment $defaultEnvironment
+        private readonly FeatureRepository $featureRepository,
+        private readonly Invalidator $invalidator,
+        private readonly Environment $defaultEnvironment
     ) {
         parent::__construct();
-
-        $this->featureRepository = $featureRepository;
-        $this->invalidator = $invalidator;
-        $this->defaultEnvironment = $defaultEnvironment;
     }
 
     protected function configure(): void

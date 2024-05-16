@@ -8,11 +8,11 @@ on:
 
 jobs:
     code_analysis:
-        name: Code Analysis - PHP ${{ matrix.php-versions }}
+        name: 'Code Analysis - PHP ${{ matrix.php-versions }}'
         runs-on: ubuntu-latest
         strategy:
             matrix:
-                php-versions: [ '8.1', '8.2' ]
+                php-versions: [ '8.1', '8.2', '8.3' ]
         steps:
             -   name: Setup PHP, with composer and extensions
                 uses: shivammathur/setup-php@v2
@@ -26,12 +26,12 @@ jobs:
                 run: vendor/bin/phpstan analyze
             -   name: Psalm
                 run: vendor/bin/psalm
-    tests:
-        name: 'Tests - PHP ${{ matrix.php-versions }}'
+    code_analysis_lowest_dependencies:
+        name: 'Code Analysis lowest dependency - PHP ${{ matrix.php-versions }}'
         runs-on: ubuntu-latest
         strategy:
             matrix:
-                php-versions: [ '8.1', '8.2' ]
+                php-versions: [ '8.1', '8.2', '8.3' ]
         steps:
             -   name: Setup PHP, with composer and extensions
                 uses: shivammathur/setup-php@v2
@@ -41,5 +41,45 @@ jobs:
                     coverage: pcov
             -   uses: actions/checkout@v1
             -   uses: ramsey/composer-install@v1
+                with:
+                    dependency-versions: lowest
+            -   name: PHP Stan
+                run: vendor/bin/phpstan analyze
+            -   name: Psalm
+                run: vendor/bin/psalm
+    tests:
+        name: 'Tests - PHP ${{ matrix.php-versions }}'
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                php-versions: [ '8.1', '8.2', '8.3' ]
+        steps:
+            -   name: Setup PHP, with composer and extensions
+                uses: shivammathur/setup-php@v2
+                with:
+                    php-version: ${{ matrix.php-versions }}
+                    extensions: mbstring, xml, ctype, iconv, mysql, curl, intl
+                    coverage: pcov
+            -   uses: actions/checkout@v1
+            -   uses: ramsey/composer-install@v1
+            -   name: PHPUnit
+                run: vendor/bin/phpunit
+    tests_lowest_dependencies:
+        name: 'Tests lowest dependency - PHP ${{ matrix.php-versions }}'
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                php-versions: [ '8.1', '8.2', '8.3' ]
+        steps:
+            -   name: Setup PHP, with composer and extensions
+                uses: shivammathur/setup-php@v2
+                with:
+                    php-version: ${{ matrix.php-versions }}
+                    extensions: mbstring, xml, ctype, iconv, mysql, curl, intl
+                    coverage: pcov
+            -   uses: actions/checkout@v1
+            -   uses: ramsey/composer-install@v1
+                with:
+                    dependency-versions: lowest
             -   name: PHPUnit
                 run: vendor/bin/phpunit

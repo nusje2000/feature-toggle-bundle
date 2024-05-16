@@ -152,7 +152,7 @@ final class Nusje2000FeatureToggleExtension extends Extension
                 new Definition(SimpleFeature::class, [
                     (string) $name,
                     new Definition(State::class, [
-                        State::fromBoolean($feature['enabled'])->getValue(),
+                        State::fromBoolean($feature['enabled'])->value,
                     ]),
                     $feature['description'],
                 ]),
@@ -172,7 +172,7 @@ final class Nusje2000FeatureToggleExtension extends Extension
                 $requirements[] = new Definition(Requirement::class, [
                     $name,
                     new Definition(State::class, [
-                        State::fromBoolean($enabled)->getValue(),
+                        State::fromBoolean($enabled)->value,
                     ]),
                 ]);
             }

@@ -22,8 +22,8 @@ final class UnmetRequirement extends LogicException implements Throwable
             sprintf(
                 'Feature "%s" has state "%s" (requires %s)',
                 $feature->name(),
-                $feature->state()->getKey(),
-                $requirement->state()->getKey()
+                $feature->state()->name,
+                $requirement->state()->name,
             ),
             $previous
         );

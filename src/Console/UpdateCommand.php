@@ -78,7 +78,7 @@ final class UpdateCommand extends Command
                 continue;
             }
 
-            $actions[] = sprintf('Create feature "%s" with default state "%s".', $feature->name(), $feature->state()->getKey());
+            $actions[] = sprintf('Create feature "%s" with default state "%s".', $feature->name(), $feature->state()->name);
         }
 
         if (count($actions) < 1) {

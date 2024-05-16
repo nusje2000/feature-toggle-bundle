@@ -36,7 +36,7 @@ final class AccessMapRequestValidator implements RequestValidator
     private function assert(Requirement $requirement): void
     {
         $feature = $this->featureToggle->get($requirement->feature());
-        if (!$requirement->state()->equals($feature->state())) {
+        if ($requirement->state() !== $feature->state()) {
             throw UnmetRequirement::byFeature($feature, $requirement);
         }
     }

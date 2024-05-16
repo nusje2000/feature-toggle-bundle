@@ -40,12 +40,12 @@ final class SimpleFeature implements Feature
 
     public function enable(): void
     {
-        $this->state = State::ENABLED();
+        $this->state = State::ENABLED;
     }
 
     public function disable(): void
     {
-        $this->state = State::DISABLED();
+        $this->state = State::DISABLED;
     }
 
     public function description(): ?string

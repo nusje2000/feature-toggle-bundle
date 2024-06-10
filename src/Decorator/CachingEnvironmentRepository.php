@@ -16,33 +16,17 @@ final class CachingEnvironmentRepository implements EnvironmentRepository
     private const CACHE_ALL_SECTION = '_all';
     private const CACHE_EXISTS_SECTION = '_exists';
 
-    /**
-     * @var AdapterInterface
-     */
-    private $adapter;
-
-    /**
-     * @var EnvironmentRepository
-     */
-    private $repository;
-
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    public function __construct(AdapterInterface $adapter, EnvironmentRepository $repository, LoggerInterface $logger)
-    {
-        $this->adapter = $adapter;
-        $this->repository = $repository;
-        $this->logger = $logger;
+    public function __construct(
+        private readonly AdapterInterface $adapter,
+        private readonly EnvironmentRepository $repository,
+        private readonly LoggerInterface $logger,
+    ) {
     }
 
     public function all(): array
     {
-        $item = $this->adapter->getItem(
-            $this->createKey(self::CACHE_ENVIRONMENT_KEY, self::CACHE_ALL_SECTION)
-        );
+        $key = $this->createKey(self::CACHE_ENVIRONMENT_KEY, self::CACHE_ALL_SECTION);
+        $item = $this->adapter->getItem($key);
 
         if ($item->isHit()) {
             $this->logger->info(sprintf('Attempting to use cache with key "%s".', $item->getKey()));
@@ -134,10 +118,8 @@ final class CachingEnvironmentRepository implements EnvironmentRepository
 
     /**
      * @psalm-assert-if-true array<Environment> $list
-     *
-     * @param mixed $list
      */
-    private function isValidEnvironmentArray($list): bool
+    private function isValidEnvironmentArray(mixed $list): bool
     {
         if (!is_array($list)) {
             return false;

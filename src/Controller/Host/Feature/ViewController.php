@@ -10,14 +10,9 @@ use Symfony\Component\HttpFoundation\Response;
 
 final class ViewController
 {
-    /**
-     * @var FeatureRepository
-     */
-    private $repository;
-
-    public function __construct(FeatureRepository $repository)
-    {
-        $this->repository = $repository;
+    public function __construct(
+        private readonly FeatureRepository $repository,
+    ) {
     }
 
     public function __invoke(string $environment, string $name): Response

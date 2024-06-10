@@ -9,14 +9,9 @@ use Symfony\Component\HttpFoundation\Response;
 
 final class InvalidateCacheController
 {
-    /**
-     * @var Invalidator
-     */
-    private $invalidator;
-
-    public function __construct(Invalidator $invalidator)
-    {
-        $this->invalidator = $invalidator;
+    public function __construct(
+        private readonly Invalidator $invalidator,
+    ) {
     }
 
     public function __invoke(): Response

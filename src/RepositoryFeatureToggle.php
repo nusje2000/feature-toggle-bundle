@@ -12,20 +12,10 @@ use Nusje2000\FeatureToggleBundle\Repository\FeatureRepository;
 
 final class RepositoryFeatureToggle implements FeatureToggle
 {
-    /**
-     * @var FeatureRepository
-     */
-    private $featureRepository;
-
-    /**
-     * @var string
-     */
-    private $environmentName;
-
-    public function __construct(FeatureRepository $featureRepository, string $environmentName)
-    {
-        $this->featureRepository = $featureRepository;
-        $this->environmentName = $environmentName;
+    public function __construct(
+        private readonly FeatureRepository $featureRepository,
+        private readonly string $environmentName,
+    ) {
     }
 
     public function get(string $feature): Feature

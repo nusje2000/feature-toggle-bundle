@@ -12,14 +12,9 @@ use Symfony\Component\HttpFoundation\Response;
 
 final class ListController
 {
-    /**
-     * @var EnvironmentRepository
-     */
-    private $repository;
-
-    public function __construct(EnvironmentRepository $repository)
-    {
-        $this->repository = $repository;
+    public function __construct(
+        private readonly EnvironmentRepository $repository,
+    ) {
     }
 
     public function __invoke(): Response
@@ -38,7 +33,7 @@ final class ListController
                             'description' => $feature->description(),
                         ];
                     },
-                    array_values($environment->features())
+                    array_values($environment->features()),
                 ),
             ];
         }, $environments));

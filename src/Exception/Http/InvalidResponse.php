@@ -29,10 +29,7 @@ final class InvalidResponse extends UnexpectedValueException implements Throwabl
         );
     }
 
-    /**
-     * @param mixed $value
-     */
-    public static function invalidKeyType(string $key, string $expected, $value, ?Throwable $previous = null): self
+    public static function invalidKeyType(string $key, string $expected, mixed $value, ?Throwable $previous = null): self
     {
         return new self(
             sprintf(

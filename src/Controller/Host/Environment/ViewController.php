@@ -11,14 +11,9 @@ use Symfony\Component\HttpFoundation\Response;
 
 final class ViewController
 {
-    /**
-     * @var EnvironmentRepository
-     */
-    private $repository;
-
-    public function __construct(EnvironmentRepository $repository)
-    {
-        $this->repository = $repository;
+    public function __construct(
+        private readonly EnvironmentRepository $repository,
+    ) {
     }
 
     public function __invoke(string $name): Response
@@ -36,7 +31,7 @@ final class ViewController
                         'description' => $feature->description(),
                     ];
                 },
-                array_values($environment->features())
+                array_values($environment->features()),
             ),
         ]);
 

@@ -10,20 +10,10 @@ use Symfony\Component\HttpFoundation\Request;
 
 final class AccessMapRequestValidator implements RequestValidator
 {
-    /**
-     * @var AccessMap
-     */
-    private $accessMap;
-
-    /**
-     * @var FeatureToggle
-     */
-    private $featureToggle;
-
-    public function __construct(AccessMap $accessMap, FeatureToggle $featureToggle)
-    {
-        $this->accessMap = $accessMap;
-        $this->featureToggle = $featureToggle;
+    public function __construct(
+        private readonly AccessMap $accessMap,
+        private readonly FeatureToggle $featureToggle,
+    ) {
     }
 
     public function validate(Request $request): void

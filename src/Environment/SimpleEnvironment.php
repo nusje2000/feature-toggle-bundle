@@ -11,28 +11,24 @@ use Nusje2000\FeatureToggleBundle\Feature\Feature;
 final class SimpleEnvironment implements Environment
 {
     /**
-     * @var string
-     */
-    private $name;
-
-    /**
      * @var array<string, Feature>
      */
-    private $features = [];
+    private array $features = [];
 
     /**
      * @var list<string>
      */
-    private $hosts = [];
+    private array $hosts = [];
 
     /**
      * @param list<string>  $hosts
      * @param list<Feature> $features
      */
-    public function __construct(string $name, array $hosts, array $features)
-    {
-        $this->name = $name;
-
+    public function __construct(
+        private readonly string $name,
+        array $hosts,
+        array $features,
+    ) {
         foreach ($hosts as $host) {
             $this->addHost($host);
         }

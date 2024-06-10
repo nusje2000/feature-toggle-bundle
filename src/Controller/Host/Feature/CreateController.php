@@ -15,20 +15,10 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 final class CreateController
 {
-    /**
-     * @var RequestParser
-     */
-    private $requestParser;
-
-    /**
-     * @var FeatureRepository
-     */
-    private $repository;
-
-    public function __construct(RequestParser $requestParser, FeatureRepository $repository)
-    {
-        $this->requestParser = $requestParser;
-        $this->repository = $repository;
+    public function __construct(
+        private readonly RequestParser $requestParser,
+        private readonly FeatureRepository $repository,
+    ) {
     }
 
     public function __invoke(Request $request, string $environment): Response

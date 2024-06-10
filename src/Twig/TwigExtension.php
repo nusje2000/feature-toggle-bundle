@@ -10,14 +10,9 @@ use Twig\TwigFunction;
 
 final class TwigExtension extends AbstractExtension
 {
-    /**
-     * @var FeatureToggle
-     */
-    private $featureToggle;
-
-    public function __construct(FeatureToggle $featureToggle)
-    {
-        $this->featureToggle = $featureToggle;
+    public function __construct(
+        private readonly FeatureToggle $featureToggle,
+    ) {
     }
 
     /**

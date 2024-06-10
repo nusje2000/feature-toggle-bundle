@@ -17,20 +17,10 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
 
 final class RemoteEnvironmentRepository implements EnvironmentRepository
 {
-    /**
-     * @var HttpClientInterface
-     */
-    private $client;
-
-    /**
-     * @var string
-     */
-    private $basePath;
-
-    public function __construct(HttpClientInterface $client, string $basePath)
-    {
-        $this->client = $client;
-        $this->basePath = $basePath;
+    public function __construct(
+        private readonly HttpClientInterface $client,
+        private readonly string $basePath,
+    ) {
     }
 
     /**

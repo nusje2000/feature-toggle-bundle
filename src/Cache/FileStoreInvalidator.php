@@ -11,20 +11,10 @@ use Symfony\Component\Filesystem\Filesystem;
  */
 final class FileStoreInvalidator implements Invalidator
 {
-    /**
-     * @var Filesystem
-     */
-    private $filesystem;
-
-    /**
-     * @var string
-     */
-    private $storageLocation;
-
-    public function __construct(string $storageLocation, ?Filesystem $filesystem = null)
-    {
-        $this->filesystem = $filesystem ?? new Filesystem();
-        $this->storageLocation = $storageLocation;
+    public function __construct(
+        private readonly string $storageLocation,
+        private readonly Filesystem $filesystem = new Filesystem(),
+    ) {
     }
 
     public function invalidate(): void

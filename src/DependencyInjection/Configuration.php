@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Nusje2000\FeatureToggleBundle\DependencyInjection;
 
-use Symfony\Component\Config\Definition\BaseNode;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
@@ -49,8 +48,8 @@ final class Configuration implements ConfigurationInterface
         $environment->arrayNode('hosts')->requiresAtLeastOneElement()->isRequired()->scalarPrototype();
         $features = $environment->arrayNode('features')->useAttributeAsKey('name')->arrayPrototype();
         $features->beforeNormalization()
-            ->ifTrue(/** @param mixed $v */
-                function ($v) {
+            ->ifTrue(
+                function (mixed $v) {
                     return is_bool($v);
                 })->then(function (bool $v) {
                 return ['enabled' => $v];

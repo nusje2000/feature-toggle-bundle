@@ -11,7 +11,7 @@ final class AccessMap
     /**
      * @var list<Pattern>
      */
-    private $patterns = [];
+    private array $patterns = [];
 
     public function add(Pattern $pattern): void
     {

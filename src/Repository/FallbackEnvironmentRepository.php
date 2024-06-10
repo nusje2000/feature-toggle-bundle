@@ -15,26 +15,11 @@ use Throwable;
  */
 final class FallbackEnvironmentRepository implements EnvironmentRepository
 {
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
-     * @var EnvironmentRepository
-     */
-    private $main;
-
-    /**
-     * @var EnvironmentRepository
-     */
-    private $fallback;
-
-    public function __construct(LoggerInterface $logger, EnvironmentRepository $main, EnvironmentRepository $fallback)
-    {
-        $this->logger = $logger;
-        $this->main = $main;
-        $this->fallback = $fallback;
+    public function __construct(
+        private readonly LoggerInterface $logger,
+        private readonly EnvironmentRepository $main,
+        private readonly EnvironmentRepository $fallback,
+    ) {
     }
 
     public function all(): array
@@ -81,7 +66,7 @@ final class FallbackEnvironmentRepository implements EnvironmentRepository
             'Failed accessing "%s" due to: %s %s',
             get_class($this->main),
             get_class($throwable),
-            $throwable->getMessage()
+            $throwable->getMessage(),
         ));
     }
 }

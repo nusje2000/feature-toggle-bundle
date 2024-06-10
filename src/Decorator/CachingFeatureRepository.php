@@ -16,26 +16,11 @@ final class CachingFeatureRepository implements FeatureRepository
     private const CACHE_ALL_SECTION = '_all';
     private const CACHE_EXISTS_SECTION = '_exists';
 
-    /**
-     * @var AdapterInterface
-     */
-    private $adapter;
-
-    /**
-     * @var FeatureRepository
-     */
-    private $repository;
-
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    public function __construct(AdapterInterface $adapter, FeatureRepository $repository, LoggerInterface $logger)
-    {
-        $this->adapter = $adapter;
-        $this->repository = $repository;
-        $this->logger = $logger;
+    public function __construct(
+        private readonly AdapterInterface $adapter,
+        private readonly FeatureRepository $repository,
+        private readonly LoggerInterface $logger,
+    ) {
     }
 
     public function all(string $environment): array
@@ -145,10 +130,8 @@ final class CachingFeatureRepository implements FeatureRepository
 
     /**
      * @psalm-assert-if-true array<string, Feature> $list
-     *
-     * @param mixed $list
      */
-    private function isValidFeatureArray($list): bool
+    private function isValidFeatureArray(mixed $list): bool
     {
         if (!is_array($list)) {
             return false;

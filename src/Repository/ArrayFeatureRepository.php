@@ -11,14 +11,9 @@ use Nusje2000\FeatureToggleBundle\Feature\Feature;
 
 final class ArrayFeatureRepository implements FeatureRepository
 {
-    /**
-     * @var EnvironmentRepository
-     */
-    private $environmentRepository;
-
-    public function __construct(EnvironmentRepository $environmentRepository)
-    {
-        $this->environmentRepository = $environmentRepository;
+    public function __construct(
+        private readonly EnvironmentRepository $environmentRepository,
+    ) {
     }
 
     /**

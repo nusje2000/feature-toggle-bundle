@@ -255,10 +255,7 @@ final class CachingFeatureRepositoryTest extends TestCase
         return $adapter;
     }
 
-    /**
-     * @param mixed $value
-     */
-    private function createCacheItem(string $key, $value, bool $expectUpdate): ItemInterface
+    private function createCacheItem(string $key, mixed $value, bool $expectUpdate): ItemInterface
     {
         $item = $this->createMock(ItemInterface::class);
         $item->method('getKey')->willReturn($key);

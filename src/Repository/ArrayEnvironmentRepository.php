@@ -13,7 +13,7 @@ final class ArrayEnvironmentRepository implements EnvironmentRepository
     /**
      * @var array<string, Environment>
      */
-    private $environments = [];
+    private array $environments = [];
 
     /**
      * @param list<Environment> $environments

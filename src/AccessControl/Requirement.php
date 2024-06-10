@@ -8,20 +8,10 @@ use Nusje2000\FeatureToggleBundle\Feature\State;
 
 final class Requirement
 {
-    /**
-     * @var string
-     */
-    private $feature;
-
-    /**
-     * @var State
-     */
-    private $state;
-
-    public function __construct(string $feature, State $state)
-    {
-        $this->feature = $feature;
-        $this->state = $state;
+    public function __construct(
+        private readonly string $feature,
+        private readonly State $state,
+    ) {
     }
 
     public function feature(): string

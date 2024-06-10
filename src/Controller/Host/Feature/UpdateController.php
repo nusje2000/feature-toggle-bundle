@@ -13,20 +13,10 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 final class UpdateController
 {
-    /**
-     * @var FeatureRepository
-     */
-    private $repository;
-
-    /**
-     * @var RequestParser
-     */
-    private $requestParser;
-
-    public function __construct(RequestParser $requestParser, FeatureRepository $repository)
-    {
-        $this->repository = $repository;
-        $this->requestParser = $requestParser;
+    public function __construct(
+        private readonly RequestParser $requestParser,
+        private readonly FeatureRepository $repository,
+    ) {
     }
 
     public function __invoke(Request $request, string $environment, string $name): Response

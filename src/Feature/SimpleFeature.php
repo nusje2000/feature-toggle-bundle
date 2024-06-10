@@ -6,26 +6,11 @@ namespace Nusje2000\FeatureToggleBundle\Feature;
 
 final class SimpleFeature implements Feature
 {
-    /**
-     * @var string
-     */
-    private $name;
-
-    /**
-     * @var State
-     */
-    private $state;
-
-    /**
-     * @var string|null
-     */
-    private $description;
-
-    public function __construct(string $name, State $state, ?string $description = null)
-    {
-        $this->name = $name;
-        $this->state = $state;
-        $this->description = $description;
+    public function __construct(
+        private readonly string $name,
+        private State $state,
+        private ?string $description = null,
+    ) {
     }
 
     public function name(): string

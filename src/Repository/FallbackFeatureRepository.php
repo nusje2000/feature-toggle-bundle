@@ -15,26 +15,11 @@ use Throwable;
  */
 final class FallbackFeatureRepository implements FeatureRepository
 {
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
-     * @var FeatureRepository
-     */
-    private $main;
-
-    /**
-     * @var FeatureRepository
-     */
-    private $fallback;
-
-    public function __construct(LoggerInterface $logger, FeatureRepository $main, FeatureRepository $fallback)
-    {
-        $this->logger = $logger;
-        $this->main = $main;
-        $this->fallback = $fallback;
+    public function __construct(
+        private readonly LoggerInterface $logger,
+        private readonly FeatureRepository $main,
+        private readonly FeatureRepository $fallback,
+    ) {
     }
 
     public function all(string $environment): array
@@ -91,7 +76,7 @@ final class FallbackFeatureRepository implements FeatureRepository
             'Failed accessing "%s" due to: %s %s',
             get_class($this->main),
             get_class($throwable),
-            $throwable->getMessage()
+            $throwable->getMessage(),
         ));
     }
 }

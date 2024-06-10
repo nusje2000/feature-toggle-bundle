@@ -86,10 +86,7 @@ final class Nusje2000FeatureToggleExtension extends Extension
         $this->configureEnvironment($container, $xmlLoader, $config['environment']);
     }
 
-    /**
-     * @param string|null|false $loggerConfig
-     */
-    private function configureLogger(ContainerBuilder $container, $loggerConfig): void
+    private function configureLogger(ContainerBuilder $container, string|false|null $loggerConfig): void
     {
         if (null === $loggerConfig && $container->has('logger')) {
             $loggerConfig = 'logger';
@@ -278,7 +275,6 @@ final class Nusje2000FeatureToggleExtension extends Extension
     }
 
     /**
-     * @param ContainerBuilder $builder
      * @param array{
      *     enabled: bool,
      *     feature: string|null,

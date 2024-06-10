@@ -10,22 +10,12 @@ use Symfony\Component\HttpFoundation\RequestMatcherInterface;
 final class RequestMatcherPattern implements Pattern
 {
     /**
-     * @var RequestMatcherInterface
-     */
-    private $matcher;
-
-    /**
-     * @var list<Requirement>
-     */
-    private $requirements;
-
-    /**
      * @param list<Requirement> $requirements
      */
-    public function __construct(RequestMatcherInterface $matcher, array $requirements)
-    {
-        $this->matcher = $matcher;
-        $this->requirements = $requirements;
+    public function __construct(
+        private readonly RequestMatcherInterface $matcher,
+        private readonly array $requirements,
+    ) {
     }
 
     public function matches(Request $request): bool
